@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Transaction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="email"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+     <header>
+      <h4>Escape the ghost👻. </h4>
+      <div class="solde" id="Solde" >Solde:<span>1000</span>trx</div> 
+   </header>
+    <div class="container">
+        <h1>Formulaire de Transaction</h1>
+        <form id="transactionForm">
+    <div class="form-group">
+        <label for="email">Email :</label>
+        <input type="email" id="email" name="email" placeholder="exemple@email.com" required>
+    </div>
+
+    <div class="form-group">
+        <label for="montant">Montant (€) :</label>
+        <input type="number" id="montant" name="montant" placeholder="0.00" min="0" step="0.01" required>
+    </div>
+
+    <button type="submit">Soumettre la Transaction</button>
+</form>
+
+<script>
+const form = document.getElementById('transactionForm');
+
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const montant = parseFloat(document.getElementById('montant').value);
+
+    const response = await fetch('/api/transaction', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, montant })
+    });
+
+    const result = await response.json();
+
+    if(result.payment_url) {
+        // Redirige le client vers le paiement
+        window.location.href = result.payment_url;
+    } else {
+        alert('Erreur lors de la création de la transaction.');
+    }
+});
+</script>
+<script>
+async function syncBalance() {
+    const email = localStorage.getItem('email'); // ou via session
+
+    if (!email) return;
+
+    const res = await fetch(`/api/balance?email=${email}`);
+    const data = await res.json();
+
+    document.querySelectorAll('[data-balance]').forEach(el => {
+        el.textContent = data.balance.toFixed(2) + ' TRX';
+    });
+}
+
+syncBalance();
+</script>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<html lang="fr">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Escape the Ghost - Jeu</title>
+   <link rel="stylesheet" href="GhostR.css">
+</head>
+<body>
+   <header>
+      <h4>Escape the ghost👻. </h4>
+      <div class="solde" id="Solde" >Solde:<span>1000</span>trx</div>    
+      <button onclick="location.href='transaction.html'">Deposite</button>
+   </header>
+   <div class="cadreJeux">
+      <div class="cote" id="cote">×<span>1.0</span></div>
+      <div class="img">
+      <img src="ima/dance.gif" width="250px" height=150px" style="mix-blend-mode:multiply;" class="stick1" id="stick1">
+      <div class="Acteurs">
+   <img src="ima/R.gif" width="150px" height="150px" style="mix-blend-mode:multiply;" class="stick" id="stick0">
+   
+      <img src="ima/Gost.jpg" width="100px" style="mix-blend-mode:multiply;" class="Ghost" id="Ghost">
+      </div>
+      </div>
+      <div class="commandes">
+         <div class="mise">
+            <p>Placer la mise</p>
+            <input type="number" placeholder="Inscriver votre mise" id="Mise" value="">
+            <button class="btn-mise" onclick="Miser()" id="btn-mise">Miser</button>
+         </div>
+         <button class="retirer" onclick="retrait()" id="btn-rtt">Saute !!!</button>
+      </div>
+      <div class="historique" id="Story"></div>
+      <script src="GhostR.js"></script>
+   </div>
+</body>
+</html>

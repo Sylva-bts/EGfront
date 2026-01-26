@@ -1,0 +1,285 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: all 0.3s ease-in-out;
+}
+
+body{
+    background: #323742;
+}
+
+header {
+  background-color: #2e2e2e;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  color: white;
+  align-items: center;
+}
+
+.solde {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.cadreJeux {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  flex-direction: column;
+  background: #000000;
+  max-width: 460px;
+  border-radius: 0 10px 10px 0;
+  margin: auto;
+}
+
+.cote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 10px;
+  font-size: 2em;
+  background: #3d3d38;
+  max-width: 300px;
+  border-radius: 10px 0 10px 0;
+  margin-bottom: 10px;
+}
+
+.img {
+  background: repeating-linear-gradient(
+    to right,
+    #152b7d 0,
+    #152b7d 20px,
+    white 20px,
+    white 40px
+  );
+  padding: 10px 20px;
+  height: 150px;
+  width: 100%;
+}
+
+.Acteurs {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.stick {
+  margin-right: 125px;
+  transform: scaleX(-1);
+}
+INPUT[type="number"] {
+  width: 200px;
+  height: 40px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  padding: 8px 12px;
+  font-size: 1em;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #89018453 0%, #c71585 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(137, 1, 133, 0.3);
+  transition: all 0.3s ease;
+}
+
+INPUT[type="number"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(137, 1, 133, 0.5);
+  border-color: #e84ba0;
+}
+
+INPUT[type="number"]:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2), 0 6px 20px rgba(137, 1, 133, 0.5);
+  transform: translateY(-2px);
+}
+
+INPUT[type="number"]:active {
+  transform: translateY(0);
+}
+.Ghost {
+  animation: float 3s ease-in-out infinite, Appar 0.5s ease-out;
+  position: relative;
+  right: 10px;
+  border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+  box-shadow: 0 0 15px #890185;
+  
+}
+@keyframes MoveEcran{
+   from{
+      background-position:0 0;
+   }
+   to {
+      background-position:40px 40px;
+   }
+}
+
+/* Animation de flottement */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* Animation d'apparition */
+@keyframes Appar {
+  0% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.commandes {
+  padding: 50px;
+  align-items: center;
+}
+
+input {
+  width: 200px;
+  padding: 8px;
+}
+
+.btn-mise {
+  margin-right: 10px;
+  padding: 4px;
+  color: white;
+  background: #8098ff;
+  border: none;
+  border-radius: 6px;
+}
+
+.demarer, .retirer {
+  padding: 10px;
+  border-radius: 8px;
+  background: #3d3d38;
+  border: none;
+  transition: 0.5s;
+  margin-top: 29px;
+}
+
+.demarer:hover, .retirer:hover {
+  transform: scale(0.80);
+}
+
+.retirer:hover {
+  background: #aaffca;
+}
+
+.retirer {
+  position: relative;
+  left: 100px;
+}
+.historique {
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 20px;
+  background: #1a1a1f;
+  border-top: 2px solid #3d3d38;
+}
+
+.historique::-webkit-scrollbar {
+  width: 8px;
+}
+
+.historique::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+.historique::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 4px;
+}
+
+.historique h3 {
+  color: #667eea;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background: #2a2a30;
+  border-left: 4px solid #667eea;
+  border-radius: 6px;
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+}
+
+.transaction-item:hover {
+  background: #333339;
+  transform: translateX(5px);
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.transaction-type {
+  color: #aaa;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+.transaction-amount {
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.transaction-amount.gain {
+  color: #4ade80;
+}
+
+.transaction-amount.perte {
+  color: #ff6b6b;
+}
+
+.transaction-time {
+  color: #888;
+  font-size: 0.8em;
+  text-align: right;
+}
+
+.btn-clear-history {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}
+
+.btn-clear-history:hover {
+  background: #ff5252;
+  transform: scale(1.02);
+}
