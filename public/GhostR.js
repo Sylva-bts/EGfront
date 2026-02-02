@@ -85,7 +85,7 @@ function GameOn() {
   alert("Tu as misé !!");
 
   coteIni = 1.0;
-  vitesse = 1000;
+  vitesse =800;
   jeuEnCours = true;
 
   pouuf = tirerCote(); // génère la cote perdante selon probabilité
