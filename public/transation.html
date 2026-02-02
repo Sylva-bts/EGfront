@@ -84,14 +84,31 @@
         button:active {
             transform: translateY(0);
         }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h4 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .solde {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
     </style>
 </head>
 <body>
-     <header>
-      <h4>Escape the ghost👻. </h4>
-      <div class="solde" id="Solde" >Solde:<span>1000</span>trx</div> 
-   </header>
     <div class="container">
+        <header>
+            <h4>Escape the ghost👻.</h4>
+            <div class="solde" id="Solde">Solde: <span data-balance>0</span> TRX</div>
+        </header>
         <h1>Formulaire de Transaction</h1>
         <form id="transactionForm">
     <div class="form-group">
