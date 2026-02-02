@@ -30,7 +30,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
+  min-height: 70vh;
   flex-direction: column;
   background: #000000;
   max-width: 460px;

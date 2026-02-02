@@ -135,45 +135,101 @@
     </div>
 
     <script>
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        const API_URL = "";
 
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm_password').value;
-            const messageDiv = document.getElementById('message');
+    const registerForm = document.getElementById('registerForm');
+    const messageEl = document.getElementById('message');
+    const submitBtn = registerForm.querySelector('button[type="submit"]');
 
-            // Vérifier si les mots de passe correspondent
-            if (password !== confirmPassword) {
-                messageDiv.innerHTML = '<p style="color: red;">Les mots de passe ne correspondent pas.</p>';
-                return;
-            }
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        messageEl.style.color = 'red';
+        messageEl.textContent = '';
 
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+
+        if (!email) {
+            messageEl.textContent = 'Entrez une adresse email valide';
+            submitBtn.disabled = false;
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            messageEl.textContent = 'Les mots de passe ne correspondent pas';
+            submitBtn.disabled = false;
+            return;
+        }
+
+        if (username.length < 3) {
+            messageEl.textContent = 'Nom d\'utilisateur trop court (min 3 caractères)';
+            submitBtn.disabled = false;
+            return;
+        }
+
+        if (password.length < 6) {
+            messageEl.textContent = 'Mot de passe trop court (min 6 caractères)';
+            submitBtn.disabled = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': '*/*' },
+                body: JSON.stringify({ username, email, password })
+            });
+
+            let data;
+            const contentType = response.headers.get('content-type') || '';
             try {
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, email, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    messageDiv.innerHTML = '<p style="color: green;">' + data.message + '</p>';
-                    // Redirect to GhostR.html after successful registration
-                    setTimeout(() => {
-                        window.location.href = 'GhostR.html';
-                    }, 2000);
+                if (contentType.includes('application/json')) {
+                    data = await response.json();
                 } else {
-                    messageDiv.innerHTML = '<p style="color: red;">' + data.message + '</p>';
+                    const text = await response.text();
+                    data = { __raw: text };
                 }
-            } catch (error) {
-                messageDiv.innerHTML = '<p style="color: red;">Erreur de connexion au serveur.</p>';
+            } catch (parseErr) {
+                const text = await response.text().catch(() => '');
+                data = { __raw: text };
+                console.warn('Response parsing failed', parseErr);
             }
-        });
+
+            console.group('Register response');
+            console.log('status', response.status);
+            console.log('headers', [...response.headers.entries()]);
+            console.log('body', data);
+            console.groupEnd();
+
+            if (response.ok) {
+                messageEl.style.color = 'green';
+                messageEl.textContent = '✅ Inscription réussie';
+                registerForm.reset();
+
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user || {}));
+                    setTimeout(() => window.location.href = 'GhostR.html', 1200);
+                } else {
+                    setTimeout(() => window.location.href = '/connec.html', 1200);
+                }
+            } else {
+                messageEl.style.color = 'red';
+                const errMsg = data && (data.error || data.message || data.__raw) ? (data.error || data.message || data.__raw) : `Status ${response.status}`;
+                messageEl.textContent = '❌ ' + errMsg;
+            }
+        } catch (err) {
+            messageEl.style.color = 'red';
+            messageEl.textContent = '❌ Erreur réseau ou serveur (voir console)';
+            console.error('Fetch error', err);
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
     </script>
 </body>
 </html>

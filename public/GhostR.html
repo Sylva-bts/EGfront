@@ -31,23 +31,6 @@
       </div>
       <div class="historique" id="Story"></div>
       <script src="GhostR.js"></script>
-      <script>
-async function syncBalance() {
-    const email = localStorage.getItem('email'); // ou via session
-
-    if (!email) return;
-
-    const res = await fetch(`/api/balance?email=${email}`);
-    const data = await res.json();
-
-    document.querySelectorAll('[data-balance]').forEach(el => {
-        el.textContent = data.balance.toFixed(2) + ' TRX';
-    });
-}
-
-syncBalance();
-</script>
-
    </div>
 </body>
 </html>
