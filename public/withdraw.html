@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirer des fonds - Jeu</title>
+    <link rel="stylesheet" href="css/transactions.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <h1>🎰 Jeu Casino</h1>
+        </div>
+        <nav class="nav-links">
+            <a href="GhostR.html">Accueil</a>
+            <a href="deposit.html">Déposer</a>
+            <a href="withdraw.html" class="active">Retirer</a>
+        </nav>
+        <div class="user-info">
+            <div class="balance-display">
+                Solde: $<span id="user-balance">0.00</span>
+            </div>
+            <button id="logout-btn" class="logout-btn">Déconnexion</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="page-title">
+            <h2>💸 Retirer des fonds</h2>
+            <p>Convertissez vos jetons en cryptomonnaie</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <a href="deposit.html" class="nav-tab">Dépôt</a>
+            <a href="withdraw.html" class="nav-tab active">Retrait</a>
+        </div>
+
+        <!-- Withdrawal Form -->
+        <div class="card" id="withdraw-form">
+            <div class="card-header">
+                <h3>Informations de retrait</h3>
+            </div>
+
+            <form id="withdraw-form-element">
+                <!-- Crypto Selector -->
+                <div class="form-group">
+                    <label>Cryptomonnaie</label>
+                    <div class="crypto-selector">
+                        <div class="crypto-option">
+                            <input type="radio" name="crypto" id="withdraw-crypto-TRX" value="TRX">
+                            <label for="withdraw-crypto-TRX">
+                                <span class="icon">🔶</span>
+                                <span class="name">TRX</span>
+                            </label>
+                        </div>
+                        <div class="crypto-option">
+                            <input type="radio" name="crypto" id="withdraw-crypto-USDT" value="USDT" checked>
+                            <label for="withdraw-crypto-USDT">
+                                <span class="icon">💵</span>
+                                <span class="name">USDT</span>
+                            </label>
+                        </div>
+                        <div class="crypto-option">
+                            <input type="radio" name="crypto" id="withdraw-crypto-BTC" value="BTC">
+                            <label for="withdraw-crypto-BTC">
+                                <span class="icon">₿</span>
+                                <span class="name">BTC</span>
+                            </label>
+                        </div>
+                        <div class="crypto-option">
+                            <input type="radio" name="crypto" id="withdraw-crypto-ETH" value="ETH">
+                            <label for="withdraw-crypto-ETH">
+                                <span class="icon">Ξ</span>
+                                <span class="name">ETH</span>
+                            </label>
+                        </div>
+                        <div class="crypto-option">
+                            <input type="radio" name="crypto" id="withdraw-crypto-BNB" value="BNB">
+                            <label for="withdraw-crypto-BNB">
+                                <span class="icon">⬡</span>
+                                <span class="name">BNB</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Amount Input -->
+                <div class="form-group">
+                    <label for="withdraw-amount">Montant (USD)</label>
+                    <input type="number" id="withdraw-amount" placeholder="Entrez le montant en USD" min="20" step="1" required>
+                </div>
+
+                <!-- Address Input -->
+                <div class="form-group">
+                    <label for="withdraw-address">Adresse wallet de destination</label>
+                    <input type="text" id="withdraw-address" placeholder="Entrez votre adresse crypto" required>
+                </div>
+
+                <!-- Minimum Info -->
+                <div class="min-info">
+                    <strong>Montants minimums:</strong><br>
+                    TRX/USDT: $20 | BTC: 0.005 | ETH: 0.02 | BNB: 0.05
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="withdraw-btn" class="btn btn-primary">
+                    Demander un retrait
+                </button>
+            </form>
+        </div>
+
+        <!-- Withdrawal Info (Hidden by default) -->
+        <div class="card" id="withdraw-info" style="display: none;">
+            <div class="card-header">
+                <h3>📤 Demande de retrait</h3>
+            </div>
+
+            <!-- Transaction Details -->
+            <div class="transaction-details">
+                <h4>Détails de la transaction</h4>
+                
+                <div class="detail-row">
+                    <span class="info-label">Montant</span>
+                    <span class="info-value" id="withdraw-amount">-</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="info-label">Adresse</span>
+                    <span class="info-value" id="withdraw-address">-</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="info-label">ID Transaction</span>
+                    <span class="info-value" id="withdraw-transaction-id">-</span>
+                </div>
+            </div>
+
+            <!-- Status -->
+            <div class="status-section" id="withdraw-status" style="display: none;">
+                <div class="status-icon" id="withdraw-status-icon">⏳</div>
+                <div class="status-text" id="withdraw-status-text">En attente...</div>
+            </div>
+
+            <!-- New Withdrawal Button -->
+            <button class="btn btn-primary" style="margin-top: 20px;" onclick="resetWithdrawForm()">
+                Nouveau retrait
+            </button>
+        </div>
+    </div>
+
+    <script src="js/transactions.js"></script>
+    <script>
+        // Override crypto selector to work with radio buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle radio button selection
+            const cryptoOptions = document.querySelectorAll('.crypto-option input');
+            cryptoOptions.forEach(option => {
+                option.addEventListener('change', function() {
+                    cryptoOptions.forEach(o => o.checked = false);
+                    this.checked = true;
+                });
+            });
+
+            // Update form to get crypto value from radio buttons
+            const withdrawForm = document.getElementById('withdraw-form-element');
+            withdrawForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const amount = document.getElementById('withdraw-amount').value;
+                const address = document.getElementById('withdraw-address').value;
+                
+                // Get selected crypto
+                const selectedCrypto = document.querySelector('input[name="crypto"]:checked');
+                const crypto = selectedCrypto ? selectedCrypto.value : 'USDT';
+                
+                if (!amount || amount <= 0) {
+                    alert('Veuillez entrer un montant valide');
+                    return;
+                }
+                
+                if (!address) {
+                    alert('Veuillez entrer une adresse wallet');
+                    return;
+                }
+                
+                await createWithdrawal(amount, crypto, address);
+            });
+
+            // Load balance
+            loadBalance();
+        });
+    </script>
+</body>
+</html>
