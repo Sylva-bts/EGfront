@@ -3,7 +3,7 @@
 
 // Auto-detect API URL based on current hostname
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE = isLocalhost ? 'http://localhost:5000/api' : window.location.origin + '/api';
+const API_BASE = isLocalhost ? 'http://localhost:5000/api' : 'https://egback-1.onrender.com/api';
 
 console.log('Running on:', window.location.hostname);
 console.log('Using API:', API_BASE);
