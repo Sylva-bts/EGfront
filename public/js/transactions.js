@@ -420,13 +420,16 @@ document.addEventListener('DOMContentLoaded', function() {
     loadBalance();
     
     // Deposit form handler
-    const depositForm = document.getElementById('deposit-form');
+    const depositForm = document.getElementById('deposit-form-element');
     if (depositForm) {
         depositForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const amount = document.getElementById('deposit-amount').value;
-            const crypto = document.getElementById('crypto-selector').value;
+            
+            // Get selected crypto from radio buttons
+            const selectedCrypto = document.querySelector('input[name="crypto"]:checked');
+            const crypto = selectedCrypto ? selectedCrypto.value : 'USDT';
             
             if (!amount || amount <= 0) {
                 showMessage('Veuillez entrer un montant valide', 'error');
@@ -438,14 +441,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Withdrawal form handler
-    const withdrawForm = document.getElementById('withdraw-form');
+    const withdrawForm = document.getElementById('withdraw-form-element');
     if (withdrawForm) {
         withdrawForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const amount = document.getElementById('withdraw-amount').value;
-            const crypto = document.getElementById('withdraw-crypto').value;
             const address = document.getElementById('withdraw-address').value;
+            
+            // Get selected crypto from radio buttons
+            const selectedCrypto = document.querySelector('input[name="crypto"]:checked');
+            const crypto = selectedCrypto ? selectedCrypto.value : 'USDT';
             
             if (!amount || amount <= 0) {
                 showMessage('Veuillez entrer un montant valide', 'error');
