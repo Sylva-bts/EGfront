@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paiement OxaPay</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background:#0f172a; color:#e2e8f0; font-family:Arial, sans-serif; }
+    .pay-wrap { max-width:900px; margin:30px auto; padding:20px; }
+    .panel { background:#1e293b; border:1px solid #334155; border-radius:12px; padding:18px; margin-bottom:16px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .field { display:flex; flex-direction:column; gap:6px; }
+    input, select, button { padding:10px; border-radius:8px; border:1px solid #475569; }
+    button { cursor:pointer; border:none; font-weight:700; }
+    .btn-deposit { background:#22c55e; color:#052e16; }
+    .btn-withdraw { background:#f97316; color:#431407; }
+    .log { background:#020617; border:1px solid #334155; padding:10px; border-radius:8px; min-height:80px; white-space:pre-wrap; }
+    .balance { font-size:1.1rem; font-weight:700; color:#67e8f9; }
+    a { color:#7dd3fc; }
+  </style>
+</head>
+<body>
+  <div class="pay-wrap">
+    <h1>💳 Paiement OxaPay</h1>
+    <p>Cette page gère les <strong>dépôts</strong> (incrémentation de solde) et les <strong>retraits</strong> (décrémentation de solde).</p>
+
+    <div class="panel">
+      <div class="balance">Solde actuel: <span id="balance">0.00</span> USD</div>
+      <small>Le solde est stocké localement dans ce navigateur (localStorage) pour la démo front.</small>
+    </div>
+
+    <div class="panel">
+      <h3>Configuration API</h3>
+      <div class="row">
+        <div class="field">
+          <label for="merchantKey">Clé marchand OxaPay</label>
+          <input id="merchantKey" type="password" placeholder="OXAPAY_MERCHANT_API_KEY" />
+        </div>
+        <div class="field">
+          <label for="callbackUrl">Callback URL (optionnel)</label>
+          <input id="callbackUrl" type="url" placeholder="https://votre-backend.com/api/oxapay/callback" />
+        </div>
+      </div>
+      <small>⚠️ En production, la clé API doit rester côté serveur. Ici elle est saisie manuellement pour test rapide.</small>
+    </div>
+
+    <div class="panel" id="deposit-section">
+      <h3>📥 Dépôt</h3>
+      <div class="row">
+        <div class="field">
+          <label for="depositAmount">Montant USD</label>
+          <input id="depositAmount" type="number" min="1" step="0.01" value="10" />
+        </div>
+        <div class="field">
+          <label for="depositCurrency">Crypto</label>
+          <select id="depositCurrency">
+            <option value="USDT">USDT</option>
+            <option value="TRX">TRX</option>
+            <option value="BTC">BTC</option>
+            <option value="ETH">ETH</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-deposit" id="btnDeposit">Créer une facture OxaPay</button>
+      <button id="btnCheckDeposit" style="margin-left:8px;">Vérifier statut dépôt</button>
+      <p id="depositResult"></p>
+    </div>
+
+    <div class="panel" id="withdraw-section">
+      <h3>📤 Retrait</h3>
+      <div class="row">
+        <div class="field">
+          <label for="withdrawAmount">Montant USD</label>
+          <input id="withdrawAmount" type="number" min="1" step="0.01" value="5" />
+        </div>
+        <div class="field">
+          <label for="withdrawCurrency">Crypto</label>
+          <select id="withdrawCurrency">
+            <option value="USDT">USDT</option>
+            <option value="TRX">TRX</option>
+            <option value="BTC">BTC</option>
+            <option value="ETH">ETH</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="withdrawAddress">Adresse wallet destinataire</label>
+        <input id="withdrawAddress" type="text" placeholder="Votre adresse wallet" />
+      </div>
+      <button class="btn-withdraw" id="btnWithdraw">Envoyer le retrait OxaPay</button>
+      <button id="btnCheckWithdraw" style="margin-left:8px;">Vérifier statut retrait</button>
+      <p id="withdrawResult"></p>
+    </div>
+
+    <div class="panel">
+      <h3>Journal</h3>
+      <div class="log" id="log"></div>
+    </div>
+
+    <p><a href="GhostR.html">← Retour au jeu</a></p>
+  </div>
+
+  <script src="js/oxapay-payments.js"></script>
+</body>
+</html>
