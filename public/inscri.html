@@ -136,8 +136,7 @@
 
     <script>
     // Auto-detect API URL based on current hostname
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const API_BASE_URL = isLocalhost ? 'http://localhost:5000' : 'https://egback-1.onrender.com';
+    const API_BASE_URL = `${window.location.origin}/api`;
     
     console.log('Running on:', window.location.hostname);
     console.log('Using API:', API_BASE_URL);
@@ -159,7 +158,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     messageDiv.innerHTML = "Création du compte...";
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
