@@ -173,40 +173,71 @@ function getUserFromRequest(req) {
 }
 
 async function createOxaPayInvoice(payload) {
-  const merchantApiKey = process.env.OXAPAY_MERCHANT_API_KEY;
+  const merchantApiKey = String(process.env.OXAPAY_MERCHANT_API_KEY || '').trim();
   if (!merchantApiKey) {
     throw new Error('OXAPAY_MERCHANT_API_KEY manquant. Lancez le serveur avec `OXAPAY_MERCHANT_API_KEY=... node server.js` ou `node server.js OXAPAY_MERCHANT_API_KEY=...`.');
   }
 
-  const response = await fetch(`${OXAPAY_API_BASE}/merchants/request`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  const requestPayload = {
+    merchant: merchantApiKey,
+    ...payload
+  };
 
-  const data = await response.json();
+  if (!requestPayload.merchant) {
+    requestPayload.merchant = merchantApiKey;
+  }
+
+  let response;
+  try {
+    response = await fetch(`${OXAPAY_API_BASE}/merchants/request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestPayload)
+    });
+  } catch (error) {
+    throw new Error(`Impossible de joindre OxaPay (facture): ${error.message}`);
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error('Réponse invalide de OxaPay (facture).');
+  }
+
   if (!response.ok || !data?.result) {
-    throw new Error(data?.message || 'Erreur OxaPay (création facture)');
+    throw new Error(data?.message || `Erreur OxaPay (création facture). HTTP ${response.status}`);
   }
 
   return data;
 }
 
 async function createOxaPayPayout(payload) {
-  const payoutApiKey = process.env.OXAPAY_PAYOUT_API_KEY || process.env.OXAPAY_MERCHANT_API_KEY;
+  const payoutApiKey = String(process.env.OXAPAY_PAYOUT_API_KEY || process.env.OXAPAY_MERCHANT_API_KEY || '').trim();
   if (!payoutApiKey) {
     throw new Error('OXAPAY_PAYOUT_API_KEY (ou OXAPAY_MERCHANT_API_KEY) manquant. Utilisez `OXAPAY_PAYOUT_API_KEY=... node server.js` ou `node server.js OXAPAY_PAYOUT_API_KEY=...`.');
   }
 
-  const response = await fetch(`${OXAPAY_API_BASE}/api/send`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ key: payoutApiKey, ...payload })
-  });
+  let response;
+  try {
+    response = await fetch(`${OXAPAY_API_BASE}/api/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: payoutApiKey, ...payload })
+    });
+  } catch (error) {
+    throw new Error(`Impossible de joindre OxaPay (retrait): ${error.message}`);
+  }
 
-  const data = await response.json();
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error('Réponse invalide de OxaPay (retrait).');
+  }
+
   if (!response.ok || !data?.result) {
-    throw new Error(data?.message || 'Erreur OxaPay (retrait)');
+    throw new Error(data?.message || `Erreur OxaPay (retrait). HTTP ${response.status}`);
   }
 
   return data;
@@ -328,7 +359,6 @@ async function handlePayments(req, res, pathname) {
       const callbackUrl = body.callbackUrl || `http://localhost:${PORT}/deposit.html?payment=callback`;
 
       const invoice = await createOxaPayInvoice({
-        merchant: process.env.OXAPAY_MERCHANT_API_KEY,
         amount,
         currency,
         orderId,
@@ -447,7 +477,6 @@ async function handleCrypto(req, res, pathname) {
       const callbackUrl = body.callbackUrl || `http://localhost:${PORT}/deposit.html?payment=callback`;
 
       const invoice = await createOxaPayInvoice({
-        merchant: process.env.OXAPAY_MERCHANT_API_KEY,
         amount,
         currency,
         lifeTime: 30,
