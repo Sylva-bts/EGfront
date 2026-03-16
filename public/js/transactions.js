@@ -2,11 +2,12 @@
 // Frontend logic for deposit and withdrawal operations
 
 // Auto-detect API URL based on current hostname
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE = isLocalhost ? 'http://localhost:5000/api' : 'https://egback-1.onrender.com/api';
+const API_BASE = `${window.location.origin}/api`;
 
 console.log('Running on:', window.location.hostname);
 console.log('Using API:', API_BASE);
+
+const LOCAL_CRYPTO_API = `${window.location.origin}/api/crypto`;
 
 // ==================== AUTH UTILITIES ====================
 
@@ -91,6 +92,21 @@ async function createDeposit(amount, crypto) {
     btn.innerHTML = '<span class="loader"></span>';
 
     try {
+        const localResponse = await fetch(`${LOCAL_CRYPTO_API}/deposit`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount: parseFloat(amount), crypto })
+        });
+
+        if (localResponse.ok) {
+            const localData = await localResponse.json();
+            if (localData.success && localData.data?.payLink) {
+                showMessage('Redirection vers OxaPay...', 'success');
+                window.location.href = localData.data.payLink;
+                return;
+            }
+        }
+
         const data = await apiCall('/payments/deposit', {
             method: 'POST',
             body: JSON.stringify({ amount: parseFloat(amount), crypto })
@@ -227,7 +243,8 @@ function resetDepositForm() {
     depositStatus.style.display = 'none';
     
     document.getElementById('deposit-amount').value = '';
-    document.getElementById('crypto-selector').value = 'USDT';
+    const defaultCrypto = document.getElementById('crypto-USDT');
+    if (defaultCrypto) defaultCrypto.checked = true;
 }
 
 // ==================== WITHDRAWAL FUNCTIONS ====================
@@ -241,6 +258,31 @@ async function createWithdrawal(amount, crypto, address) {
     btn.innerHTML = '<span class="loader"></span>';
 
     try {
+        const localResponse = await fetch(`${LOCAL_CRYPTO_API}/withdraw`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                amount: parseFloat(amount),
+                crypto,
+                address
+            })
+        });
+
+        if (localResponse.ok) {
+            const localData = await localResponse.json();
+            if (localData.success) {
+                showWithdrawalInfo({
+                    amount: localData.data.amount,
+                    crypto: localData.data.currency,
+                    address: localData.data.address,
+                    transaction_id: localData.data.payoutId,
+                    payout_id: localData.data.payoutId
+                });
+                showMessage('Retrait envoyé vers OxaPay.', 'success');
+                return;
+            }
+        }
+
         const data = await apiCall('/payments/withdraw', {
             method: 'POST',
             body: JSON.stringify({ 
@@ -344,7 +386,8 @@ function resetWithdrawForm() {
     
     document.getElementById('withdraw-amount').value = '';
     document.getElementById('withdraw-address').value = '';
-    document.getElementById('withdraw-crypto').value = 'USDT';
+    const defaultWithdrawCrypto = document.getElementById('withdraw-crypto-USDT');
+    if (defaultWithdrawCrypto) defaultWithdrawCrypto.checked = true;
 }
 
 // ==================== QR CODE ====================
