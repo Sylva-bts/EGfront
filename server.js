@@ -4,6 +4,21 @@ const path = require('path');
 const crypto = require('crypto');
 const { URL } = require('url');
 
+function applyRuntimeEnvFromArgs() {
+  for (const arg of process.argv.slice(2)) {
+    if (!arg || !arg.includes('=')) continue;
+    const [rawKey, ...rest] = arg.split('=');
+    const key = String(rawKey || '').trim();
+    if (!key) continue;
+    const value = rest.join('=').trim();
+    if (key && !(key in process.env)) {
+      process.env[key] = value;
+    }
+  }
+}
+
+applyRuntimeEnvFromArgs();
+
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const DATA_DIR = path.join(__dirname, 'data');
@@ -160,7 +175,7 @@ function getUserFromRequest(req) {
 async function createOxaPayInvoice(payload) {
   const merchantApiKey = process.env.OXAPAY_MERCHANT_API_KEY;
   if (!merchantApiKey) {
-    throw new Error('OXAPAY_MERCHANT_API_KEY manquant');
+    throw new Error('OXAPAY_MERCHANT_API_KEY manquant. Lancez le serveur avec `OXAPAY_MERCHANT_API_KEY=... node server.js` ou `node server.js OXAPAY_MERCHANT_API_KEY=...`.');
   }
 
   const response = await fetch(`${OXAPAY_API_BASE}/merchants/request`, {
@@ -180,7 +195,7 @@ async function createOxaPayInvoice(payload) {
 async function createOxaPayPayout(payload) {
   const payoutApiKey = process.env.OXAPAY_PAYOUT_API_KEY || process.env.OXAPAY_MERCHANT_API_KEY;
   if (!payoutApiKey) {
-    throw new Error('OXAPAY_PAYOUT_API_KEY (ou OXAPAY_MERCHANT_API_KEY) manquant');
+    throw new Error('OXAPAY_PAYOUT_API_KEY (ou OXAPAY_MERCHANT_API_KEY) manquant. Utilisez `OXAPAY_PAYOUT_API_KEY=... node server.js` ou `node server.js OXAPAY_PAYOUT_API_KEY=...`.');
   }
 
   const response = await fetch(`${OXAPAY_API_BASE}/api/send`, {
