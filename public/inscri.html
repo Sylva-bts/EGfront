@@ -3,187 +3,345 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Escape the Ghost - Jeu</title>
+   <title>Inscription | Escape the Ghost</title>
    <link rel="stylesheet" href="GhostR.css">
+   <style>
+      :root {
+         --bg-base: #14091f;
+         --line: rgba(255, 255, 255, 0.14);
+         --text: #edf5ff;
+         --muted: #b6cae6;
+         --accent: #b47cff;
+         --accent-2: #d7b0ff;
+         --danger: #ff9090;
+         --success: #88f5ca;
+         --shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+      }
+      * { box-sizing: border-box; }
+      body {
+         margin: 0;
+         min-height: 100vh;
+         padding: 24px;
+         display: grid;
+         place-items: center;
+         color: var(--text);
+         font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+         background:
+            radial-gradient(circle at top left, rgba(180, 124, 255, 0.18), transparent 28%),
+            radial-gradient(circle at 82% 16%, rgba(215, 176, 255, 0.16), transparent 24%),
+            linear-gradient(155deg, #090512, var(--bg-base) 48%, #34185d);
+      }
+      .signup-layout {
+         width: min(1120px, 100%);
+         display: grid;
+         grid-template-columns: 0.95fr 1.05fr;
+         border-radius: 30px;
+         overflow: hidden;
+         border: 1px solid var(--line);
+         background: rgba(7, 14, 26, 0.76);
+         box-shadow: var(--shadow);
+         backdrop-filter: blur(18px);
+      }
+      .signup-aside,
+      .signup-card { padding: 40px; }
+      .signup-aside {
+         display: flex;
+         flex-direction: column;
+         justify-content: space-between;
+         gap: 28px;
+         background:
+            linear-gradient(180deg, rgba(180, 124, 255, 0.1), rgba(215, 176, 255, 0.04)),
+            linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent);
+      }
+      .badge {
+         display: inline-flex;
+         align-items: center;
+         gap: 8px;
+         width: fit-content;
+         padding: 8px 14px;
+         border-radius: 999px;
+         background: rgba(180, 124, 255, 0.14);
+         color: var(--accent);
+         font-size: 0.84rem;
+         font-weight: 700;
+         letter-spacing: 0.04em;
+         text-transform: uppercase;
+      }
+      .signup-aside h1 {
+         margin: 18px 0 16px;
+         font-size: clamp(2.2rem, 4vw, 4rem);
+         line-height: 1;
+      }
+      .signup-aside p {
+         margin: 0;
+         max-width: 34ch;
+         color: var(--muted);
+         line-height: 1.75;
+      }
+      .steps {
+         display: grid;
+         gap: 14px;
+      }
+      .step {
+         padding: 16px 18px;
+         border-radius: 20px;
+         border: 1px solid rgba(255, 255, 255, 0.08);
+         background: rgba(255, 255, 255, 0.05);
+      }
+      .step strong {
+         display: block;
+         margin-bottom: 6px;
+      }
+      .step span {
+         color: var(--muted);
+         line-height: 1.6;
+         font-size: 0.95rem;
+      }
+      .signup-card {
+         background: rgba(255, 255, 255, 0.04);
+         border-left: 1px solid var(--line);
+      }
+      .signup-card h2 {
+         margin: 0 0 8px;
+         font-size: 2rem;
+      }
+      .intro {
+         margin: 0 0 28px;
+         color: var(--muted);
+         line-height: 1.65;
+      }
+      form {
+         display: grid;
+         gap: 16px;
+      }
+      .field-grid {
+         display: grid;
+         grid-template-columns: repeat(2, minmax(0, 1fr));
+         gap: 16px;
+      }
+      .field {
+         display: grid;
+         gap: 8px;
+      }
+      .field.full { grid-column: 1 / -1; }
+      label {
+         font-weight: 700;
+         font-size: 0.94rem;
+      }
+      input {
+         width: 100%;
+         min-height: 52px;
+         padding: 14px 16px;
+         border: 1px solid rgba(255, 255, 255, 0.12);
+         border-radius: 16px;
+         background: rgba(7, 13, 24, 0.7);
+         color: var(--text);
+         font: inherit;
+         transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      }
+      input::placeholder { color: #7f94b6; }
+      input:focus {
+         outline: none;
+         border-color: rgba(180, 124, 255, 0.68);
+         box-shadow: 0 0 0 4px rgba(180, 124, 255, 0.12);
+         transform: translateY(-1px);
+      }
+      .hint {
+         margin: -4px 0 0;
+         color: var(--muted);
+         font-size: 0.85rem;
+      }
+      .submit-btn,
+      .back-link {
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         min-height: 52px;
+         border-radius: 999px;
+         font-weight: 700;
+      }
+      .submit-btn {
+         margin-top: 4px;
+         border: none;
+         color: #08111d;
+         cursor: pointer;
+         background: linear-gradient(135deg, var(--accent-2), #f2e1ff);
+         box-shadow: 0 18px 30px rgba(180, 124, 255, 0.24);
+         transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .submit-btn:hover {
+         transform: translateY(-2px);
+         box-shadow: 0 20px 34px rgba(180, 124, 255, 0.3);
+      }
+      .meta-row {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         gap: 16px;
+         flex-wrap: wrap;
+         margin-top: 6px;
+      }
+      .meta-row p {
+         margin: 0;
+         color: var(--muted);
+      }
+      .meta-row a,
+      .back-link {
+         color: var(--accent);
+         text-decoration: none;
+         font-weight: 700;
+      }
+      .back-link {
+         margin-top: 22px;
+         border: 1px solid var(--line);
+         background: rgba(255, 255, 255, 0.04);
+      }
+      #message {
+         min-height: 24px;
+         font-weight: 700;
+      }
+      #message[data-state="error"] { color: var(--danger); }
+      #message[data-state="success"] { color: var(--success); }
+      #message[data-state="pending"] { color: var(--accent-2); }
+      @media (max-width: 980px) {
+         .signup-layout { grid-template-columns: 1fr; }
+         .signup-card {
+            border-left: none;
+            border-top: 1px solid var(--line);
+         }
+      }
+      @media (max-width: 700px) {
+         body { padding: 12px; }
+         .signup-aside,
+         .signup-card { padding: 24px 20px; }
+         .field-grid { grid-template-columns: 1fr; }
+      }
+   </style>
 </head>
 <body>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+   <div class="signup-layout">
+      <aside class="signup-aside">
+         <div>
+            <div class="badge">Nouvelle inscription</div>
+            <h1>Creez votre acces et entrez dans le monde de Ghost.</h1>
+            <p>Ouvrez votre compte pour jouer, suivre vos bonus et utiliser vos liens d'affiliation sans friction.</p>
+         </div>
+         <div class="steps">
+            <div class="step">
+               <strong>1. Creez votre profil</strong>
+               <span>Un nom, un email, un mot de passe, et vous etes pret a commencer.</span>
+            </div>
+            <div class="step">
+               <strong>2. Ajoutez un code d'affiliation</strong>
+               <span>Le code se remplit automatiquement si vous arrivez depuis un lien de parrainage.</span>
+            </div>
+            <div class="step">
+               <strong>3. Connectez-vous et jouez</strong>
+               <span>Une fois le compte cree, vous etes redirige vers la page de connexion.</span>
+            </div>
+         </div>
+      </aside>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      <section class="signup-card">
+         <h2>Inscription</h2>
+         <p class="intro">Remplissez le formulaire ci-dessous pour rejoindre Escape the Ghost.</p>
 
-        .form-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 40px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
+         <form id="registerForm">
+            <div class="field-grid">
+               <div class="field">
+                  <label for="username">Nom d'utilisateur</label>
+                  <input type="text" id="username" name="username" placeholder="Votre pseudo" required>
+               </div>
+               <div class="field">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" name="email" placeholder="vous@exemple.com" required>
+               </div>
+               <div class="field">
+                  <label for="password">Mot de passe</label>
+                  <input type="password" id="password" name="password" placeholder="Choisissez un mot de passe" required>
+               </div>
+               <div class="field">
+                  <label for="confirm_password">Confirmer le mot de passe</label>
+                  <input type="password" id="confirm_password" name="confirm_password" placeholder="Retapez votre mot de passe" required>
+               </div>
+               <div class="field full">
+                  <label for="referral_code">Code d'affiliation</label>
+                  <input type="text" id="referral_code" name="referral_code" placeholder="Rempli automatiquement via un lien partage">
+                  <p class="hint">Optionnel. Si vous avez un code de parrainage, il sera conserve automatiquement.</p>
+               </div>
+            </div>
 
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-            font-size: 28px;
-        }
+            <button class="submit-btn" type="submit">S'inscrire</button>
+            <div class="meta-row">
+               <p>Deja un compte ? <a href="connec.html">Se connecter</a></p>
+            </div>
+            <div id="message" aria-live="polite"></div>
+         </form>
 
-        form {
-            display: flex;
-            flex-direction: column;
-        }
+         <a class="back-link" href="index.html">Retour a l'accueil</a>
+      </section>
+   </div>
 
-        label {
-            margin-top: 15px;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 600;
-            font-size: 14px;
-        }
+   <script src="app-api.js"></script>
+   <script>
+      function renderMessage(message, state) {
+          const messageDiv = document.getElementById('message');
+          messageDiv.dataset.state = state;
+          messageDiv.textContent = message;
+      }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
+      document.getElementById('registerForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
 
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 5px rgba(102, 126, 234, 0.1);
-        }
+          const username = document.getElementById('username').value.trim();
+          const email = document.getElementById('email').value.trim();
+          const password = document.getElementById('password').value;
+          const confirmPassword = document.getElementById('confirm_password').value;
+          const referralCode = document.getElementById('referral_code').value.trim().toUpperCase();
 
-        button[type="submit"] {
-            padding: 12px;
-            margin-top: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+          if (password !== confirmPassword) {
+              renderMessage('Les mots de passe ne correspondent pas.', 'error');
+              return;
+          }
 
-        button[type="submit"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
+          renderMessage('Creation du compte...', 'pending');
 
-        button[type="submit"]:active {
-            transform: translateY(0);
-        }
+          try {
+              const response = await fetch(`${window.AppApi.getApiBaseUrl()}/api/auth/register`, {
+                  method: 'POST',
+                  headers: window.AppApi.authHeaders(),
+                  body: JSON.stringify({ username, email, password, referralCode })
+              });
 
-        p {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-        }
+              const data = await response.json();
 
-        a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
+              if (!response.ok) {
+                  throw new Error(data.message || "Erreur d'inscription");
+              }
 
-        a:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-    </style>
-    <!-- formulaire d'inscription-->
-    <div class="form-container">
-        <h2>Inscription</h2>
-        <form id="registerForm">
-            <label for="username">Nom d'utilisateur:</label>
-            <input type="text" id="username" name="username" required>
+              window.AppApi.clearReferralCode();
+              renderMessage(data.message, 'success');
 
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+              setTimeout(() => {
+                  window.location.href = '/connec.html';
+              }, 1500);
 
-            <label for="password">Mot de passe:</label>
-            <input type="password" id="password" name="password" required>
+          } catch (err) {
+              renderMessage(err.message, 'error');
+          }
+      });
 
-            <label for="confirm_password">Confirmer le mot de passe:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
+      (function hydrateReferralCode() {
+          const referralInput = document.getElementById('referral_code');
+          const url = new URL(window.location.href);
+          const referralFromUrl = url.searchParams.get('ref');
+          const storedReferralCode = referralFromUrl || window.AppApi.getReferralCode();
 
-            <button type="submit">S'inscrire</button>
-            <p><i>Déjà un compte?</i> <a href="connec.html">Se connecter</a></p>
-            <div id="message"></div>
-        </form>
-    </div>
-
-    <script>
-    // Auto-detect API URL based on current hostname
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const API_BASE_URL = isLocalhost ? 'http://localhost:5000' : 'https://egback-1.onrender.com';
-    
-    console.log('Running on:', window.location.hostname);
-    console.log('Using API:', API_BASE_URL);
-
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm_password').value;
-    const messageDiv = document.getElementById('message');
-
-    if (password !== confirmPassword) {
-        messageDiv.innerHTML = '<p style="color:red;">Les mots de passe ne correspondent pas</p>';
-        return;
-    }
-
-    messageDiv.innerHTML = "Création du compte...";
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, email, password })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.message || "Erreur d'inscription");
-        }
-
-        messageDiv.innerHTML = `<p style="color:green;">${data.message}</p>`;
-
-        setTimeout(() => {
-            window.location.href = "/connec.html";
-        }, 1500);
-
-    } catch (err) {
-        messageDiv.innerHTML = `<p style="color:red;">${err.message}</p>`;
-    }
-});
-</script>
-
+          if (storedReferralCode) {
+              const normalizedCode = window.AppApi.setReferralCode(storedReferralCode);
+              referralInput.value = normalizedCode;
+          }
+      })();
+   </script>
 </body>
 </html>

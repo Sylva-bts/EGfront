@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>GhostR - Profil</title>
+   <link rel="stylesheet" href="GhostR.css">
+   <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+   <header>
+      <h4>GhostR Profil</h4>
+      <div class="header-actions">
+         <button class="header-btn" type="button" onclick="location.href='GhostR.html'">Jeu</button>
+         <button class="header-btn" type="button" onclick="location.href='transac.html'">Finance</button>
+         <button class="header-btn" type="button" onclick="location.href='abonnement.html'">Boutique</button>
+      </div>
+   </header>
+
+   <main class="profile-page">
+      <section class="profile-card">
+         <p class="profile-page-kicker">Compte joueur</p>
+         <h1>Mon profil</h1>
+         <p class="profile-page-status" id="profile-status">Chargement du compte...</p>
+
+         <form id="profile-form" class="profile-page-form" autocomplete="on">
+            <label for="profile-username">Nom d'utilisateur</label>
+            <input type="text" id="profile-username" name="username" minlength="3" autocomplete="username" required>
+
+            <label for="profile-balance">Solde</label>
+            <input type="text" id="profile-balance" name="account_balance" readonly>
+
+            <label for="profile-affiliate-total">Solde affiliation</label>
+            <input type="text" id="profile-affiliate-total" name="affiliate_total" readonly>
+
+            <label for="profile-affiliate-locked">Affiliation bloquee</label>
+            <input type="text" id="profile-affiliate-locked" name="affiliate_locked" readonly>
+
+            <label for="profile-affiliate-withdrawable">Retirable maintenant</label>
+            <input type="text" id="profile-affiliate-withdrawable" name="affiliate_withdrawable" readonly>
+
+            <label for="profile-referral-code">Code d'affiliation</label>
+            <input type="text" id="profile-referral-code" name="referral_code" readonly>
+
+            <label for="profile-referral-link">Lien d'affiliation</label>
+            <div class="profile-inline-action">
+               <input type="text" id="profile-referral-link" name="referral_link" readonly>
+               <button class="header-btn profile-copy-btn" type="button" id="profile-copy-link">Copier</button>
+            </div>
+
+            <p class="profile-affiliate-note" id="profile-affiliate-note">
+               Les gains d'affiliation sont ajoutes au solde, mais la partie bloquee doit d'abord etre mise et jouee avant retrait.
+            </p>
+
+            <label for="profile-email">Email</label>
+            <input type="email" id="profile-email" name="email" autocomplete="email" required>
+
+            <label for="profile-current-password">Mot de passe actuel</label>
+            <input type="password" id="profile-current-password" name="current_password" autocomplete="current-password" placeholder="Requis pour changer le mot de passe">
+
+            <label for="profile-new-password">Nouveau mot de passe</label>
+            <input type="password" id="profile-new-password" name="new_password" autocomplete="new-password" minlength="6" placeholder="Laissez vide pour conserver l'actuel">
+
+            <div class="profile-page-actions">
+               <button class="btn-mise" type="submit">Enregistrer</button>
+               <button class="retirer profile-page-logout" type="button" id="profile-logout">Deconnexion</button>
+            </div>
+         </form>
+      </section>
+   </main>
+
+   <script src="app-api.js"></script>
+   <script src="profile.js"></script>
+</body>
+</html>

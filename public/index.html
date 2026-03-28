@@ -3,42 +3,356 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Escape the Ghost - Jeu</title>
-   <link rel="stylesheet" href="style.css">
+   <title>Escape the Ghost</title>
+   <meta name="description" content="Joue à Escape The Ghost, un jeu d'horreur en ligne où tu dois survivre et t'échapper du fantôme et te faire un maximum de pactole.">
+   <script src="app-api.js"></script>
+   <style>
+      :root {
+         --bg-night: #13081f;
+         --bg-deep: #2a1140;
+         --surface: rgba(9, 18, 34, 0.78);
+         --surface-soft: rgba(255, 255, 255, 0.08);
+         --line: rgba(255, 255, 255, 0.14);
+         --text: #f4f7fb;
+         --muted: #bfd0ea;
+         --accent: #b47cff;
+         --accent-strong: #d9b8ff;
+         --danger: #ff8f8f;
+         --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      }
+      * { box-sizing: border-box; }
+      body {
+         margin: 0;
+         min-height: 100vh;
+         font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+         color: var(--text);
+         background:
+            radial-gradient(circle at top left, rgba(180, 124, 255, 0.2), transparent 32%),
+            radial-gradient(circle at 80% 20%, rgba(217, 184, 255, 0.18), transparent 24%),
+            linear-gradient(145deg, var(--bg-night), var(--bg-deep) 55%, #3b1d63);
+      }
+      body::before {
+         content: "";
+         position: fixed;
+         inset: 0;
+         pointer-events: none;
+         background-image:
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+         background-size: 32px 32px;
+         opacity: 0.25;
+      }
+      a { color: inherit; text-decoration: none; }
+      .page-shell {
+         width: min(1180px, calc(100% - 32px));
+         margin: 0 auto;
+         padding: 24px 0 40px;
+      }
+      .topbar {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         gap: 16px;
+         margin-bottom: 24px;
+         padding: 18px 22px;
+         border: 1px solid var(--line);
+         border-radius: 22px;
+         background: rgba(7, 13, 25, 0.75);
+         backdrop-filter: blur(16px);
+         box-shadow: var(--shadow);
+      }
+      .brand h1 {
+         margin: 0;
+         font-size: clamp(1.4rem, 3vw, 2.2rem);
+         letter-spacing: 0.04em;
+         text-transform: uppercase;
+      }
+      .brand p {
+         margin: 6px 0 0;
+         color: var(--muted);
+         font-size: 0.96rem;
+      }
+      .topbar-actions {
+         display: flex;
+         align-items: center;
+         gap: 12px;
+         flex-wrap: wrap;
+         justify-content: flex-end;
+      }
+      .chip {
+         padding: 10px 16px;
+         border-radius: 999px;
+         border: 1px solid rgba(180, 124, 255, 0.3);
+         background: rgba(180, 124, 255, 0.14);
+         color: var(--text);
+         font-weight: 700;
+      }
+      .primary-btn,
+      .secondary-btn {
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         min-height: 48px;
+         padding: 0 22px;
+         border-radius: 999px;
+         border: 1px solid transparent;
+         font-weight: 700;
+         cursor: pointer;
+         transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      }
+      .primary-btn {
+         color: #07131d;
+         background: linear-gradient(135deg, var(--accent-strong), #f1dcff);
+         box-shadow: 0 16px 28px rgba(180, 124, 255, 0.28);
+      }
+      .secondary-btn {
+         color: var(--text);
+         background: rgba(255, 255, 255, 0.08);
+         border-color: var(--line);
+      }
+      .primary-btn:hover,
+      .secondary-btn:hover { transform: translateY(-2px); }
+      .hero {
+         display: grid;
+         grid-template-columns: 1.15fr 0.85fr;
+         gap: 24px;
+         align-items: stretch;
+         margin-bottom: 24px;
+      }
+      .hero-copy,
+      .hero-card,
+      .notice {
+         border: 1px solid var(--line);
+         border-radius: 28px;
+         background: var(--surface);
+         backdrop-filter: blur(14px);
+         box-shadow: var(--shadow);
+      }
+      .hero-copy { padding: 36px; }
+      .eyebrow {
+         display: inline-flex;
+         align-items: center;
+         gap: 10px;
+         margin-bottom: 18px;
+         padding: 8px 14px;
+         border-radius: 999px;
+         background: rgba(180, 124, 255, 0.14);
+         color: var(--accent);
+         font-size: 0.88rem;
+         font-weight: 700;
+         letter-spacing: 0.04em;
+         text-transform: uppercase;
+      }
+      .hero-copy h2 {
+         margin: 0 0 18px;
+         font-size: clamp(2.2rem, 5vw, 4.6rem);
+         line-height: 0.98;
+      }
+      .hero-copy p {
+         margin: 0 0 24px;
+         max-width: 60ch;
+         color: var(--muted);
+         font-size: 1.05rem;
+         line-height: 1.7;
+      }
+      .hero-actions {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 14px;
+         margin-bottom: 26px;
+      }
+      .highlights {
+         display: grid;
+         grid-template-columns: repeat(3, minmax(0, 1fr));
+         gap: 14px;
+      }
+      .stat {
+         padding: 16px;
+         border-radius: 20px;
+         background: var(--surface-soft);
+         border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .stat strong {
+         display: block;
+         margin-bottom: 4px;
+         font-size: 1.1rem;
+      }
+      .stat span {
+         color: var(--muted);
+         font-size: 0.92rem;
+      }
+      .hero-card {
+         overflow: hidden;
+         position: relative;
+         min-height: 100%;
+      }
+      .hero-card img {
+         display: block;
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+         min-height: 420px;
+      }
+      .hero-card-overlay {
+         position: absolute;
+         inset: auto 18px 18px;
+         padding: 18px;
+         border-radius: 20px;
+         background: linear-gradient(180deg, rgba(8, 17, 31, 0.2), rgba(8, 17, 31, 0.88));
+         border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .hero-card-overlay h3 {
+         margin: 0 0 8px;
+         font-size: 1.3rem;
+      }
+      .hero-card-overlay p {
+         margin: 0;
+         color: var(--muted);
+         line-height: 1.6;
+      }
+      .notice {
+         display: grid;
+         grid-template-columns: 220px 1fr;
+         gap: 24px;
+         padding: 24px;
+      }
+      .notice img {
+         width: 100%;
+         height: 100%;
+         min-height: 250px;
+         object-fit: cover;
+         border-radius: 22px;
+      }
+      .notice h3 {
+         margin: 0 0 10px;
+         font-size: 1.8rem;
+      }
+      .notice p {
+         margin: 0;
+         color: var(--muted);
+         line-height: 1.75;
+      }
+      .warning {
+         display: inline-flex;
+         margin-bottom: 14px;
+         padding: 7px 12px;
+         border-radius: 999px;
+         background: rgba(255, 143, 143, 0.12);
+         color: var(--danger);
+         font-weight: 700;
+         letter-spacing: 0.03em;
+         text-transform: uppercase;
+         font-size: 0.8rem;
+      }
+      footer {
+         margin-top: 24px;
+         text-align: center;
+         color: var(--muted);
+         font-size: 0.92rem;
+      }
+      @media (max-width: 900px) {
+         .hero,
+         .notice { grid-template-columns: 1fr; }
+         .hero-card img { min-height: 320px; }
+         .highlights { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 640px) {
+         .page-shell {
+            width: min(100% - 20px, 100%);
+            padding-top: 16px;
+         }
+         .topbar,
+         .hero-copy,
+         .notice { padding: 18px; }
+         .topbar {
+            align-items: flex-start;
+            flex-direction: column;
+         }
+         .topbar-actions {
+            width: 100%;
+            justify-content: stretch;
+         }
+         .topbar-actions > * { flex: 1 1 auto; }
+         .hero-copy h2 { font-size: 2.4rem; }
+      }
+   </style>
 </head>
 <body>
-   <header>
-      <h4>Escape the ghost👻. </h4>
-      <div class="solde" id="Solde" >Solde:<span>1000</span>€</div>    
-      <button onclick="location.href='transac.html'">Deposite</button>
-   </header>
-   <div  class="main">
-   <div class="gIma">
-      <h3>la planete de ghost</h3>
-      
-    <img src ="ima/EG.jpeg" width="300px" height="400px">
-    <div class="btns">       
-       <a href="inscri.html"><button>jouer maintenant</button></a>
-       <a href="GhostR.html"><button>Jouer la demo</button></a>
-       </div>
-       
-      </div>
-   <div class="txt1"><p>Bienvenue dans la planete de ghost, un endroit mysterieus ou les fantomes regnent. Ici, vous pouvez jouer a "Escape the ghost", un jeu palpitant ou vous devez eviter d'etre attrape par un fantome tout en essayant de gagner de l'argent. Placez votre mise, surveillez le fantome et sautez au bon moment pour maximiser vos gains. Bonne chance et amusez-vous bien dans ce monde hanté!</p>
+   <div class="page-shell">
+      <header class="topbar">
+         <div class="brand">
+            <h1>Escape the Ghost</h1>
+            <p>Un univers fantomatique, des mises rapides, et des sorties au bon moment.</p>
+         </div>
+         <div class="topbar-actions">
+         </div>
+      </header>
+
+      <main>
+         <section class="hero">
+            <div class="hero-copy">
+               <div class="eyebrow">Planet Ghost</div>
+               <h2>Entrez dans la partie avant que le fantome ne vous rattrape.</h2>
+               <p>
+                  Bienvenue dans la planete de Ghost, un monde brumeux ou chaque manche peut faire grimper votre gain.
+                  Placez votre mise, surveillez la cote, et retirez-vous au bon instant pour repartir avec vos benefices.
+               </p>
+               <div class="hero-actions">
+                  <a class="primary-btn" href="inscri.html">Jouer maintenant</a>
+                  <a class="secondary-btn" href="GhostRD.html">Tester la demo</a>
+               </div>
+               <div class="highlights">
+                  <div class="stat">
+                     <strong>Decisions rapides</strong>
+                     <span>Chaque seconde compte pendant la montee de la cote.</span>
+                  </div>
+                  <div class="stat">
+                     <strong>Univers immersif</strong>
+                     <span>Une ambiance nocturne pensee pour mettre la pression juste ce qu'il faut.</span>
+                  </div>
+                  <div class="stat">
+                     <strong>Partie immediate</strong>
+                     <span>Inscription simple, demo accessible, et navigation plus claire.</span>
+                  </div>
+               </div>
+            </div>
+
+            <div class="hero-card">
+               <img src="ima/EG.jpeg" alt="Illustration de l'univers Escape the Ghost">
+               <div class="hero-card-overlay">
+                  <h3>La planete de Ghost</h3>
+                  <p>Explorez une atmosphere entre casino, science-fiction et monde hante.</p>
+               </div>
+            </div>
+         </section>
+
+         <section class="notice">
+            <img src="ima/imgA.jpeg" alt="Visuel de prevention autour du jeu">
+            <div>
+               <div class="warning">18 ans et plus</div>
+               <h3>Jouez avec responsabilite</h3>
+               <p>
+                  Escape the Ghost est reserve aux adultes. En jouant, vous confirmez avoir l'age legal dans votre juridiction.
+                  Fixez vos limites, ne misez jamais plus que ce que vous pouvez perdre, et faites une pause si le jeu cesse d'etre un loisir.
+               </p>
+            </div>
+         </section>
+      </main>
+
+      <footer>
+         <p>&copy; 2026 Escape the Ghost. Tous droits reserves.</p>
+      </footer>
    </div>
-   </div>
-<!-- presentation de jeu -->
-   
-<!-- restriction d'age -->
-<div class="restriction">
-   <div class="IM">
-     <a href="GhostR.html"></a> <img src="ima/imgA.jpeg" width="200px" height=300px id="stick1">
- </div>
- <div class="tx2">
-     <h3>Restriction d'age</h3>
-   <p>Ce jeu est reserve aux personnes agees de 18 ans et plus. En jouant a "Escape the ghost", vous confirmez que vous avez l'age legal pour participer a des jeux d'argent en ligne dans votre juridiction. Nous encourageons le jeu responsable et vous recommandons de ne pas depasser vos limites financieres. Si vous pensez avoir un probleme de jeu, veuillez chercher de l'aide professionelle.</p>
-</div>
- </div>
- <footer>
-    <p>&copy; 2024 Escape the Ghost. Tous droits reserves.</p>
+
+   <script>
+      (function captureReferralFromHome() {
+        const url = new URL(window.location.href);
+        const referralCode = url.searchParams.get("ref");
+
+        if (referralCode && window.AppApi) {
+          window.AppApi.setReferralCode(referralCode);
+        }
+      })();
+   </script>
 </body>
 </html>

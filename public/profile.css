@@ -1,0 +1,124 @@
+.profile-page {
+  min-height: calc(100vh - 110px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem 3rem;
+}
+
+.profile-card {
+  width: min(92vw, 620px);
+  padding: 2rem;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(12, 15, 29, 0.96), rgba(28, 20, 54, 0.96));
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
+}
+
+.profile-page-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a6b5ff;
+  margin-bottom: 0.35rem;
+}
+
+.profile-card h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.profile-page-status {
+  margin-bottom: 1rem;
+  color: #d8ddff;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.profile-page-form {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.profile-page-form label {
+  font-family: 'Roboto Condensed', sans-serif;
+  color: #a6b5ff;
+  font-weight: 700;
+}
+
+.profile-page-form input {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 0.35rem;
+  padding: 0 1rem;
+  border-radius: 12px;
+  border: 2px solid rgba(102, 126, 234, 0.25);
+  background: rgba(14, 17, 32, 0.85);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.profile-page-form input[readonly] {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.profile-inline-action {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.profile-copy-btn {
+  min-height: 50px;
+  white-space: nowrap;
+}
+
+.profile-affiliate-note {
+  margin-top: -0.2rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #d8ddff;
+}
+
+.profile-page-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.profile-page-logout {
+  margin-left: 0;
+}
+
+@media (max-width: 640px) {
+  .profile-page {
+    padding-inline: 0.75rem;
+  }
+
+  .profile-card {
+    padding: 1.35rem;
+    border-radius: 18px;
+  }
+
+  .profile-card h1 {
+    font-size: 1.7rem;
+  }
+
+  .profile-inline-action {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-copy-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-page-actions {
+    flex-direction: column;
+  }
+}

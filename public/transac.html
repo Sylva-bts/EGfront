@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GhostR Finance</title>
+    <link rel="stylesheet" href="transac.css">
+</head>
+<body>
+    <div class="finance-shell">
+        <header class="finance-hero">
+            <div class="hero-copy">
+                <p class="eyebrow">GhostR Secure Wallet</p>
+                <h1>Gestion financiere premium</h1>
+                <p class="hero-text">
+                    Deposez, retirez et suivez vos transactions depuis une interface unique,
+                    inspiree des plateformes de casino modernes.
+                </p>
+
+                <div class="balance-card">
+                    <span class="balance-label">Solde utilisateur</span>
+                    <strong id="user-balance">-- USD</strong>
+                    <span class="balance-status" id="balance-status">Synchronisation...</span>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="ghost-frame">
+                    <img src="ima/tranGhost.png" alt="GhostR finance" class="hero-image">
+                </div>
+            </div>
+        </header>
+
+        <main class="finance-panel">
+            <div class="tab-bar" role="tablist" aria-label="Operations financieres">
+                <button class="tab-button active" id="deposit-tab" data-tab="deposit" type="button">Depot</button>
+                <button class="tab-button" id="withdraw-tab" data-tab="withdraw" type="button">Retrait</button>
+            </div>
+
+            <section class="tab-section active" id="deposit-panel" role="tabpanel" aria-labelledby="deposit-tab">
+                <div class="grid-two">
+                    <div class="glass-card">
+                        <div class="section-head">
+                            <h2>Effectuer un depot</h2>
+                            <span class="mini-badge">Minimum 0,5 USD</span>
+                        </div>
+
+                        <form id="deposit-form" class="finance-form">
+                            <label>
+                                <span>Montant</span>
+                                <input type="number" id="deposit-amount" min="0.5" step="0.01" placeholder="0.50" required>
+                            </label>
+
+                            <label>
+                                <span>Crypto</span>
+                                <select id="deposit-crypto" required>
+                                    <option value="USDT">USDT</option>
+                                    <option value="TRX">TRX</option>
+                                    <option value="BTC">BTC</option>
+                                    <option value="ETH">ETH</option>
+                                    <option value="BNB">BNB</option>
+                                </select>
+                            </label>
+
+                            <label>
+                                <span>Methode</span>
+                                <div class="method-card">
+                                    <div class="method-icon">O</div>
+                                    <div>
+                                        <strong>OxaPay</strong>
+                                        <p>Paiement crypto securise avec suivi de transaction.</p>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <button class="primary-btn" type="submit">Generer une facture</button>
+                        </form>
+
+                        <p class="feedback" id="deposit-feedback"></p>
+                    </div>
+
+                    <div class="glass-card accent-card">
+                        <div class="section-head">
+                            <h2>Instructions de paiement</h2>
+                            <span class="mini-badge" id="deposit-transaction-status">Aucune transaction</span>
+                        </div>
+
+                        <div class="payment-instructions" id="payment-details">
+                            <div class="instruction-placeholder">
+                                <p>Generez une facture pour afficher le QR code, le lien OxaPay et le statut du depot.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-section" id="withdraw-panel" role="tabpanel" aria-labelledby="withdraw-tab">
+                <div class="grid-two">
+                    <div class="glass-card">
+                        <div class="section-head">
+                            <h2>Effectuer un retrait</h2>
+                            <span class="mini-badge">Rapide et securise</span>
+                        </div>
+
+                        <div class="withdraw-intro">
+                            <div class="mini-stat">
+                                <strong>Crypto</strong>
+                                <span>USDT, TRX, BTC, ETH</span>
+                            </div>
+                            <div class="mini-stat">
+                                <strong>Minimum</strong>
+                                <span>0,5 USD</span>
+                            </div>
+                            <div class="mini-stat">
+                                <strong>Etapes</strong>
+                                <span>Montant, adresse, validation</span>
+                            </div>
+                        </div>
+
+                        <form id="withdraw-form" class="finance-form" autocomplete="off">
+                            <div class="form-row">
+                                <label>
+                                    <span>Montant</span>
+                                    <input type="text" inputmode="decimal" id="withdraw-amount" placeholder="0.50" required>
+                                </label>
+
+                                <label>
+                                    <span>Reseau</span>
+                                    <select id="withdraw-crypto" required>
+                                        <option value="USDT">USDT (TRC20)</option>
+                                        <option value="TRX">TRX (Tron)</option>
+                                        <option value="BTC">BTC (Bitcoin)</option>
+                                        <option value="ETH">ETH (Ethereum)</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <div class="quick-actions">
+                                <button class="secondary-btn" type="button" id="withdraw-min-btn">Minimum</button>
+                                <button class="secondary-btn" type="button" id="withdraw-max-btn">Max solde</button>
+                                <button class="secondary-btn" type="button" id="withdraw-paste-btn">Coller l'adresse</button>
+                            </div>
+
+                            <label>
+                                <span>Adresse de reception</span>
+                                <input type="text" id="withdraw-wallet-address" name="withdraw_wallet_address" placeholder="Collez votre adresse wallet" autocomplete="off" data-form-type="other" data-lpignore="true" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+                            </label>
+
+                            <div class="address-hint" id="withdraw-address-hint">
+                                Utilisez uniquement une adresse compatible avec la crypto selectionnee.
+                            </div>
+
+                            <div class="warning-note">
+                                <strong>Avant d'envoyer</strong>
+                                <p>Utilisez votre propre wallet compatible avec la crypto choisie et verifiez l'adresse une seule fois avant validation.</p>
+                            </div>
+
+                            <label>
+                                <span>Mot de passe de validation</span>
+                                <input type="password" id="withdraw-password" placeholder="Confirmez votre mot de passe" required>
+                            </label>
+
+                            <button class="primary-btn" type="submit">Confirmer le retrait</button>
+                        </form>
+
+                        <p class="feedback" id="withdraw-feedback"></p>
+                    </div>
+
+                    <div class="glass-card security-card">
+                        <div class="section-head">
+                            <h2>Suivi du retrait</h2>
+                            <span class="mini-badge">Temps reel</span>
+                        </div>
+
+                        <div class="withdraw-steps">
+                            <div class="step-chip">1. Saisir le montant</div>
+                            <div class="step-chip">2. Choisir la crypto et coller l'adresse</div>
+                            <div class="step-chip">3. Confirmer avec le mot de passe</div>
+                        </div>
+
+                        <div class="status-box" id="withdraw-status-box">
+                            <strong>Etat du retrait</strong>
+                            <p>En attente d'une demande utilisateur.</p>
+                        </div>
+
+                        <div class="status-box" id="withdraw-recipient-box">
+                            <strong>Destinataire</strong>
+                            <p>Adresse crypto: --</p>
+                            <p>Statut de transaction: aucune demande</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app-api.js"></script>
+    <script src="transac.js"></script>
+</body>
+</html>

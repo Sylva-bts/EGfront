@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowersBay</title>
+    <link rel="stylesheet" href="powerBay-violet.css">
+</head>
+<body>
+    <header>
+        <div class="logo"></div>
+        <div class="retourAccueil"></div>
+    </header>
+
+    <a href="abonnement.html">
+        <img class="imgAb" src="ima/GhostShop.jpeg" alt="Ghost Shop" width="550" height="250">
+    </a>
+
+    <section class="auth-panel shop-auth-panel">
+        <h2 style="margin-top:0;">Boutique Casino</h2>
+        <p id="auth-status">Chargement de votre session...</p>
+        <p id="wallet-balance">Solde global: -- USD</p>
+    </section>
+
+    <div class="panel_option">
+        <div class="power-option Gel">
+            <strong data-power-name="freeze">Gel</strong>
+            <p>Gele le ghost pendant quelques secondes.</p>
+            <p data-power-price="freeze"><strong>20 USD</strong> pour 2 utilisations</p>
+            <button class="achat" data-power="freeze" data-method="wallet">Acheter via le solde</button>
+            <button class="achat" data-power="freeze" data-method="oxapay">Acheter via OxaPay</button>
+            <p class="power-stock" data-stock="freeze">Unites: 0</p>
+        </div>
+        <div class="power-option Bouclier">
+            <strong data-power-name="shield">Bouclier</strong>
+            <p>Bloque une capture imminente.</p>
+            <p data-power-price="shield"><strong>3 USD</strong> pour 2 utilisations</p>
+            <button class="achat" data-power="shield" data-method="wallet">Acheter via le solde</button>
+            <button class="achat" data-power="shield" data-method="oxapay">Acheter via OxaPay</button>
+            <p class="power-stock" data-stock="shield">Unites: 0</p>
+        </div>
+        <div class="power-option SecondeChance">
+            <strong data-power-name="second_chance">Seconde Chance</strong>
+            <p>Relance une partie perdue sans perdre la mise.</p>
+            <p data-power-price="second_chance"><strong>60 USD</strong> pour 2 utilisations</p>
+            <button class="achat" data-power="second_chance" data-method="wallet">Acheter via le solde</button>
+            <button class="achat" data-power="second_chance" data-method="oxapay">Acheter via OxaPay</button>
+            <p class="power-stock" data-stock="second_chance">Unites: 0</p>
+        </div>
+        <div class="power-option Vision">
+            <strong data-power-name="vision">Vision</strong>
+            <p>Revele brievement la zone de danger.</p>
+            <p data-power-price="vision"><strong>10 USD</strong> pour 2 utilisations</p>
+            <button class="achat" data-power="vision" data-method="wallet">Acheter via le solde</button>
+            <button class="achat" data-power="vision" data-method="oxapay">Acheter via OxaPay</button>
+            <p class="power-stock" data-stock="vision">Unites: 0</p>
+        </div>
+    </div>
+
+    <script src="app-api.js"></script>
+    <script src="powers.js"></script>
+</body>
+</html>
