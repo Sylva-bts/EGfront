@@ -1,0 +1,124 @@
+<html lang="fr">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Escape the Ghost - Jeu</title>
+   <link rel="stylesheet" href="GhostR.css">
+</head>
+<body>
+   <header>
+      <h4>Escape the Ghost</h4>
+      <div class="header-actions">
+         <div class="solde" id="Solde">Solde:<span>0.00</span> USD</div>
+         <button class="header-btn" type="button" onclick="location.href='transac.html'">Finance</button>
+         <div class="achat_logo"><a href="abonnement.html"><img src="ima/GhostShop.jpeg" alt="Ghost Premium shopping logo featuring a cheerful ghost wearing a crown, holding green and pink shopping bags with stars and a crescent moon in the background, linking to subscription page" width="50" height="50"></a></div>
+         <button class="header-btn profile-btn" type="button" onclick="location.href='profile.html'">Profil</button>
+      </div>
+   </header>
+
+   <main class="interface">
+      <section class="cadreJeux" aria-labelledby="game-title">
+         <div class="game-shell">
+            <div class="game-head">
+               <div>
+                  <p class="game-kicker">Mode principal</p>
+                  <h1 id="game-title">Ghost Runner</h1>
+               </div>
+               <div class="cote" id="cote">x<span>1.0</span></div>
+            </div>
+
+            <section class="game-stage" aria-label="Zone de jeu">
+               <div class="img">
+                  <img src="ima/dance.gif" width="250" height="150" style="mix-blend-mode:multiply;" class="stick1" id="stick1" alt="Personnage en attente avant le depart">
+                  <div class="Acteurs">
+                     <img src="ima/R.gif" width="150" height="150" style="mix-blend-mode:multiply;" class="stick" id="stick0" alt="Coureur principal">
+                     <img src="ima/Gost.jpg" width="100" style="mix-blend-mode:multiply;" class="Ghost" id="Ghost" alt="Fantome poursuivant">
+                  </div>
+               </div>
+            </section>
+
+            <section class="game-powers-panel" aria-labelledby="powers-title">
+               <div class="panel-heading">
+                  <div>
+                     <p class="game-kicker">Pouvoirs</p>
+                     <h2 id="powers-title">Arsenal special</h2>
+                  </div>
+                  <p class="power-status" id="power-auth-status" aria-live="polite"></p>
+               </div>
+
+               <div class="pouvoir" id="pouvoir">
+                  <div class="power-slot gel" id="gel">
+                     <button class="btn-pouvoir" type="button" onclick="Gel()" id="btn-gel" aria-label="Utiliser le gel"></button>
+                     <span class="power-label">Gel</span>
+                  </div>
+                  <div class="power-slot bouclier" id="bouclier">
+                     <button class="btn-pouvoir" type="button" onclick="Bouclier()" id="btn-bouclier" aria-label="Utiliser le bouclier"></button>
+                     <span class="power-label">Bouclier</span>
+                  </div>
+                  <div class="power-slot sec_chance" id="sec_chance">
+                     <button class="btn-pouvoir" type="button" onclick="SecondeChance()" id="btn-sec-chance" aria-label="Utiliser la seconde chance"></button>
+                     <span class="power-label">Seconde chance</span>
+                  </div>
+                  <div class="power-slot vision" id="vision">
+                     <button class="btn-pouvoir" type="button" onclick="Vision()" id="btn-vision" aria-label="Utiliser la vision"></button>
+                     <span class="power-label">Vision</span>
+                  </div>
+               </div>
+            </section>
+
+            <section class="commandes" aria-labelledby="bet-title">
+               <div class="panel-heading panel-heading-compact">
+                  <div>
+                     <p class="game-kicker">Commandes</p>
+                     <h2 id="bet-title">Lancer une manche</h2>
+                  </div>
+               </div>
+               <p class="commandes-intro">Choisis ta mise, lance la partie, puis saute avant que le fantome ne te rattrape.</p>
+
+               <div class="commandes-grid">
+               <div class="mise">
+                  <label for="Mise">Placer la mise</label>
+                  <input type="number" placeholder="Inscrivez votre mise" id="Mise" value="">
+                  <button class="btn-mise" type="button" onclick="Miser()" id="btn-mise">Miser</button>
+               </div>
+               <div class="commandes-side">
+                  <p class="action-label">Retrait rapide</p>
+                  <button class="retirer" type="button" onclick="retrait()" id="btn-rtt">Saute !!!</button>
+               </div>
+               </div>
+            </section>
+         </div>
+      </section>
+
+      <aside class="world-panel" aria-label="Panneaux communautaires">
+         <section class="world-card">
+            <div class="world-card-head">
+               <h3>Table Monde</h3>
+               <span>Joueurs en direct</span>
+            </div>
+            <div class="world-feed" id="world-feed">
+               <p class="world-empty">Chargement des mises...</p>
+            </div>
+         </section>
+
+         <section class="world-card world-chat-card">
+            <div class="world-card-head">
+               <h3>Chat Monde</h3>
+               <span>Message visible par tous</span>
+            </div>
+            <div class="world-chat-messages" id="world-chat-messages">
+               <p class="world-empty">Aucun message pour le moment.</p>
+            </div>
+            <form class="world-chat-form" id="world-chat-form">
+               <input type="text" id="world-chat-input" maxlength="180" placeholder="Ecris ton message au monde entier">
+               <button type="submit" class="btn-mise">Envoyer</button>
+            </form>
+         </section>
+
+         <section class="historique" id="Story" aria-live="polite"></section>
+      </aside>
+      <script src="app-api.js"></script>
+      <script src="GhostR.js"></script>
+   </main>
+</body>
+</html>

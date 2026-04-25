@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escape the Ghost Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-login-shell" id="admin-login-shell">
+    <section class="admin-login-card">
+      <p class="eyebrow">Escape the Ghost</p>
+      <h1>Panel Administrateur</h1>
+      <p class="login-copy">Controle integral de la plateforme, des joueurs, des transactions et des parametres de jeu.</p>
+      <form id="admin-login-form" class="admin-login-form">
+        <label><span>Email admin</span><input type="email" name="email" placeholder="admin@escape.local" required></label>
+        <label><span>Mot de passe</span><input type="password" name="password" placeholder="••••••••" required></label>
+        <button type="submit">Connexion securisee</button>
+      </form>
+      <p class="form-status" id="admin-login-status"></p>
+    </section>
+  </div>
+
+  <div class="admin-shell hidden" id="admin-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <p class="eyebrow">Escape the Ghost</p>
+        <h2>Admin Control</h2>
+        <p id="admin-profile-label">Session admin</p>
+      </div>
+
+      <nav class="side-nav">
+        <button class="nav-link active" data-view="dashboard">Dashboard</button>
+        <button class="nav-link" data-view="users">Joueurs</button>
+        <button class="nav-link" data-view="transactions">Transactions</button>
+        <button class="nav-link" data-view="settings">Parametres Jeu</button>
+        <button class="nav-link" data-view="logs">Journal Admin</button>
+      </nav>
+
+      <div class="sidebar-actions">
+        <button class="ghost-button" id="refresh-bootstrap">Actualiser</button>
+        <button class="ghost-button danger" id="admin-logout">Deconnexion</button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Console</p>
+          <h1>Gestion plateforme</h1>
+        </div>
+        <div class="topbar-right">
+          <div class="top-stat"><span>Alertes retrait</span><strong id="alerts-count">0</strong></div>
+          <div class="top-stat"><span>RTP global</span><strong id="global-rtp-top">0%</strong></div>
+        </div>
+      </header>
+
+      <section class="view active" id="view-dashboard">
+        <div class="card-grid" id="dashboard-cards"></div>
+        <div class="panel-grid two">
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Activite</p><h3>14 derniers jours</h3></div></div>
+            <div id="activity-chart" class="chart-block"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Cotes</p><h3>Les plus atteintes</h3></div></div>
+            <div id="top-odds-list" class="list-block"></div>
+          </section>
+        </div>
+        <div class="panel-grid two">
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Alertes</p><h3>Demandes en attente</h3></div></div>
+            <div id="alerts-list" class="feed-list"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Logs</p><h3>Dernieres actions admin</h3></div></div>
+            <div id="dashboard-logs" class="feed-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-users">
+        <section class="panel">
+          <div class="panel-head responsive-head">
+            <div><p class="eyebrow">Joueurs</p><h3>Centre utilisateurs</h3></div>
+            <form id="users-filter-form" class="inline-form">
+              <input type="search" name="search" placeholder="Recherche nom ou email">
+              <select name="status">
+                <option value="">Tous</option>
+                <option value="active">Actifs</option>
+                <option value="banned">Bannis</option>
+              </select>
+              <button type="submit">Filtrer</button>
+            </form>
+          </div>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Joueur</th><th>Solde</th><th>Cote forcee</th><th>RTP</th><th>Statut</th><th>Derniere activite</th><th></th></tr></thead>
+              <tbody id="users-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+        <section class="panel user-detail-panel">
+          <div class="panel-head"><div><p class="eyebrow">Detail</p><h3 id="user-detail-title">Selectionnez un joueur</h3></div></div>
+          <div id="user-detail-content" class="detail-stack empty-state">Aucun joueur selectionne.</div>
+        </section>
+      </section>
+
+      <section class="view" id="view-transactions">
+        <section class="panel">
+          <div class="panel-head responsive-head">
+            <div><p class="eyebrow">Finance</p><h3>Transactions</h3></div>
+            <form id="transactions-filter-form" class="inline-form multi">
+              <select name="type">
+                <option value="">Tous types</option>
+                <option value="deposit">Depots</option>
+                <option value="withdraw">Retraits</option>
+                <option value="game_bet">Mises</option>
+                <option value="game_cashout">Gains</option>
+                <option value="power_purchase">Pouvoirs</option>
+              </select>
+              <select name="status">
+                <option value="">Tous statuts</option>
+                <option value="pending">En attente</option>
+                <option value="paid">Paye</option>
+                <option value="completed">Complete</option>
+                <option value="rejected">Refuse</option>
+              </select>
+              <input type="date" name="from">
+              <input type="date" name="to">
+              <input type="search" name="search" placeholder="Joueur ou email">
+              <button type="submit">Appliquer</button>
+            </form>
+          </div>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Type</th><th>Joueur</th><th>Montant</th><th>Statut</th><th>Date</th><th>Action</th></tr></thead>
+              <tbody id="transactions-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="panel-grid two">
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Plateforme</p><h3>Fonctionnalites globales</h3></div></div>
+            <form id="feature-settings-form" class="stack-form">
+              <label class="switch-row"><span>Depots actifs</span><input type="checkbox" name="depositsEnabled"></label>
+              <label class="switch-row"><span>Retraits actifs</span><input type="checkbox" name="withdrawalsEnabled"></label>
+              <label class="switch-row"><span>Chat monde actif</span><input type="checkbox" name="worldChatEnabled"></label>
+              <button type="submit">Enregistrer</button>
+            </form>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Ghost</p><h3>Controle de cote</h3></div></div>
+            <form id="force-crash-form" class="stack-form">
+              <label><span>Forcer la prochaine logique de crash</span><input type="number" step="0.01" min="1" name="crashValue" placeholder="1.01"></label>
+              <div class="action-row">
+                <button type="submit">Forcer</button>
+                <button type="button" class="ghost-button" id="clear-force-crash">Retirer</button>
+              </div>
+            </form>
+            <p class="info-line" id="force-crash-status">Aucune cote forcee.</p>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Probabilites</p><h3>Comportement du Ghost</h3></div></div>
+          <form id="ghost-settings-form" class="ghost-grid-form">
+            <label><span>Chance basse (%)</span><input type="number" name="lowChance" min="0" max="100" required></label>
+            <label><span>Chance moyenne (%)</span><input type="number" name="mediumChance" min="0" max="100" required></label>
+            <label><span>Chance haute (%)</span><input type="number" name="highChance" min="0" max="100" required></label>
+            <label><span>Chance extreme (%)</span><input type="number" name="extremeChance" min="0" max="100" required></label>
+            <label><span>Plage basse min</span><input type="number" step="0.01" name="lowRangeMin" required></label>
+            <label><span>Plage basse max</span><input type="number" step="0.01" name="lowRangeMax" required></label>
+            <label><span>Plage moyenne min</span><input type="number" step="0.01" name="mediumRangeMin" required></label>
+            <label><span>Plage moyenne max</span><input type="number" step="0.01" name="mediumRangeMax" required></label>
+            <label><span>Plage haute min</span><input type="number" step="0.01" name="highRangeMin" required></label>
+            <label><span>Plage haute max</span><input type="number" step="0.01" name="highRangeMax" required></label>
+            <label><span>Plage extreme min</span><input type="number" step="0.01" name="extremeRangeMin" required></label>
+            <label><span>Plage extreme max</span><input type="number" step="0.01" name="extremeRangeMax" required></label>
+            <button type="submit">Mettre a jour les probabilites</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Pouvoirs</p><h3>Activation et tarification</h3></div></div>
+          <form id="powers-settings-form" class="powers-grid-form">
+            <div class="power-card">
+              <h4>Vision</h4>
+              <label class="switch-row"><span>Actif</span><input type="checkbox" name="visionEnabled"></label>
+              <label><span>Prix USD</span><input type="number" step="0.01" name="visionPrice"></label>
+              <label><span>Unites</span><input type="number" min="1" name="visionUnits"></label>
+            </div>
+            <div class="power-card">
+              <h4>Gel</h4>
+              <label class="switch-row"><span>Actif</span><input type="checkbox" name="freezeEnabled"></label>
+              <label><span>Prix USD</span><input type="number" step="0.01" name="freezePrice"></label>
+              <label><span>Unites</span><input type="number" min="1" name="freezeUnits"></label>
+            </div>
+            <div class="power-card">
+              <h4>Bouclier</h4>
+              <label class="switch-row"><span>Actif</span><input type="checkbox" name="shieldEnabled"></label>
+              <label><span>Prix USD</span><input type="number" step="0.01" name="shieldPrice"></label>
+              <label><span>Unites</span><input type="number" min="1" name="shieldUnits"></label>
+            </div>
+            <div class="power-card">
+              <h4>Seconde chance</h4>
+              <label class="switch-row"><span>Actif</span><input type="checkbox" name="secondChanceEnabled"></label>
+              <label><span>Prix USD</span><input type="number" step="0.01" name="secondChancePrice"></label>
+              <label><span>Unites</span><input type="number" min="1" name="secondChanceUnits"></label>
+            </div>
+            <button type="submit">Sauvegarder les pouvoirs</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Moderation</p><h3>Supprimer un message du monde</h3></div></div>
+          <form id="world-chat-delete-form" class="stack-form">
+            <label>
+              <span>ID du message</span>
+              <input type="text" name="messageId" placeholder="Collez l'ID MongoDB du message" required>
+            </label>
+            <div class="action-row">
+              <button type="submit" class="ghost-button danger">Supprimer le message</button>
+            </div>
+          </form>
+          <p class="info-line" id="world-chat-delete-status">Entrez l'identifiant exact du message du chat monde a supprimer.</p>
+        </section>
+      </section>
+
+      <section class="view" id="view-logs">
+        <div class="panel-grid two">
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Exports</p><h3>Donnees</h3></div></div>
+            <div class="action-cluster">
+              <button id="export-users-json">Export joueurs JSON</button>
+              <button id="export-users-csv">Export joueurs CSV</button>
+              <button id="export-transactions-json">Export transactions JSON</button>
+              <button id="export-transactions-csv">Export transactions CSV</button>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Securite</p><h3>Etat de la session</h3></div></div>
+            <div class="detail-stack">
+              <div class="metric-line"><span>Authentification</span><strong>JWT admin</strong></div>
+              <div class="metric-line"><span>Stockage mot de passe</span><strong>Hash bcrypt</strong></div>
+              <div class="metric-line"><span>Routes protegees</span><strong>Middleware admin</strong></div>
+              <div class="metric-line"><span>Journalisation</span><strong>Active</strong></div>
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><div><p class="eyebrow">Audit</p><h3>Journal administrateur</h3></div></div>
+          <div id="logs-list" class="feed-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast-stack" id="toast-stack"></div>
+  <script src="app-api.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

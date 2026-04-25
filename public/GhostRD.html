@@ -1,0 +1,59 @@
+<html lang="fr">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Escape the Ghost - Jeu</title>
+   <link rel="stylesheet" href="GhostRD.css">
+   <link rel="stylesheet" href="powerBay.css">
+</head>
+<body>
+   <header>
+      <h4>Escape the ghost👻. </h4>
+      <div class="solde" id="Solde" >Solde:<span>1000</span>USD</div> 
+   </header>
+   <div class="interface">
+
+      <div class="cadreJeux">
+      <div class="cote" id="cote">×<span>1.0</span></div>
+      <div class="img">
+      <img src="ima/dance.gif" width="250px" height="150px" style="mix-blend-mode:multiply;" class="stick1" id="stick1">
+      <div class="Acteurs">
+   <img src="ima/R.gif" width="150px" height="150px" style="mix-blend-mode:multiply;" class="stick" id="stick0">
+   
+      <img src="ima/Gost.jpg" width="100px" style="mix-blend-mode:multiply;" class="Ghost" id="Ghost">
+      </div>
+      </div>
+      <!---pouvoirs-->
+<div class="pouvoir" id="pouvoir" style="display:flex;">
+      <div class="vitesse" id="vitesse">
+         <button class="btn-pouvoir" onclick="Vitesse()" id="btn-vitesse">⚡</button>
+      </div>
+      <div class="gel" id="gel">
+         <button class="btn-pouvoir" onclick="Gel()" id="btn-gel">❄️</button>
+      </div>
+      <div class="bouclié" id="bouclié">
+         <button class="btn-pouvoir" onclick="Bouclier()" id="btn-bouclier">🛡️</button>
+      </div>
+      <div class="sec_chance" id="sec_chance">
+         <button class="btn-pouvoir" onclick="SecondeChance()" id="btn-sec-chance">🍀</button>
+      </div>
+      <div class="vision" id="vision">
+         <button class="btn-pouvoir" onclick="Vision()" id="btn-vision">👀</button>
+      </div>
+      </div>
+      <div class="commandes">
+         <div class="mise">
+            <p>Placer la mise</p>
+            <input type="number" placeholder="Inscriver votre mise" id="Mise" value="">
+            <button class="btn-mise" onclick="Miser()" id="btn-mise">Miser</button>
+         </div>
+         <button class="retirer" onclick="retrait()" id="btn-rtt">Saute !!!</button>
+      </div>
+   </div>
+   
+      <div class="historique" id="Story"></div>
+      <script src="GhostRD.js"></script>
+      <script src="powers.js"></script>
+   </div>
+</body>
+</html>
