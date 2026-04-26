@@ -289,9 +289,14 @@ header h4 {
   align-items: start;
 }
 
+.interface > * {
+  min-width: 0;
+}
+
 .world-panel {
   display: grid;
   gap: 1rem;
+  min-width: 0;
 }
 
 .world-card,
@@ -301,6 +306,8 @@ header h4 {
   border: 1px solid rgba(102, 126, 234, 0.24);
   box-shadow: 0 20px 55px rgba(0, 0, 0, 0.35);
   padding: 0.95rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .world-card-head {
@@ -624,6 +631,7 @@ header h4 {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .img img {
@@ -1012,8 +1020,8 @@ input[type="number"]:focus {
 /* Responsive */
 @media (max-width: 1024px) {
   .interface {
-    width: min(1200px, calc(100% - 2rem));
-    grid-template-columns: 1fr minmax(250px, 0.4fr);
+    width: min(1200px, calc(100% - 1.5rem));
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.48fr);
     gap: 1.5rem;
   }
 
@@ -1048,8 +1056,13 @@ input[type="number"]:focus {
     gap: 1.5rem;
   }
 
+  .world-card-head {
+    align-items: flex-start;
+  }
+
   .historique {
     max-height: 350px;
+    width: 100%;
   }
 }
 
@@ -1060,7 +1073,7 @@ input[type="number"]:focus {
   }
 
   .cadreJeux {
-    margin: 2rem auto;
+    margin: 0 auto;
     min-height: 50vh;
   }
 
@@ -1085,6 +1098,10 @@ input[type="number"]:focus {
     width: 100%;
     justify-content: center;
     gap: 0.5rem;
+  }
+
+  .header-actions > * {
+    flex: 0 1 auto;
   }
 
   .solde {
@@ -1220,6 +1237,15 @@ input[type="number"]:focus {
     grid-template-columns: 1fr;
   }
 
+  .commandes-side,
+  .mise {
+    width: 100%;
+  }
+
+  .world-card-head {
+    flex-direction: column;
+  }
+
   .world-chat-form {
     grid-template-columns: 1fr;
     gap: 0.5rem;
@@ -1227,6 +1253,11 @@ input[type="number"]:focus {
 
   .world-chat-form input {
     min-height: 44px;
+  }
+
+  .world-chat-form .btn-mise {
+    width: 100%;
+    min-width: 0;
   }
 }
 
@@ -1247,6 +1278,8 @@ input[type="number"]:focus {
   .cote {
     font-size: 2.2rem;
     padding: 0.8rem;
+    width: 100%;
+    text-align: center;
   }
 
   .img {
@@ -1286,6 +1319,13 @@ input[type="number"]:focus {
 
   .commandes-grid {
     gap: 0.5rem;
+  }
+
+  .btn-mise,
+  .retirer {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
   }
 
   .mise {
@@ -1358,8 +1398,14 @@ input[type="number"]:focus {
     justify-content: center;
   }
 
+  .header-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
   .solde {
     font-size: 1rem;
+    text-align: center;
   }
 
   .interface {
@@ -1414,7 +1460,7 @@ input[type="number"]:focus {
   }
 
   .commandes {
-    padding: 0.8rem 0;
+    padding: 0.8rem;
   }
 
   .commandes-intro {
@@ -1491,6 +1537,10 @@ input[type="number"]:focus {
   .world-chat-form input {
     min-height: 38px;
     font-size: 0.85rem;
+  }
+
+  .world-chat-form .btn-mise {
+    width: 100%;
   }
 
   .historique {
