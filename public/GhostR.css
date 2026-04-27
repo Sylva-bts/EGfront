@@ -540,6 +540,27 @@ header h4 {
   background: linear-gradient(#d23a9e, #667eea);
   border-radius: 999px;
 }
+
+@media (max-width: 980px) {
+  .interface {
+    grid-template-columns: 1fr;
+  }
+
+  .cadreJeux {
+    margin: 2rem auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .interface {
+    width: min(100%, calc(100% - 1rem));
+    margin: 1rem auto 2rem;
+  }
+
+  .world-chat-form {
+    grid-template-columns: 1fr;
+  }
+}
 .cadreJeux {
   padding: 2rem;
 }
@@ -621,15 +642,6 @@ header h4 {
   padding-top: 100px;
   width: 100%;
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.img img {
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
 }
 
 /* Preserve original Acteurs, Ghost, stick1, stick */
@@ -639,11 +651,6 @@ header h4 {
   align-items: center;
   justify-content: space-around;
   margin-top: 20px;
-}
-
-.Acteurs img {
-  max-width: 100%;
-  height: auto;
 }
 
 .stick {
@@ -1010,119 +1017,29 @@ input[type="number"]:focus {
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
-  .interface {
-    width: min(1200px, calc(100% - 2rem));
-    grid-template-columns: 1fr minmax(250px, 0.4fr);
-    gap: 1.5rem;
-  }
-
-  .cadreJeux {
-    min-height: 60vh;
-    padding: 1.5rem;
-  }
-
-  .cote {
-    font-size: 2.8rem;
-  }
-
-  .img {
-    height: 250px;
-    padding-top: 80px;
-  }
-
-  .Acteurs img {
-    max-width: 120px;
-  }
-
-  .pouvoir {
-    gap: 0.8rem;
-  }
-
-  .btn-pouvoir {
-    min-height: 60px;
-    font-size: 1.4rem;
-  }
-
-  .world-panel {
-    gap: 1.5rem;
-  }
-
-  .historique {
-    max-height: 350px;
-  }
-}
-
-@media (max-width: 980px) {
-  .interface {
-    grid-template-columns: 1fr;
-    width: min(100%, calc(100% - 2rem));
-  }
-
-  .cadreJeux {
-    margin: 2rem auto;
-    min-height: 50vh;
-  }
-
-  .world-panel {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-}
-
 @media (max-width: 768px) {
   header {
-    padding: 0.75rem 0.9rem;
-    flex-direction: column;
-    gap: 0.65rem;
-    text-align: center;
-  }
-
-  header h4 {
-    font-size: 1.15rem;
-    letter-spacing: 1px;
+    padding: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
   }
 
   .header-actions {
     width: 100%;
-    justify-content: center;
-    gap: 0.45rem;
+    justify-content: flex-start;
   }
-
-  .header-actions > * {
-    flex: 0 1 auto;
-  }
-
-  .solde {
-    width: 100%;
-    font-size: 1rem;
-    order: -1;
-  }
-
-  .achat_logo {
-    width: 44px;
-    height: 44px;
-  }
-
-  .header-btn {
-    min-height: 42px;
-    padding: 0.65rem 0.9rem;
-    font-size: 0.82rem;
-  }
-
-  .interface {
-    width: min(100%, calc(100% - 1rem));
-    margin: 0.75rem auto 1.5rem;
-    gap: 0.85rem;
-  }
-
+  
   .cadreJeux {
     min-height: auto;
-    padding: 0.85rem;
+    padding: 1rem;
   }
-
+  
   .cote {
-    font-size: 2rem;
-    padding: 0.7rem 0.9rem;
+    font-size: 2.5rem;
+  }
+  
+  .pouvoir {
+    gap: 0.5rem;
   }
 
   .game-head,
@@ -1139,256 +1056,41 @@ input[type="number"]:focus {
 
   .img {
     height: auto;
-    min-height: 210px;
-    padding: 0.75rem;
-    padding-top: 2.25rem;
-  }
-
-  .Acteurs {
-    flex-direction: row;
-    gap: 0.65rem;
-    margin-top: 0.75rem;
-    width: 100%;
-  }
-
-  .Acteurs img {
-    max-width: 88px;
-  }
-
-  .stick {
-    margin-right: 0;
-    transform: scaleX(-1);
-  }
-
-  .stick1 {
-    max-width: 150px;
-  }
-
-  .Ghost {
-    max-width: 64px;
-  }
-
-  .pouvoir {
-    max-width: none;
-    gap: 0.45rem;
-    justify-content: stretch;
-  }
-
-  .pouvoir > div {
-    flex: 1 1 calc(25% - 0.45rem);
-    min-width: 0;
-    max-width: none;
-  }
-
-  .btn-pouvoir {
-    min-height: 50px;
-    font-size: 1rem;
-    border-radius: 10px;
-  }
-
-  .power-label {
-    font-size: 0.68rem;
-  }
-
-  input[type="number"] {
-    max-width: 100%;
-    height: 42px;
-    font-size: 0.95rem;
-  }
-
-  .btn-mise {
-    min-width: 0;
-    padding: 0.75rem 1rem;
-    font-size: 0.92rem;
-  }
-
-  .retirer {
-    padding: 0.85rem 1rem;
-    font-size: 1rem;
-    min-width: 0;
-  }
-
-  .world-panel {
-    grid-template-columns: 1fr;
-  }
-
-  .world-card,
-  .historique {
+    min-height: 260px;
     padding: 1rem;
   }
 
-  .world-feed,
-  .world-chat-messages {
-    max-height: 200px;
+  .Acteurs {
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
-  .historique {
-    width: 100%;
-    max-height: 300px;
+  .stick,.stick1 {
+    margin-right: 200px;
+    margin-top: 30px;
   }
 
   .transaction-item {
     align-items: flex-start;
     flex-direction: column;
-    padding: 0.8rem;
-    font-size: 0.9rem;
   }
 
   .commandes-grid {
     grid-template-columns: 1fr;
-    gap: 0.7rem;
-  }
-
-  .commandes-side,
-  .mise {
-    width: 100%;
-    padding: 0.85rem;
-  }
-
-  .world-chat-form {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-
-  .world-chat-form input {
-    min-height: 44px;
-  }
-
-  .world-chat-form .btn-mise {
-    width: 100%;
-    min-width: 0;
   }
 }
 
-@media (max-width: 640px) {
-  .interface {
-    width: calc(100% - 1rem);
-    margin: 0.65rem auto 1.25rem;
-  }
-
-  .cadreJeux {
-    padding: 0.75rem;
-  }
-
-  .game-shell {
-    gap: 0.7rem;
-  }
-
-  .cote {
-    font-size: 1.7rem;
-    padding: 0.65rem;
-    width: 100%;
-    text-align: center;
-  }
-
-  .img {
-    min-height: 180px;
-    padding: 0.65rem;
-    padding-top: 1.75rem;
-  }
-
-  .Acteurs img {
-    max-width: 72px;
-  }
-
-  .stick1 {
-    max-width: 124px;
-  }
-
-  .Ghost {
-    max-width: 52px;
-  }
-
-  .pouvoir {
-    gap: 0.35rem;
-  }
-
-  .pouvoir > div {
-    flex-basis: calc(25% - 0.35rem);
-  }
-
-  .btn-pouvoir {
-    min-height: 44px;
-    font-size: 0.9rem;
-  }
-
-  .commandes-intro {
-    font-size: 0.84rem;
-  }
-
-  .commandes-grid {
-    gap: 0.55rem;
-  }
-
-  .btn-mise,
-  .retirer {
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-  }
-
-  .mise {
-    padding: 0.75rem;
-    gap: 0.55rem;
-  }
-
-  .commandes-side {
-    padding: 0.75rem;
-    gap: 0.55rem;
-  }
-
-  .mise label {
-    font-size: 0.9rem;
-  }
-
-  input[type="number"] {
-    height: 40px;
-    font-size: 0.9rem;
-  }
-
-  .btn-mise {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-  }
-
-  .retirer {
-    padding: 10px 20px;
-    font-size: 1rem;
-    min-width: 120px;
-  }
-
-  .world-card-head h3 {
-    font-size: 1rem;
-  }
-
-  .world-feed-item,
-  .world-chat-item {
-    padding: 0.6rem;
-    font-size: 0.85rem;
-  }
-
-  .world-chat-form input {
-    min-height: 40px;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 435px) {
-  body {
-    padding: 0 0.35rem;
-  }
-
+@media (max-width: 480px) {
   header {
-    padding: 0.65rem 0.55rem;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   header h4 {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 
   .header-actions > * {
-    width: auto;
+    width: 100%;
   }
 
   .header-btn,
@@ -1397,130 +1099,58 @@ input[type="number"]:focus {
     justify-content: center;
   }
 
-  .header-actions {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .solde {
-    font-size: 1rem;
-    text-align: center;
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-
-  .header-btn {
-    width: 100%;
-    min-height: 40px;
-    padding: 0.6rem 0.45rem;
-    font-size: 0.78rem;
-  }
-
-  .achat_logo {
-    width: 40px;
-    height: 40px;
-    justify-self: center;
-    align-self: center;
-  }
-
   .interface {
     width: calc(100% - 1rem);
-    margin: 0.55rem auto 1rem;
   }
 
   .cadreJeux,
   .world-card,
   .historique {
     border-radius: 18px;
-    padding: 0.7rem;
   }
 
   .cote {
     width: 100%;
-    padding: 0.55rem;
-    font-size: 1.45rem;
+    padding-inline: 1rem;
+    font-size: 2rem;
     text-align: center;
   }
 
   .img {
-    min-height: 152px;
-    padding: 0.45rem;
-    padding-top: 1.1rem;
+    min-height: 220px;
+    padding-top: 1rem;
   }
 
-  .Acteurs img {
-    max-width: 60px;
-  }
-
-  .stick1 {
-    max-width: 102px;
-  }
-
+  .stick1,
+  .stick,
   .Ghost {
-    max-width: 42px;
+    max-width: 100%;
+    margin-top: 30px;
+    height: auto;
   }
 
-  .pouvoir {
-    gap: 0.3rem;
+  .stick {
+    margin-right: 155px;
   }
 
   .pouvoir > div {
-    flex-basis: calc(25% - 0.3rem);
-    max-width: none;
+    flex-basis: calc(50% - 0.5rem);
+    max-width: 100px;
   }
-
+  
   .btn-pouvoir {
-    min-height: 42px;
-    font-size: 0.78rem;
-    border-width: 1px;
+    min-height: 50px;
+    font-size: 0.95rem;
   }
 
-  .power-label {
-    font-size: 0.62rem;
-  }
-
-  .commandes {
-    padding: 0.7rem;
-  }
-
-  .commandes-intro {
-    font-size: 0.8rem;
-  }
-
-  .commandes-grid {
-    gap: 0.4rem;
-  }
-
-  .mise {
-    padding: 0.65rem;
-    gap: 0.45rem;
-  }
-
-  .commandes-side {
-    padding: 0.65rem;
-    gap: 0.45rem;
-  }
-
-  .mise label {
-    font-size: 0.85rem;
-  }
-
-  input[type="number"] {
-    height: 40px;
-    font-size: 0.85rem;
-  }
-
-  .btn-mise {
-    padding: 0.7rem 0.8rem;
-    font-size: 0.82rem;
+  .demarer, .retirer, .btn-mise {
+    font-size: 1rem;
+    width: 100%;
   }
 
   .retirer {
-    padding: 0.75rem 0.8rem;
-    font-size: 0.88rem;
     min-width: 0;
+    max-width: none;
   }
 
   .world-card-head,
@@ -1528,67 +1158,331 @@ input[type="number"]:focus {
   .world-chat-top {
     align-items: flex-start;
     flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .world-card-head h3 {
-    font-size: 0.95rem;
-  }
-
-  .world-card-head span {
-    font-size: 0.7rem;
-  }
-
-  .world-feed,
-  .world-chat-messages {
-    max-height: 170px;
-    gap: 0.4rem;
-  }
-
-  .world-feed-item,
-  .world-chat-item {
-    padding: 0.5rem;
-    font-size: 0.8rem;
-  }
-
-  .world-chat-form {
-    padding: 0.6rem;
-    gap: 0.4rem;
-  }
-
-  .world-chat-form input {
-    min-height: 38px;
-    font-size: 0.85rem;
   }
 
   .historique {
     width: 100%;
-    padding: 0.8rem;
-    max-height: 250px;
-  }
-
-  .historique h3 {
-    font-size: 1rem;
-    margin-bottom: 0.8rem;
-  }
-
-  .transaction-item {
-    padding: 0.6rem;
-    font-size: 0.8rem;
-  }
-
-  .btn-clear-history {
-    padding: 0.7rem;
-    font-size: 0.85rem;
-  }
-
-  .profile-panel {
-    width: calc(100% - 1rem);
     padding: 1rem;
   }
 
   .profile-actions {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 0.6rem 0.75rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  header h4 {
+    font-size: 1rem;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  .header-actions {
+    display: grid;
+    grid-template-columns: 1fr 42px 1fr;
+    gap: 0.4rem;
+    align-items: center;
+    width: 100%;
+  }
+
+  .solde {
+    grid-column: 1 / -1;
+    width: 100%;
+    text-align: center;
+    font-size: 0.95rem;
+  }
+
+  .header-btn {
+    width: 100%;
+    min-height: 38px;
+    padding: 0.55rem 0.5rem;
+    font-size: 0.78rem;
+  }
+
+  .achat_logo {
+    width: 42px;
+    height: 42px;
+    justify-self: center;
+  }
+
+  .interface {
+    width: calc(100% - 0.8rem);
+    margin: 0.7rem auto 1.2rem;
+    grid-template-columns: 1fr;
     gap: 0.8rem;
+  }
+
+  .cadreJeux,
+  .world-card,
+  .historique {
+    padding: 0.85rem;
+    border-radius: 18px;
+  }
+
+  .cadreJeux {
+    min-height: auto;
+  }
+
+  .game-shell {
+    gap: 0.85rem;
+  }
+
+  .game-head,
+  .panel-heading {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .power-status {
+    max-width: none;
+    text-align: center;
+  }
+
+  .cote {
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .img {
+    position: relative;
+    min-height: 220px;
+    padding: 0.65rem;
+    padding-top: 1.3rem;
+    overflow: hidden;
+  }
+
+  .Acteurs {
+    position: absolute;
+    inset: auto 0 0 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    display: block;
+  }
+
+  .stick1,
+  .stick {
+    position: absolute;
+    left: 6px;
+    bottom: 0;
+    width: 94px;
+    max-width: none;
+    margin: 0;
+  }
+
+  .Ghost {
+    position: absolute;
+    right: 6px;
+    bottom: 4px;
+    width: 64px;
+    max-width: none;
+    margin: 0;
+  }
+
+  .commandes {
+    padding: 0.9rem;
+    gap: 0.8rem;
+  }
+
+  .commandes-intro {
+    font-size: 0.85rem;
+  }
+
+  .commandes-grid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .mise,
+  .commandes-side {
+    padding: 0.75rem;
+    gap: 0.6rem;
+  }
+
+  input[type="number"] {
+    max-width: 100%;
+    height: 42px;
+    font-size: 0.95rem;
+  }
+
+  .btn-mise,
+  .retirer {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    padding: 0.8rem 0.9rem;
+    font-size: 0.92rem;
+  }
+
+  .world-panel {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .world-card-head,
+  .world-feed-top,
+  .world-chat-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.45rem;
+  }
+
+  .world-feed,
+  .world-chat-messages {
+    max-height: 190px;
+  }
+
+  .world-chat-form {
+    grid-template-columns: 1fr;
+    padding: 0.7rem;
+  }
+
+  .world-chat-form input {
+    min-height: 42px;
+    font-size: 0.9rem;
+  }
+
+  .world-chat-form .btn-mise {
+    width: 100%;
+  }
+
+  .historique {
+    width: 100%;
+    margin: 0;
+    max-height: 280px;
+    padding: 0.9rem;
+  }
+
+  .transaction-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 0.5rem;
+  }
+
+  header h4 {
+    font-size: 0.9rem;
+  }
+
+  .header-actions {
+    grid-template-columns: 1fr 36px 1fr;
+  }
+
+  .solde {
+    font-size: 0.82rem;
+  }
+
+  .header-btn {
+    min-height: 34px;
+    padding: 0.45rem 0.35rem;
+    font-size: 0.7rem;
+  }
+
+  .achat_logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cadreJeux,
+  .world-card,
+  .historique {
+    padding: 0.72rem;
+    border-radius: 16px;
+  }
+
+  .cote {
+    padding: 0.55rem;
+    font-size: 1.55rem;
+  }
+
+  .img {
+    min-height: 190px;
+    padding: 0.5rem;
+    padding-top: 1rem;
+  }
+
+  .stick1,
+  .stick {
+    left: 4px;
+    width: 82px;
+  }
+
+  .Ghost {
+    right: 4px;
+    bottom: 2px;
+    width: 56px;
+  }
+
+  .pouvoir {
+    gap: 0.35rem;
+  }
+
+  .pouvoir > div {
+    flex: 1 1 calc(25% - 0.35rem);
+    max-width: none;
+  }
+
+  .btn-pouvoir {
+    min-height: 44px;
+    font-size: 0.85rem;
+  }
+
+  .power-label {
+    font-size: 0.62rem;
+  }
+
+  .commandes {
+    padding: 0.75rem;
+  }
+
+  .commandes-intro {
+    font-size: 0.8rem;
+  }
+
+  input[type="number"] {
+    height: 40px;
+    font-size: 0.88rem;
+  }
+
+  .btn-mise,
+  .retirer {
+    padding: 0.72rem 0.8rem;
+    font-size: 0.86rem;
+  }
+
+  .world-feed-item,
+  .world-chat-item {
+    padding: 0.55rem;
+    font-size: 0.82rem;
+  }
+
+  .world-chat-form {
+    padding: 0.6rem;
+  }
+
+  .historique {
+    max-height: 240px;
+    padding: 0.8rem;
+  }
+
+  .historique h3 {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
   }
 }

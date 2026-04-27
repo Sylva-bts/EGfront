@@ -87,8 +87,7 @@ header h4 {
   align-items: center;
   justify-content: center;
   min-height: 70vh;
-  width: min(100%, 600px);
-  max-width: calc(100% - 2rem);
+  max-width: 500px;
   margin: 2rem auto;
   padding: 2rem;
   border-radius: 20px;
@@ -179,7 +178,6 @@ header h4 {
   padding: 10px 20px;
   height: 200px;
   width: 100%;
-  border-radius: 10px;
 }
 
 /* Preserve original Acteurs, Ghost, stick1, stick */
@@ -188,7 +186,6 @@ header h4 {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-top: 20px;
 }
 
 .stick {
@@ -234,23 +231,15 @@ header h4 {
 }
 
 .pouvoir {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
   gap: 1rem;
   width: 100%;
   max-width: 400px;
   margin: 1.5rem 0;
 }
 
-.pouvoir > div {
-  flex: 1 1 90px;
-  max-width: 150px;
-}
-
 .btn-pouvoir {
-  width: 100%;
-  min-height: 64px;
   aspect-ratio: 1;
   border: none;
   border-radius: 12px;
@@ -330,18 +319,6 @@ input[type="number"]:focus {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  width: 100%;
-}
-
-.mise {
-  width: 100%;
-  display: grid;
-  justify-items: center;
-  gap: 0.9rem;
-}
-
-.mise p {
-  text-align: center;
 }
 
 .btn-mise {
@@ -494,7 +471,7 @@ input[type="number"]:focus {
   }
   
   .cadreJeux {
-    width: calc(100% - 2rem);
+    margin: 1rem;
     padding: 1rem;
   }
   
@@ -502,68 +479,21 @@ input[type="number"]:focus {
     font-size: 2.5rem;
   }
   
-  .pouvoir { gap: 0.5rem; }
-
-  .img {
-    height: auto;
-    min-height: 220px;
-    padding: 1rem;
-  }
-
-  .Acteurs {
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .stick {
-    margin-right: 10px;
-
-  }
-  .stick1 {
-    margin-left: 10px;
+  .pouvoir {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .cadreJeux {
-    width: calc(100% - 1rem);
-    max-width: calc(100% - 1rem);
+  .pouvoir {
+    grid-template-columns: repeat(2, 1fr);
   }
-
-  .cote {
-    width: 100%;
-    padding-inline: 1rem;
-    font-size: 2rem;
-    text-align: center;
-  }
-
-  .stick1,
-  .stick,
-  .Ghost {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .pouvoir > div {
-    flex-basis: calc(50% - 0.5rem);
-    max-width: none;
-  }
-
-  .btn-pouvoir {
-    min-height: 58px;
-    font-size: 1.1rem;
-  }
-
-  .demarer, .retirer, .btn-mise {
+  
+  .demarer, .retirer {
     font-size: 1rem;
     width: 100%;
   }
-
-  .retirer {
-    margin-left: 0;
-    min-width: 0;
-  }
-  .stick {
-    margin-right: 0;
-  }
 }
+
+  margin
