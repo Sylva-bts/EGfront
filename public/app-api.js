@@ -42,11 +42,7 @@
       return window.location.origin;
     }
 
-    if (hostname.endsWith("netlify.app")) {
-      return "https://egback-1.onrender.com";
-    }
-
-    return window.location.origin;
+    return "";
   }
 
   function getToken() {
@@ -102,6 +98,17 @@
     };
   }
 
+  function isLikelyNetworkError(error) {
+    const message = String(error && error.message ? error.message : "").toLowerCase();
+    return message.includes("failed to fetch") || message.includes("networkerror") || message.includes("load failed");
+  }
+
+  function buildNetworkErrorMessage(baseUrls) {
+    const candidates = baseUrls.filter((value) => value !== "").map((value) => value || window.location.origin);
+    const list = candidates.length ? candidates.join(" ou ") : window.location.origin;
+    return `Impossible de contacter l'API. Verifiez le proxy Netlify, l'URL Render et le demarrage du backend (${list}).`;
+  }
+
   async function fetchJson(path, options) {
     const primaryBaseUrl = getApiBaseUrl();
     const alternateBaseUrls = [];
@@ -134,6 +141,9 @@
         return payload;
       } catch (error) {
         if (baseUrl === baseUrls[baseUrls.length - 1]) {
+          if (isLikelyNetworkError(error)) {
+            throw new Error(buildNetworkErrorMessage(baseUrls));
+          }
           throw new Error(lastPayload.message || lastPayload.error || error.message || "Erreur serveur.");
         }
       }
