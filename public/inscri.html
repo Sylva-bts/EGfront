@@ -307,23 +307,17 @@
           renderMessage('Creation du compte...', 'pending');
 
           try {
-              const response = await fetch(`${window.AppApi.getApiBaseUrl()}/api/auth/register`, {
+              const data = await window.AppApi.fetchJson('/api/auth/register', {
                   method: 'POST',
                   headers: window.AppApi.authHeaders(),
                   body: JSON.stringify({ username, email, password, referralCode })
               });
 
-              const data = await response.json();
-
-              if (!response.ok) {
-                  throw new Error(data.message || "Erreur d'inscription");
-              }
-
               window.AppApi.clearReferralCode();
               renderMessage(data.message, 'success');
 
               setTimeout(() => {
-                  window.location.href = '/connec.html';
+                  window.location.href = 'connec.html';
               }, 1500);
 
           } catch (err) {

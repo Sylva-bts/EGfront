@@ -268,23 +268,17 @@
           renderMessage('Connexion en cours...', 'pending');
 
           try {
-              const response = await fetch(`${window.AppApi.getApiBaseUrl()}/api/auth/login`, {
+              const data = await window.AppApi.fetchJson('/api/auth/login', {
                   method: 'POST',
                   headers: window.AppApi.authHeaders(),
                   body: JSON.stringify({ email, password })
               });
 
-              const data = await response.json();
-
-              if (!response.ok) {
-                  throw new Error(data.message || 'Erreur de connexion');
-              }
-
               window.AppApi.setToken(data.token);
               renderMessage(data.message, 'success');
 
               setTimeout(() => {
-                  window.location.href = '/GhostR.html';
+                  window.location.href = 'GhostR.html';
               }, 1500);
 
           } catch (err) {
