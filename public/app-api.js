@@ -2,6 +2,7 @@
   const TOKEN_KEYS = ["token", "ghostrAuthToken"];
   const REFERRAL_KEY = "ghostrReferralCode";
   const META_API_BASE_SELECTOR = 'meta[name="ghostr-api-base-url"]';
+  const DEFAULT_RENDER_API_BASE_URL = "https://egback-1.onrender.com";
 
   function normalizeBaseUrl(value) {
     return String(value || "").trim().replace(/\/$/, "");
@@ -19,7 +20,6 @@
   function getApiBaseUrl() {
     const overrideUrl = normalizeBaseUrl(localStorage.getItem("ghostrApiBaseUrl"));
     const windowOverrideUrl = readWindowApiBaseUrl();
-    const metaOverrideUrl = readMetaApiBaseUrl();
     const hostname = window.location.hostname;
 
     if (overrideUrl) {
@@ -28,10 +28,6 @@
 
     if (windowOverrideUrl) {
       return windowOverrideUrl;
-    }
-
-    if (metaOverrideUrl) {
-      return metaOverrideUrl;
     }
 
     if (window.location.protocol === "file:") {
@@ -43,6 +39,14 @@
     }
 
     return "";
+  }
+
+  function addBaseUrlCandidate(baseUrls, candidate) {
+    const normalizedCandidate = normalizeBaseUrl(candidate);
+
+    if (!baseUrls.includes(normalizedCandidate)) {
+      baseUrls.push(normalizedCandidate);
+    }
   }
 
   function getToken() {
@@ -104,24 +108,26 @@
   }
 
   function buildNetworkErrorMessage(baseUrls) {
-    const candidates = baseUrls.filter((value) => value !== "").map((value) => value || window.location.origin);
+    const candidates = baseUrls.map((value) => value || window.location.origin);
     const list = candidates.length ? candidates.join(" ou ") : window.location.origin;
     return `Impossible de contacter l'API. Verifiez le proxy Netlify, l'URL Render et le demarrage du backend (${list}).`;
   }
 
   async function fetchJson(path, options) {
     const primaryBaseUrl = getApiBaseUrl();
-    const alternateBaseUrls = [];
+    const baseUrls = [];
+    const configuredRenderUrl = readMetaApiBaseUrl() || DEFAULT_RENDER_API_BASE_URL;
+
+    addBaseUrlCandidate(baseUrls, primaryBaseUrl);
 
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
       ["http://localhost:5000", "http://localhost:3000"].forEach((candidate) => {
-        if (candidate !== primaryBaseUrl && !alternateBaseUrls.includes(candidate)) {
-          alternateBaseUrls.push(candidate);
-        }
+        addBaseUrlCandidate(baseUrls, candidate);
       });
+    } else if (primaryBaseUrl !== configuredRenderUrl) {
+      addBaseUrlCandidate(baseUrls, configuredRenderUrl);
     }
 
-    const baseUrls = [primaryBaseUrl, ...alternateBaseUrls];
     let lastPayload = {};
 
     for (const baseUrl of baseUrls) {
