@@ -3,7 +3,9 @@
     depositInvoiceId: "",
     depositPollId: null,
     balance: 0,
-    withdrawableBalance: 0
+    withdrawableBalance: 0,
+    transactionPage: 1,
+    transactionLimit: 30
   };
 
   const els = {
@@ -25,7 +27,32 @@
     withdrawRecipientBox: document.getElementById("withdraw-recipient-box"),
     withdrawMinBtn: document.getElementById("withdraw-min-btn"),
     withdrawMaxBtn: document.getElementById("withdraw-max-btn"),
-    withdrawPasteBtn: document.getElementById("withdraw-paste-btn")
+    withdrawPasteBtn: document.getElementById("withdraw-paste-btn"),
+    historyFilter: document.getElementById("history-filter"),
+    historyRefreshBtn: document.getElementById("history-refresh-btn"),
+    transactionList: document.getElementById("transaction-list"),
+    historyFeedback: document.getElementById("history-feedback"),
+    historyTotalCount: document.getElementById("history-total-count"),
+    historyLastStatus: document.getElementById("history-last-status"),
+    historyLastAmount: document.getElementById("history-last-amount")
+  };
+
+  const typeLabels = {
+    deposit: "Depot",
+    withdraw: "Retrait",
+    power_purchase: "Achat pouvoir",
+    game_bet: "Mise",
+    game_cashout: "Gain",
+    affiliate_credit: "Affiliation"
+  };
+
+  const statusLabels = {
+    pending: "En attente",
+    paid: "Paye",
+    completed: "Termine",
+    rejected: "Rejete",
+    expired: "Expire",
+    failed: "Echoue"
   };
 
   function escapeHtml(value) {
@@ -46,6 +73,29 @@
     return `${Number(value || 0).toFixed(2)} USD`;
   }
 
+  function formatDate(value) {
+    if (!value) return "--";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "--";
+
+    return new Intl.DateTimeFormat("fr-FR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(date);
+  }
+
+  function getTransactionSign(transaction) {
+    if (transaction.type === "withdraw" || transaction.type === "game_bet" || transaction.type === "power_purchase") {
+      return "-";
+    }
+
+    return "+";
+  }
+
   function setFeedback(element, message, isError = false) {
     if (!element) return;
     element.textContent = message || "";
@@ -55,6 +105,100 @@
   function setDepositStatus(status) {
     if (!els.depositStatus) return;
     els.depositStatus.textContent = status || "Aucune transaction";
+  }
+
+  function loginMessage(action) {
+    return `Connectez-vous avant de ${action}. Ouvrez connec.html puis revenez sur cette page.`;
+  }
+
+  function hasSession() {
+    return Boolean(window.AppApi.getToken());
+  }
+
+  function renderHistoryEmpty(message) {
+    if (!els.transactionList) return;
+    els.transactionList.innerHTML = `<div class="history-empty">${escapeHtml(message)}</div>`;
+  }
+
+  function renderHistorySummary(transactions, pagination) {
+    const latest = transactions[0];
+    const total = pagination?.total ?? transactions.length;
+
+    if (els.historyTotalCount) {
+      els.historyTotalCount.textContent = String(total);
+    }
+
+    if (els.historyLastStatus) {
+      els.historyLastStatus.textContent = latest ? (statusLabels[latest.status] || latest.status || "--") : "--";
+    }
+
+    if (els.historyLastAmount) {
+      els.historyLastAmount.textContent = latest ? `${getTransactionSign(latest)}${formatMoney(latest.amount_fiat)}` : "-- USD";
+    }
+  }
+
+  function renderTransactions(transactions, pagination) {
+    renderHistorySummary(transactions, pagination);
+
+    if (!transactions.length) {
+      renderHistoryEmpty("Aucune transaction pour le moment.");
+      return;
+    }
+
+    els.transactionList.innerHTML = transactions.map((transaction) => {
+      const type = typeLabels[transaction.type] || transaction.type || "Transaction";
+      const status = statusLabels[transaction.status] || transaction.status || "--";
+      const sign = getTransactionSign(transaction);
+      const crypto = transaction.crypto ? `<span>${escapeHtml(transaction.crypto)}</span>` : "";
+      const reference = transaction.invoice_id || transaction.order_id || transaction.transaction_hash || transaction._id || "";
+
+      return `
+        <article class="transaction-item">
+          <div class="transaction-main">
+            <span class="transaction-type">${escapeHtml(type)}</span>
+            <strong>${sign}${formatMoney(transaction.amount_fiat)}</strong>
+            <small>${escapeHtml(formatDate(transaction.createdAt))}</small>
+          </div>
+          <div class="transaction-meta">
+            <span class="status-pill status-${escapeHtml(transaction.status || "pending")}">${escapeHtml(status)}</span>
+            ${crypto}
+            ${reference ? `<span class="transaction-ref">Ref: ${escapeHtml(reference)}</span>` : ""}
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  async function loadTransactions() {
+    if (!els.transactionList) return;
+
+    if (!hasSession()) {
+      renderHistorySummary([], { total: 0 });
+      renderHistoryEmpty("Connectez-vous pour voir votre historique.");
+      return;
+    }
+
+    const type = els.historyFilter?.value || "";
+    const query = new URLSearchParams({
+      limit: String(state.transactionLimit),
+      page: String(state.transactionPage)
+    });
+
+    if (type) {
+      query.set("type", type);
+    }
+
+    setFeedback(els.historyFeedback, "Chargement de l'historique...");
+
+    try {
+      const payload = await api(`/api/payments/transactions?${query.toString()}`, { method: "GET" });
+      const data = payload.data || {};
+      renderTransactions(data.transactions || [], data.pagination || {});
+      setFeedback(els.historyFeedback, "");
+    } catch (error) {
+      renderHistoryEmpty("Historique indisponible.");
+      setFeedback(els.historyFeedback, error.message || "Impossible de charger l'historique.", true);
+    }
   }
 
   function stopDepositPolling() {
@@ -72,7 +216,7 @@
   }
 
   async function loadBalance() {
-    if (!window.AppApi.getToken()) {
+    if (!hasSession()) {
       els.userBalance.textContent = "0.00 USD";
       els.balanceStatus.textContent = "Connectez-vous pour charger votre solde.";
       return;
@@ -81,8 +225,11 @@
     const payload = await api("/api/payments/balance", { method: "GET" });
     state.balance = Number(payload.data?.balance || 0);
     state.withdrawableBalance = Number(payload.data?.withdrawableBalance || state.balance);
+    const withdrawalLockedBalance = Number(payload.data?.withdrawalLockedBalance || 0);
     els.userBalance.textContent = formatMoney(state.balance);
-    els.balanceStatus.textContent = `Retirable: ${formatMoney(state.withdrawableBalance)}`;
+    els.balanceStatus.textContent = withdrawalLockedBalance > 0
+      ? `Retirable: ${formatMoney(state.withdrawableBalance)} | En attente: ${formatMoney(withdrawalLockedBalance)}`
+      : `Retirable: ${formatMoney(state.withdrawableBalance)}`;
   }
 
   function renderPaymentDetails(data) {
@@ -121,6 +268,7 @@
       } else {
         await loadBalance();
       }
+      await loadTransactions();
       return;
     }
 
@@ -136,8 +284,8 @@
     const amount = parseAmount(els.depositAmount.value);
     const crypto = els.depositCrypto.value;
 
-    if (!window.AppApi.getToken()) {
-      setFeedback(els.depositFeedback, "Connectez-vous avant de deposer.", true);
+    if (!hasSession()) {
+      setFeedback(els.depositFeedback, loginMessage("deposer"), true);
       return;
     }
 
@@ -169,6 +317,7 @@
         }, 5000);
         await checkDepositStatus();
       }
+      await loadTransactions();
     } catch (error) {
       setDepositStatus("erreur");
       setFeedback(els.depositFeedback, error.message || "Generation de facture impossible.", true);
@@ -183,7 +332,13 @@
     const address = els.withdrawAddress.value.trim();
     const password = els.withdrawPassword.value;
 
-    setFeedback(els.withdrawFeedback, "Creation de la demande de retrait...");
+    if (!hasSession()) {
+      setFeedback(els.withdrawFeedback, loginMessage("retirer"), true);
+      els.withdrawStatusBox.innerHTML = "<strong>Etat du retrait</strong><p>Connexion requise.</p>";
+      return;
+    }
+
+    setFeedback(els.withdrawFeedback, "Verification securisee et envoi automatique du retrait...");
 
     try {
       const payload = await api("/api/payments/withdraw", {
@@ -194,8 +349,15 @@
       const data = payload.data || {};
       setFeedback(els.withdrawFeedback, payload.message || "Retrait cree.");
       els.withdrawStatusBox.innerHTML = `<strong>Etat du retrait</strong><p>${escapeHtml(data.status || "pending")}</p>`;
-      els.withdrawRecipientBox.innerHTML = `<strong>Destinataire</strong><p>${escapeHtml(data.address || address)}</p><p>${escapeHtml(data.crypto || crypto)}</p>`;
+      els.withdrawRecipientBox.innerHTML = `
+        <strong>Destinataire</strong>
+        <p>${escapeHtml(data.address || address)}</p>
+        <p>${escapeHtml(data.crypto || crypto)}</p>
+        ${data.payout_reference ? `<p>Reference: ${escapeHtml(data.payout_reference)}</p>` : ""}
+        ${data.transaction_hash ? `<p>Hash: ${escapeHtml(data.transaction_hash)}</p>` : ""}
+      `;
       await loadBalance();
+      await loadTransactions();
     } catch (error) {
       setFeedback(els.withdrawFeedback, error.message || "Retrait impossible.", true);
     }
@@ -232,7 +394,10 @@
   bindQuickActions();
   els.depositForm?.addEventListener("submit", handleDepositSubmit);
   els.withdrawForm?.addEventListener("submit", handleWithdrawSubmit);
+  els.historyFilter?.addEventListener("change", loadTransactions);
+  els.historyRefreshBtn?.addEventListener("click", loadTransactions);
   loadBalance().catch((error) => {
     els.balanceStatus.textContent = error.message || "Synchronisation impossible.";
   });
+  loadTransactions().catch((error) => setFeedback(els.historyFeedback, error.message, true));
 })();

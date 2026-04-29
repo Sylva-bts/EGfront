@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="ghostr-api-base-url" content="https://egback-1.onrender.com">
     <title>GhostR Finance</title>
     <link rel="stylesheet" href="transac.css">
 </head>
@@ -35,6 +36,7 @@
             <div class="tab-bar" role="tablist" aria-label="Operations financieres">
                 <button class="tab-button active" id="deposit-tab" data-tab="deposit" type="button">Depot</button>
                 <button class="tab-button" id="withdraw-tab" data-tab="withdraw" type="button">Retrait</button>
+                <button class="tab-button" id="history-tab" data-tab="history" type="button">Historique</button>
             </div>
 
             <section class="tab-section active" id="deposit-panel" role="tabpanel" aria-labelledby="deposit-tab">
@@ -189,6 +191,50 @@
                             <p>Statut de transaction: aucune demande</p>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <section class="tab-section" id="history-panel" role="tabpanel" aria-labelledby="history-tab">
+                <div class="glass-card history-card">
+                    <div class="section-head history-head">
+                        <div>
+                            <h2>Historique des transactions</h2>
+                            <p>Depots, retraits, achats et activite de jeu sont regroupes ici.</p>
+                        </div>
+                        <div class="history-actions">
+                            <select id="history-filter" aria-label="Filtrer les transactions">
+                                <option value="">Toutes</option>
+                                <option value="deposit">Depots</option>
+                                <option value="withdraw">Retraits</option>
+                                <option value="power_purchase">Achats pouvoirs</option>
+                                <option value="game_bet">Mises</option>
+                                <option value="game_cashout">Gains</option>
+                                <option value="affiliate_credit">Affiliation</option>
+                            </select>
+                            <button class="secondary-btn" type="button" id="history-refresh-btn">Actualiser</button>
+                        </div>
+                    </div>
+
+                    <div class="history-summary">
+                        <div class="mini-stat">
+                            <strong id="history-total-count">--</strong>
+                            <span>Transactions</span>
+                        </div>
+                        <div class="mini-stat">
+                            <strong id="history-last-status">--</strong>
+                            <span>Dernier statut</span>
+                        </div>
+                        <div class="mini-stat">
+                            <strong id="history-last-amount">-- USD</strong>
+                            <span>Dernier montant</span>
+                        </div>
+                    </div>
+
+                    <div class="transaction-list" id="transaction-list">
+                        <div class="history-empty">Chargement de l'historique...</div>
+                    </div>
+
+                    <p class="feedback" id="history-feedback"></p>
                 </div>
             </section>
         </main>

@@ -301,13 +301,15 @@ body {
 }
 
 .withdraw-intro,
+.history-summary,
 .quick-actions,
 .withdraw-steps {
   display: grid;
   gap: 12px;
 }
 
-.withdraw-intro {
+.withdraw-intro,
+.history-summary {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-bottom: 18px;
 }
@@ -547,6 +549,121 @@ body {
   gap: 12px;
 }
 
+.history-card {
+  display: grid;
+  gap: 18px;
+}
+
+.history-head {
+  align-items: flex-start;
+}
+
+.history-head p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.history-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.history-actions select {
+  min-width: 180px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(184, 132, 255, 0.16);
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  outline: none;
+}
+
+.transaction-list {
+  display: grid;
+  gap: 12px;
+}
+
+.transaction-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(184, 132, 255, 0.15);
+  background: rgba(255,255,255,0.035);
+}
+
+.transaction-main,
+.transaction-meta {
+  display: grid;
+  gap: 6px;
+}
+
+.transaction-main strong {
+  font-size: 1.25rem;
+}
+
+.transaction-main small,
+.transaction-meta,
+.history-empty {
+  color: var(--muted);
+}
+
+.transaction-type {
+  color: #f0ddff;
+  font-weight: 800;
+}
+
+.transaction-meta {
+  justify-items: end;
+  text-align: right;
+  font-size: .92rem;
+}
+
+.transaction-ref {
+  max-width: 280px;
+  overflow-wrap: anywhere;
+}
+
+.status-pill {
+  display: inline-flex;
+  justify-content: center;
+  width: fit-content;
+  padding: 7px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(184, 132, 255, 0.18);
+  background: rgba(139, 61, 255, 0.14);
+  color: var(--violet-bright);
+  font-weight: 800;
+}
+
+.status-paid,
+.status-completed {
+  border-color: rgba(105, 255, 191, 0.24);
+  background: rgba(105, 255, 191, 0.1);
+  color: var(--success);
+}
+
+.status-rejected,
+.status-expired,
+.status-failed {
+  border-color: rgba(255, 122, 156, 0.24);
+  background: rgba(255, 122, 156, 0.1);
+  color: var(--danger);
+}
+
+.history-empty {
+  padding: 24px;
+  border-radius: 18px;
+  border: 1px dashed rgba(184, 132, 255, 0.2);
+  background: rgba(255,255,255,0.025);
+  text-align: center;
+}
+
 @keyframes floatGhost {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -611,6 +728,7 @@ body {
 
   .form-row,
   .withdraw-intro,
+  .history-summary,
   .quick-actions {
     grid-template-columns: 1fr;
   }
@@ -626,6 +744,25 @@ body {
 
   .copy-btn {
     width: 100%;
+  }
+
+  .history-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .history-actions select,
+  .history-actions button {
+    width: 100%;
+  }
+
+  .transaction-item {
+    grid-template-columns: 1fr;
+  }
+
+  .transaction-meta {
+    justify-items: start;
+    text-align: left;
   }
 }
 

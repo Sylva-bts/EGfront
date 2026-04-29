@@ -314,11 +314,14 @@
                   body: JSON.stringify({ username, email, password, referralCode })
               });
 
+              if (data.token) {
+                  window.AppApi.setToken(data.token);
+              }
               window.AppApi.clearReferralCode();
               renderMessage(data.message, 'success');
 
               setTimeout(() => {
-                  window.location.href = 'connec.html';
+                  window.location.href = 'GhostR.html';
               }, 1500);
 
           } catch (err) {

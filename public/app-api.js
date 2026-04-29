@@ -20,6 +20,7 @@
   function getApiBaseUrl() {
     const overrideUrl = normalizeBaseUrl(localStorage.getItem("ghostrApiBaseUrl"));
     const windowOverrideUrl = readWindowApiBaseUrl();
+    const metaApiBaseUrl = readMetaApiBaseUrl();
     const hostname = window.location.hostname;
 
     if (overrideUrl) {
@@ -28,6 +29,10 @@
 
     if (windowOverrideUrl) {
       return windowOverrideUrl;
+    }
+
+    if (metaApiBaseUrl) {
+      return metaApiBaseUrl;
     }
 
     if (window.location.protocol === "file:") {
@@ -124,6 +129,7 @@
       ["http://localhost:5000", "http://localhost:3000"].forEach((candidate) => {
         addBaseUrlCandidate(baseUrls, candidate);
       });
+      addBaseUrlCandidate(baseUrls, configuredRenderUrl);
     } else if (primaryBaseUrl !== configuredRenderUrl) {
       addBaseUrlCandidate(baseUrls, configuredRenderUrl);
     }
@@ -141,7 +147,16 @@
             continue;
           }
 
-          throw new Error(payload.message || payload.error || "Erreur serveur.");
+          if (response.status === 401 && /token|authentification|reconnecter/i.test(payload.message || payload.error || "")) {
+            clearToken();
+          }
+
+          const errorMessage = payload.message || payload.error || "Erreur serveur.";
+          if (response.status === 401 && /token requis|acces refuse|accès refusé/i.test(errorMessage)) {
+            throw new Error("Connexion requise. Veuillez vous reconnecter.");
+          }
+
+          throw new Error(errorMessage);
         }
 
         return payload;

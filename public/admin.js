@@ -221,10 +221,7 @@
 
   function renderTransactions() {
     els.transactionsTableBody.innerHTML = state.transactions.map((transaction) => {
-      const canModerate = transaction.type === "withdraw" && transaction.status === "pending";
-      const actions = canModerate
-        ? `<div class="table-actions"><button class="js-approve-withdraw" data-transaction-id="${transaction._id}">Valider</button><button class="ghost-button danger js-reject-withdraw" data-transaction-id="${transaction._id}">Refuser</button></div>`
-        : "Aucune";
+      const actions = transaction.type === "withdraw" ? "Automatique OxaPay" : "Aucune";
       return `
         <tr>
           <td>${transaction.type}</td>
