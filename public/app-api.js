@@ -56,18 +56,32 @@
 
   function getToken() {
     for (const key of TOKEN_KEYS) {
-      const value = localStorage.getItem(key);
-      if (value) {
+      const value = normalizeToken(localStorage.getItem(key));
+      if (value && isJwtLikeToken(value)) {
         return value;
+      }
+
+      if (value) {
+        localStorage.removeItem(key);
       }
     }
     return "";
   }
 
+  function normalizeToken(token) {
+    return String(token || "").trim().replace(/^Bearer\s+/i, "").trim();
+  }
+
+  function isJwtLikeToken(token) {
+    return String(token || "").split(".").length === 3;
+  }
+
   function setToken(token) {
+    const normalizedToken = normalizeToken(token);
+
     TOKEN_KEYS.forEach((key) => {
-      if (token) {
-        localStorage.setItem(key, token);
+      if (normalizedToken && isJwtLikeToken(normalizedToken)) {
+        localStorage.setItem(key, normalizedToken);
       } else {
         localStorage.removeItem(key);
       }
