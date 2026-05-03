@@ -8,7 +8,7 @@
 
 body{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #c085cf;
+    background-color: #12081d;
     color: #333;
     line-height: 1.6;
 }
@@ -16,7 +16,7 @@ h1, h2, h3{
     color: #444;
 }
 header{ 
-    background: #390162;
+    background: #7c3aed;
     color: #fff;
     padding: 10px 0;
     text-align: center;
@@ -30,7 +30,7 @@ header h1{
 }
 header button{
     background: #fff;
-    color: #390162;
+    color: #7c3aed;
     border: none;
     padding: 10px 20px;
     margin-right: 20px;
@@ -41,7 +41,7 @@ header button{
 }
 header button:hover{
     background: #f4f4f4;
-    color: #290042;
+    color: #160821;
 }
 
 .main{
@@ -50,7 +50,7 @@ header button:hover{
     align-items: center;
     margin-bottom: 30px;
     padding: 10px;
-    background-color: #290042;
+    background-color: #160821;
 }
 .gIma{
     text-align: center;
@@ -74,7 +74,7 @@ header button:hover{
     margin-bottom: 30px;
 }
 button{
-    background: #a678c8;
+    background: #a855f7;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -85,7 +85,7 @@ button{
     transition: background 0.3s, color 0.3s;
 }
 button:hover{
-    background: #8a57a3;
+    background: #8b3dff;
 }
 .jeu{
     text-align: center;
@@ -117,7 +117,7 @@ button:hover{
     border-radius: 10px;
 }
 footer{
-    background: #390162;
+    background: #7c3aed;
     color: #fff;
     text-align: center;
     padding: 10px 0;

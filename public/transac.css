@@ -60,6 +60,14 @@ body {
   background: linear-gradient(180deg, rgba(30, 16, 55, 0.88), rgba(12, 8, 25, 0.92));
   box-shadow: var(--shadow);
   backdrop-filter: blur(14px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hero-copy:hover,
+.hero-visual:hover,
+.finance-panel:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 32px 80px rgba(17, 8, 34, 0.7);
 }
 
 .hero-copy {

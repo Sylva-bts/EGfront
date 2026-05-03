@@ -2,6 +2,8 @@
   const state = {
     depositInvoiceId: "",
     depositPollId: null,
+    withdrawPollId: null,
+    withdrawTransactionId: "",
     balance: 0,
     withdrawableBalance: 0,
     transactionPage: 1,
@@ -21,6 +23,7 @@
     withdrawAmount: document.getElementById("withdraw-amount"),
     withdrawCrypto: document.getElementById("withdraw-crypto"),
     withdrawAddress: document.getElementById("withdraw-wallet-address"),
+    withdrawEmail: document.getElementById("withdraw-email"),
     withdrawPassword: document.getElementById("withdraw-password"),
     withdrawFeedback: document.getElementById("withdraw-feedback"),
     withdrawStatusBox: document.getElementById("withdraw-status-box"),
@@ -111,8 +114,23 @@
     return `Connectez-vous avant de ${action}. Ouvrez connec.html puis revenez sur cette page.`;
   }
 
+  function isTokenError(error) {
+    return /token invalide|authentification|reconnecter|session invalide/i.test(String(error?.message || error || ""));
+  }
+
+  function friendlySessionMessage() {
+    return "Session expiree. Pour un retrait, validez avec votre email et mot de passe ci-dessous.";
+  }
+
   function hasSession() {
     return Boolean(window.AppApi.getToken());
+  }
+
+  function prefillAccountEmail() {
+    const storedUser = window.AppApi.getUser ? window.AppApi.getUser() : {};
+    if (els.withdrawEmail && storedUser.email && !els.withdrawEmail.value) {
+      els.withdrawEmail.value = storedUser.email;
+    }
   }
 
   function renderHistoryEmpty(message) {
@@ -169,7 +187,7 @@
     }).join("");
   }
 
-  async function loadTransactions() {
+  async function loadTransactions({ allowLogoutOnAuthError = true } = {}) {
     if (!els.transactionList) return;
 
     if (!hasSession()) {
@@ -197,6 +215,15 @@
       setFeedback(els.historyFeedback, "");
     } catch (error) {
       renderHistoryEmpty("Historique indisponible.");
+      if (isTokenError(error)) {
+        if (allowLogoutOnAuthError) {
+          window.AppApi.clearToken();
+          setFeedback(els.historyFeedback, friendlySessionMessage(), true);
+        } else {
+          setFeedback(els.historyFeedback, friendlySessionMessage(), true);
+        }
+        return;
+      }
       setFeedback(els.historyFeedback, error.message || "Impossible de charger l'historique.", true);
     }
   }
@@ -208,6 +235,13 @@
     }
   }
 
+  function stopWithdrawPolling() {
+    if (state.withdrawPollId) {
+      clearInterval(state.withdrawPollId);
+      state.withdrawPollId = null;
+    }
+  }
+
   async function api(path, options = {}) {
     return window.AppApi.fetchJson(path, {
       ...options,
@@ -215,21 +249,39 @@
     });
   }
 
-  async function loadBalance() {
+  async function apiNoAuth(path, options = {}) {
+    return window.AppApi.fetchJson(path, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      }
+    });
+  }
+
+  async function loadBalance({ allowLogoutOnAuthError = true } = {}) {
     if (!hasSession()) {
       els.userBalance.textContent = "0.00 USD";
       els.balanceStatus.textContent = "Connectez-vous pour charger votre solde.";
       return;
     }
 
-    const payload = await api("/api/payments/balance", { method: "GET" });
-    state.balance = Number(payload.data?.balance || 0);
-    state.withdrawableBalance = Number(payload.data?.withdrawableBalance || state.balance);
-    const withdrawalLockedBalance = Number(payload.data?.withdrawalLockedBalance || 0);
-    els.userBalance.textContent = formatMoney(state.balance);
-    els.balanceStatus.textContent = withdrawalLockedBalance > 0
-      ? `Retirable: ${formatMoney(state.withdrawableBalance)} | En attente: ${formatMoney(withdrawalLockedBalance)}`
-      : `Retirable: ${formatMoney(state.withdrawableBalance)}`;
+    try {
+      const payload = await api("/api/payments/balance", { method: "GET" });
+      state.balance = Number(payload.data?.balance || 0);
+      state.withdrawableBalance = Number(payload.data?.withdrawableBalance || state.balance);
+      const withdrawalLockedBalance = Number(payload.data?.withdrawalLockedBalance || 0);
+      els.userBalance.textContent = formatMoney(state.balance);
+      els.balanceStatus.textContent = withdrawalLockedBalance > 0
+        ? `Retirable: ${formatMoney(state.withdrawableBalance)} | En attente: ${formatMoney(withdrawalLockedBalance)}`
+        : `Retirable: ${formatMoney(state.withdrawableBalance)}`;
+    } catch (error) {
+      if (isTokenError(error) && allowLogoutOnAuthError) {
+        window.AppApi.clearToken();
+        els.balanceStatus.textContent = friendlySessionMessage();
+      }
+      throw error;
+    }
   }
 
   function renderPaymentDetails(data) {
@@ -275,6 +327,50 @@
     if (status === "expired" || status === "failed" || status === "rejected") {
       stopDepositPolling();
       setFeedback(els.depositFeedback, `Facture ${status}. Generez une nouvelle facture si besoin.`, true);
+    }
+  }
+
+  function renderWithdrawStatus(data) {
+    const status = String(data.status || "pending").toLowerCase();
+    const statusLabel = statusLabels[status] || status;
+
+    els.withdrawStatusBox.innerHTML = `
+      <strong>Etat du retrait</strong>
+      <p>${escapeHtml(statusLabel)}</p>
+      ${typeof data.withdrawalLockedBalance === "number" && data.withdrawalLockedBalance > 0 ? `<p>Reserve: ${formatMoney(data.withdrawalLockedBalance)}</p>` : ""}
+    `;
+
+    els.withdrawRecipientBox.innerHTML = `
+      <strong>Destinataire</strong>
+      <p>${escapeHtml(data.address || els.withdrawAddress.value.trim())}</p>
+      <p>${escapeHtml(data.crypto || els.withdrawCrypto.value || "USDT")} TRC20</p>
+      ${data.payout_reference ? `<p>Reference: ${escapeHtml(data.payout_reference)}</p>` : ""}
+      ${data.transaction_hash ? `<p>Hash: ${escapeHtml(data.transaction_hash)}</p>` : ""}
+    `;
+  }
+
+  async function checkWithdrawStatus() {
+    if (!state.withdrawTransactionId) return;
+
+    const payload = await api(`/api/payments/withdraw/${encodeURIComponent(state.withdrawTransactionId)}`, { method: "GET" });
+    const data = payload.data || {};
+    const status = String(data.status || "pending").toLowerCase();
+
+    renderWithdrawStatus(data);
+
+    if (status === "completed") {
+      stopWithdrawPolling();
+      setFeedback(els.withdrawFeedback, "Retrait confirme.");
+      await loadBalance();
+      await loadTransactions();
+      return;
+    }
+
+    if (status === "failed" || status === "rejected" || status === "expired") {
+      stopWithdrawPolling();
+      setFeedback(els.withdrawFeedback, "Retrait refuse par OxaPay. Le solde reserve a ete libere.", true);
+      await loadBalance();
+      await loadTransactions();
     }
   }
 
@@ -330,36 +426,52 @@
     const amount = parseAmount(els.withdrawAmount.value);
     const crypto = els.withdrawCrypto.value;
     const address = els.withdrawAddress.value.trim();
+    const email = els.withdrawEmail.value.trim().toLowerCase();
     const password = els.withdrawPassword.value;
 
-    if (!hasSession()) {
-      setFeedback(els.withdrawFeedback, loginMessage("retirer"), true);
-      els.withdrawStatusBox.innerHTML = "<strong>Etat du retrait</strong><p>Connexion requise.</p>";
+    if (!email || !email.includes("@")) {
+      setFeedback(els.withdrawFeedback, "Email du compte requis pour valider le retrait.", true);
       return;
     }
 
+    if (!Number.isFinite(amount) || amount < 0.5) {
+      setFeedback(els.withdrawFeedback, "Montant minimum: 0.50 USD.", true);
+      return;
+    }
+
+    if (!/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address)) {
+      setFeedback(els.withdrawFeedback, "Adresse USDT TRC20 invalide.", true);
+      return;
+    }
+
+    stopWithdrawPolling();
     setFeedback(els.withdrawFeedback, "Verification securisee et envoi automatique du retrait...");
 
     try {
-      const payload = await api("/api/payments/withdraw", {
+      const payload = await apiNoAuth("/api/payments/withdraw/direct", {
         method: "POST",
-        body: JSON.stringify({ amount, crypto, address, password })
+        body: JSON.stringify({ amount, crypto, address, email, password })
       });
 
       const data = payload.data || {};
-      setFeedback(els.withdrawFeedback, payload.message || "Retrait cree.");
-      els.withdrawStatusBox.innerHTML = `<strong>Etat du retrait</strong><p>${escapeHtml(data.status || "pending")}</p>`;
-      els.withdrawRecipientBox.innerHTML = `
-        <strong>Destinataire</strong>
-        <p>${escapeHtml(data.address || address)}</p>
-        <p>${escapeHtml(data.crypto || crypto)}</p>
-        ${data.payout_reference ? `<p>Reference: ${escapeHtml(data.payout_reference)}</p>` : ""}
-        ${data.transaction_hash ? `<p>Hash: ${escapeHtml(data.transaction_hash)}</p>` : ""}
-      `;
-      await loadBalance();
-      await loadTransactions();
+      if (payload.token) {
+        window.AppApi.setToken(payload.token, payload.user);
+      }
+      state.withdrawTransactionId = data.transaction_id || "";
+      setFeedback(els.withdrawFeedback, payload.message || "Demande de retrait creee.");
+      renderWithdrawStatus(data);
+      els.withdrawPassword.value = "";
+      await loadBalance({ allowLogoutOnAuthError: false }).catch(() => {});
+      await loadTransactions({ allowLogoutOnAuthError: false }).catch(() => {});
+
+      if (state.withdrawTransactionId && String(data.status || "").toLowerCase() === "pending") {
+        state.withdrawPollId = setInterval(() => {
+          checkWithdrawStatus().catch((error) => setFeedback(els.withdrawFeedback, error.message, true));
+        }, 5000);
+      }
     } catch (error) {
       setFeedback(els.withdrawFeedback, error.message || "Retrait impossible.", true);
+      await loadBalance({ allowLogoutOnAuthError: false }).catch(() => {});
     }
   }
 
@@ -392,11 +504,17 @@
 
   bindTabs();
   bindQuickActions();
+  prefillAccountEmail();
   els.depositForm?.addEventListener("submit", handleDepositSubmit);
   els.withdrawForm?.addEventListener("submit", handleWithdrawSubmit);
   els.historyFilter?.addEventListener("change", loadTransactions);
   els.historyRefreshBtn?.addEventListener("click", loadTransactions);
   loadBalance().catch((error) => {
+    if (isTokenError(error)) {
+      window.AppApi.clearToken();
+      els.balanceStatus.textContent = friendlySessionMessage();
+      return;
+    }
     els.balanceStatus.textContent = error.message || "Synchronisation impossible.";
   });
   loadTransactions().catch((error) => setFeedback(els.historyFeedback, error.message, true));

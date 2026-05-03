@@ -102,7 +102,7 @@ async function saveProfile(event) {
     });
 
     if (payload.token) {
-      window.AppApi.setToken(payload.token);
+      window.AppApi.setToken(payload.token, payload.user);
     }
 
     fillProfileForm(payload.user);

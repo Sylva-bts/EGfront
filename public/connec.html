@@ -275,7 +275,7 @@
                   body: JSON.stringify({ email, password })
               });
 
-              window.AppApi.setToken(data.token);
+              window.AppApi.setToken(data.token, data.user);
               renderMessage(data.message, 'success');
 
               setTimeout(() => {

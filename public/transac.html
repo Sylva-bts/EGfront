@@ -107,7 +107,7 @@
                         <div class="withdraw-intro">
                             <div class="mini-stat">
                                 <strong>Crypto</strong>
-                                <span>USDT, TRX, BTC, ETH</span>
+                                <span>USDT TRC20</span>
                             </div>
                             <div class="mini-stat">
                                 <strong>Minimum</strong>
@@ -130,9 +130,6 @@
                                     <span>Reseau</span>
                                     <select id="withdraw-crypto" required>
                                         <option value="USDT">USDT (TRC20)</option>
-                                        <option value="TRX">TRX (Tron)</option>
-                                        <option value="BTC">BTC (Bitcoin)</option>
-                                        <option value="ETH">ETH (Ethereum)</option>
                                     </select>
                                 </label>
                             </div>
@@ -156,6 +153,11 @@
                                 <strong>Avant d'envoyer</strong>
                                 <p>Utilisez votre propre wallet compatible avec la crypto choisie et verifiez l'adresse une seule fois avant validation.</p>
                             </div>
+
+                            <label>
+                                <span>Email du compte</span>
+                                <input type="email" id="withdraw-email" placeholder="vous@exemple.com" autocomplete="username" required>
+                            </label>
 
                             <label>
                                 <span>Mot de passe de validation</span>

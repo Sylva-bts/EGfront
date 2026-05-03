@@ -4,22 +4,51 @@
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem 3rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .profile-card {
   width: min(92vw, 620px);
   padding: 2rem;
   border-radius: 24px;
-  background: linear-gradient(145deg, rgba(12, 15, 29, 0.96), rgba(28, 20, 54, 0.96));
-  border: 1px solid rgba(102, 126, 234, 0.3);
-  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
+  background:
+    radial-gradient(circle at top right, rgba(168, 85, 247, 0.14), transparent 36%),
+    linear-gradient(145deg, rgba(19, 10, 34, 0.96), rgba(12, 8, 24, 0.96));
+  border: 1px solid rgba(192, 132, 252, 0.28);
+  box-shadow: 0 24px 70px rgba(22, 8, 40, 0.62);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+}
+
+.profile-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.05), transparent);
+  animation: violetShimmer 8s infinite;
+}
+
+@keyframes violetShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
 
 .profile-page-kicker {
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #a6b5ff;
+  color: #c084fc;
   margin-bottom: 0.35rem;
 }
 
@@ -32,7 +61,7 @@
 
 .profile-page-status {
   margin-bottom: 1rem;
-  color: #d8ddff;
+  color: #cab8e8;
   font-family: 'Roboto Condensed', sans-serif;
 }
 
@@ -43,7 +72,7 @@
 
 .profile-page-form label {
   font-family: 'Roboto Condensed', sans-serif;
-  color: #a6b5ff;
+  color: #c084fc;
   font-weight: 700;
 }
 
@@ -53,10 +82,28 @@
   margin-top: 0.35rem;
   padding: 0 1rem;
   border-radius: 12px;
-  border: 2px solid rgba(102, 126, 234, 0.25);
-  background: rgba(14, 17, 32, 0.85);
+  border: 2px solid rgba(192, 132, 252, 0.22);
+  background: rgba(255, 255, 255, 0.055);
   color: #fff;
   font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.profile-page-form input:focus {
+  border-color: #c084fc;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.14);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.profile-page-form input:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.profile-page-form input[readonly] {
+  opacity: 0.8;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .profile-page-form input[readonly] {
@@ -74,13 +121,34 @@
 .profile-copy-btn {
   min-height: 50px;
   white-space: nowrap;
+  padding: 0 1.5rem;
+  border-radius: 12px;
+  border: 2px solid rgba(192, 132, 252, 0.35);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(192, 132, 252, 0.1));
+  color: #c084fc;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.profile-copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(168, 85, 247, 0.28);
+  border-color: #c084fc;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.28), rgba(192, 132, 252, 0.18));
+}
+
+.profile-copy-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.2);
 }
 
 .profile-affiliate-note {
   margin-top: -0.2rem;
   font-size: 0.95rem;
   line-height: 1.5;
-  color: #d8ddff;
+  color: #cab8e8;
 }
 
 .profile-page-actions {

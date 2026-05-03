@@ -128,6 +128,14 @@
          background: var(--surface);
          backdrop-filter: blur(14px);
          box-shadow: var(--shadow);
+         transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .hero-copy:hover,
+      .hero-card:hover,
+      .notice:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 32px 70px rgba(0, 0, 0, 0.5);
       }
       .hero-copy { padding: 36px; }
       .eyebrow {

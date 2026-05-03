@@ -6,20 +6,30 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto+Condensed:wght@300;400;700&display=swap');
 
+:root {
+  --violet-950: #090511;
+  --violet-900: #12081d;
+  --violet-600: #7c3aed;
+  --violet-500: #8b3dff;
+  --violet-400: #a855f7;
+  --violet-300: #c084fc;
+  --pink-400: #d946ef;
+  --surface: rgba(19, 10, 34, 0.86);
+  --surface-strong: rgba(12, 8, 24, 0.94);
+  --line: rgba(192, 132, 252, 0.24);
+  --text: #f5edff;
+  --shadow-violet: 0 24px 70px rgba(22, 8, 40, 0.62);
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Roboto Condensed', sans-serif;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(204, 20, 220, 0.15) 0%, transparent 50%),
-    linear-gradient(135deg, #330761 0%, #1a1a2e 50%, #cc14dc 100%),
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 2px,
-      rgba(204, 20, 220, 0.05) 2px,
-      rgba(204, 20, 220, 0.05) 4px
-    );
+    radial-gradient(circle at 12% 16%, rgba(168, 85, 247, 0.32), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(138, 242, 255, 0.12), transparent 25%),
+    radial-gradient(circle at 78% 72%, rgba(217, 70, 239, 0.16), transparent 34%),
+    linear-gradient(155deg, var(--violet-950) 0%, var(--violet-900) 48%, #190c2d 100%);
   background-attachment: fixed;
-  color: #e0e0e0;
+  color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
   scroll-behavior: smooth;
@@ -28,12 +38,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 82%);
+}
+
 header {
-  background: rgba(13, 13, 26, 0.9);
+  background: rgba(10, 6, 19, 0.82);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(102, 126, 234, 0.4);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -47,16 +69,16 @@ header {
 
 header h4 {
   font-size: 1.5rem;
-  color: #667eea;
-  text-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+  color: var(--violet-300);
+  text-shadow: 0 2px 14px rgba(168, 85, 247, 0.45);
   letter-spacing: 2px;
 }
 
 .solde {
   font-weight: 700;
   font-size: 1.3rem;
-  color: #c71585;
-  text-shadow: 0 0 10px rgba(199, 21, 133, 0.5);
+  color: #d946ef;
+  text-shadow: 0 0 10px rgba(217, 70, 239, 0.5);
 }
 
 .achat_logo {
@@ -64,14 +86,14 @@ header h4 {
   height: 60px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #667eea;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+  border: 2px solid #a855f7;
+  box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .achat_logo:hover {
   transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 0 30px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.6);
 }
 
 .achat_logo img {
@@ -93,13 +115,13 @@ header h4 {
   padding: 2rem;
   border-radius: 20px;
   background: 
-    radial-gradient(ellipse at center, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 30% 20%, rgba(137, 1, 132, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at center, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 30% 20%, rgba(139, 61, 255, 0.05) 0%, transparent 50%),
     linear-gradient(145deg, #0f0f1a 0%, #1a1a2e 100%);
-  border: 2px solid rgba(102, 126, 234, 0.4);
+  border: 2px solid rgba(168, 85, 247, 0.4);
   box-shadow: 
     0 20px 60px rgba(0, 0, 0, 0.7),
-    inset 0 0 50px rgba(102, 126, 234, 0.05);
+    inset 0 0 50px rgba(168, 85, 247, 0.05);
   overflow: hidden;
 }
 
@@ -110,7 +132,7 @@ header h4 {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
   animation: violetShimmer 6s infinite;
 }
 
@@ -124,9 +146,9 @@ header h4 {
   position: absolute;
   inset: 0;
   background-image: 
-    radial-gradient(2px 2px at 20px 30px, #667eea, transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(102, 126, 234, 0.8), transparent),
-    radial-gradient(1px 1px at 90px 40px, #667eea, transparent);
+    radial-gradient(2px 2px at 20px 30px, #a855f7, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(168, 85, 247, 0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, #a855f7, transparent);
   background-repeat: repeat;
   background-size: 100px 100px;
   animation: particles 20s linear infinite;
@@ -145,15 +167,15 @@ header h4 {
   font-weight: 700;
   color: #ffffff;
   text-shadow: 
-    0 0 20px rgba(102, 126, 234, 0.8),
+    0 0 20px rgba(168, 85, 247, 0.8),
     0 2px 10px rgba(0, 0, 0, 0.5);
   margin-bottom: 1rem;
   padding: 1rem 2rem;
-  background: rgba(102, 126, 234, 0.15);
+  background: rgba(168, 85, 247, 0.15);
   backdrop-filter: blur(10px);
   border-radius: 15px;
-  border: 2px solid rgba(102, 126, 234, 0.6);
-  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+  border: 2px solid rgba(168, 85, 247, 0.6);
+  box-shadow: 0 10px 40px rgba(168, 85, 247, 0.3);
   animation: pulseMultiplier 2s ease-in-out infinite;
 }
 
@@ -163,8 +185,8 @@ header h4 {
 }
 
 .cote:hover {
-  box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5);
-  border-color: #667eea;
+  box-shadow: 0 15px 50px rgba(168, 85, 247, 0.5);
+  border-color: #a855f7;
 }
 
 /* Preserve original .img */
@@ -256,13 +278,13 @@ header h4 {
   border-radius: 12px;
   font-size: 1.5rem;
   cursor: pointer;
-  background: linear-gradient(145deg, rgba(102, 126, 234, 0.2), rgba(102, 126, 234, 0.1));
+  background: linear-gradient(145deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.1));
   backdrop-filter: blur(10px);
-  border: 2px solid rgba(102, 126, 234, 0.4);
-  color: #667eea;
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  color: #a855f7;
   font-weight: 700;
   box-shadow: 
-    0 8px 25px rgba(102, 126, 234, 0.2),
+    0 8px 25px rgba(168, 85, 247, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
@@ -287,9 +309,9 @@ header h4 {
 .btn-pouvoir:hover {
   transform: translateY(-4px) scale(1.05);
   box-shadow: 
-    0 15px 40px rgba(102, 126, 234, 0.4),
+    0 15px 40px rgba(168, 85, 247, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border-color: #667eea;
+  border-color: #a855f7;
 }
 
 input[type="number"] {
@@ -302,26 +324,26 @@ input[type="number"] {
   text-align: center;
   border-radius: 12px;
   border: 2px solid transparent;
-  background: linear-gradient(135deg, rgba(137, 1, 132, 0.3) 0%, rgba(199, 21, 133, 0.6) 100%);
+  background: linear-gradient(135deg, rgba(139, 61, 255, 0.3) 0%, rgba(217, 70, 239, 0.6) 100%);
   backdrop-filter: blur(15px);
   color: white;
-  box-shadow: 0 10px 30px rgba(137, 1, 132, 0.3);
+  box-shadow: 0 10px 30px rgba(139, 61, 255, 0.3);
   transition: all 0.4s ease;
   font-family: 'Roboto Condensed', sans-serif;
 }
 
 input[type="number"]:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 40px rgba(137, 1, 132, 0.5);
-  border-color: rgba(102, 126, 234, 0.6);
+  box-shadow: 0 15px 40px rgba(139, 61, 255, 0.5);
+  border-color: rgba(168, 85, 247, 0.6);
 }
 
 input[type="number"]:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #a855f7;
   box-shadow: 
-    0 0 0 4px rgba(102, 126, 234, 0.2),
-    0 15px 40px rgba(102, 126, 234, 0.3);
+    0 0 0 4px rgba(168, 85, 247, 0.2),
+    0 15px 40px rgba(168, 85, 247, 0.3);
 }
 
 .commandes {
@@ -346,7 +368,7 @@ input[type="number"]:focus {
 
 .btn-mise {
   padding: 12px 24px;
-  background: linear-gradient(145deg, #667eea, #5a67d8);
+  background: linear-gradient(145deg, #a855f7, #8b3dff);
   color: white;
   border: none;
   border-radius: 12px;
@@ -357,12 +379,12 @@ input[type="number"]:focus {
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
 }
 
 .btn-mise:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+  box-shadow: 0 15px 40px rgba(168, 85, 247, 0.6);
 }
 
 .demarer, .retirer {
@@ -382,11 +404,11 @@ input[type="number"]:focus {
 
 .demarer:hover, .retirer:hover {
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 15px 40px rgba(168, 85, 247, 0.3);
 }
 
 .retirer:hover {
-  background: linear-gradient(145deg, #c71585, #a10970);
+  background: linear-gradient(145deg, #d946ef, #a21caf);
 }
 
 .retirer {
@@ -403,14 +425,14 @@ input[type="number"]:focus {
   background: rgba(13, 13, 26, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 20px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.2);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   overflow-y: auto;
 }
 
 .historique h3 {
   font-family: 'Playfair Display', serif;
-  color: #667eea;
+  color: #a855f7;
   text-align: center;
   margin-bottom: 1.5rem;
   font-size: 1.4rem;
@@ -424,7 +446,7 @@ input[type="number"]:focus {
   padding: 1rem;
   margin-bottom: 1rem;
   background: rgba(26, 26, 46, 0.8);
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #a855f7;
   border-radius: 10px;
   transition: all 0.3s ease;
   font-family: 'Roboto Condensed', sans-serif;
@@ -432,13 +454,13 @@ input[type="number"]:focus {
 
 .transaction-item:hover {
   transform: translateX(8px);
-  background: rgba(102, 126, 234, 0.15);
+  background: rgba(168, 85, 247, 0.15);
 }
 
 .transaction-amount.gain {
-  color: #c71585;
+  color: #d946ef;
   font-weight: bold;
-  text-shadow: 0 0 8px rgba(199, 21, 133, 0.5);
+  text-shadow: 0 0 8px rgba(217, 70, 239, 0.5);
 }
 
 .transaction-amount.perte {
@@ -477,12 +499,51 @@ input[type="number"]:focus {
 }
 
 .historique::-webkit-scrollbar-thumb {
-  background: linear-gradient(#667eea, #5a67d8);
+  background: linear-gradient(#a855f7, #8b3dff);
   border-radius: 4px;
 }
 
 .historique::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(#7f9cf5, #667eea);
+  background: linear-gradient(#c084fc, #a855f7);
+}
+
+.cadreJeux,
+.historique,
+.commandes {
+  background:
+    radial-gradient(circle at top right, rgba(168, 85, 247, 0.12), transparent 34%),
+    linear-gradient(145deg, var(--surface), var(--surface-strong));
+  border-color: var(--line);
+  box-shadow: var(--shadow-violet);
+}
+
+.cote {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(217, 70, 239, 0.14));
+  border-color: rgba(192, 132, 252, 0.55);
+  box-shadow: 0 18px 42px rgba(124, 58, 237, 0.28);
+}
+
+.btn-mise,
+.demarer,
+.retirer {
+  background: linear-gradient(135deg, var(--violet-400), var(--violet-600));
+  box-shadow: 0 14px 30px rgba(124, 58, 237, 0.32);
+}
+
+.retirer:hover {
+  background: linear-gradient(135deg, var(--pink-400), var(--violet-500));
+}
+
+.btn-pouvoir,
+input[type="number"] {
+  border-color: rgba(192, 132, 252, 0.28);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.btn-pouvoir:hover,
+input[type="number"]:focus {
+  border-color: rgba(192, 132, 252, 0.68);
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.14), 0 18px 36px rgba(124, 58, 237, 0.24);
 }
 
 /* Responsive */

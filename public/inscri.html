@@ -315,7 +315,7 @@
               });
 
               if (data.token) {
-                  window.AppApi.setToken(data.token);
+                  window.AppApi.setToken(data.token, data.user);
               }
               window.AppApi.clearReferralCode();
               renderMessage(data.message, 'success');

@@ -221,11 +221,16 @@
 
   function renderTransactions() {
     els.transactionsTableBody.innerHTML = state.transactions.map((transaction) => {
-      const actions = transaction.type === "withdraw" ? "Automatique OxaPay" : "Aucune";
+      const actions = transaction.type === "withdraw" && transaction.status === "pending"
+        ? `<div class="table-actions">
+            <button class="mini-action js-approve-withdraw" data-transaction-id="${transaction._id}" type="button">Valider</button>
+            <button class="mini-action danger js-reject-withdraw" data-transaction-id="${transaction._id}" type="button">Refuser</button>
+          </div>`
+        : (transaction.type === "withdraw" ? "Traite" : "Aucune");
       return `
         <tr>
           <td>${transaction.type}</td>
-          <td><strong>${transaction.user?.username || "Joueur"}</strong><br><span>${transaction.user?.email || ""}</span></td>
+          <td><strong>${transaction.user?.username || "Joueur"}</strong><br><span>${transaction.user?.email || ""}</span>${transaction.address ? `<br><span>${transaction.crypto || ""}: ${transaction.address}</span>` : ""}</td>
           <td>${formatMoney(transaction.amount_fiat)}</td>
           <td>${statusPill(transaction.status)}</td>
           <td>${formatDate(transaction.createdAt)}</td>
