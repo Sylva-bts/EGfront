@@ -209,6 +209,11 @@
             continue;
           }
 
+          const canRetryRenderFallback = baseUrl !== configuredRenderUrl && baseUrls.includes(configuredRenderUrl);
+          if (response.status >= 500 && canRetryRenderFallback) {
+            continue;
+          }
+
           if (isAuthError(response.status, payload)) {
             authFailureMessage = payload.message || payload.error || "Session invalide.";
             if (/token invalide|authentification|reconnecter|session/i.test(authFailureMessage)) {
