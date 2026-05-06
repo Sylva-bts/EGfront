@@ -123,7 +123,6 @@ body {
   border: 1px solid rgba(184, 132, 255, 0.25);
   animation: pulseCard 3s ease-in-out infinite;
 }
-
 .balance-label,
 .balance-status,
 .feedback,
@@ -161,8 +160,9 @@ body {
 }
 
 .hero-image {
-  width: 100%;
+  width: 350px;
   max-width: 360px;
+  border-radius: 10px;
   object-fit: contain;
   filter: drop-shadow(0 18px 42px rgba(139, 61, 255, 0.35));
   animation: floatGhost 5s ease-in-out infinite;
