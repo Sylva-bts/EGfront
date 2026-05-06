@@ -4,336 +4,533 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Escape the Ghost</title>
-   <meta name="description" content="Joue à Escape The Ghost, un jeu d'horreur en ligne où tu dois survivre et t'échapper du fantôme et te faire un maximum de pactole.">
+   <meta name="description" content="Joue a Escape The Ghost, un jeu d'horreur en ligne ou tu dois survivre, sortir au bon moment et maximiser tes gains.">
    <meta name="ghostr-api-base-url" content="https://egback-1.onrender.com">
    <script src="app-api.js"></script>
    <style>
       :root {
-         --bg-night: #13081f;
-         --bg-deep: #2a1140;
-         --surface: rgba(9, 18, 34, 0.78);
-         --surface-soft: rgba(255, 255, 255, 0.08);
-         --line: rgba(255, 255, 255, 0.14);
-         --text: #f4f7fb;
-         --muted: #bfd0ea;
-         --accent: #b47cff;
-         --accent-strong: #d9b8ff;
-         --danger: #ff8f8f;
-         --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+         --bg: #06070d;
+         --panel: rgba(12, 17, 27, 0.72);
+         --line: rgba(255, 255, 255, 0.16);
+         --line-soft: rgba(255, 255, 255, 0.09);
+         --text: #f7fbff;
+         --muted: #b8c6d9;
+         --cyan: #6ee7ff;
+         --amber: #ffd166;
+         --rose: #ff7d95;
+         --shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
       }
+
       * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
       body {
          margin: 0;
          min-height: 100vh;
-         font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+         font-family: Inter, "Segoe UI", Arial, sans-serif;
          color: var(--text);
          background:
-            radial-gradient(circle at top left, rgba(180, 124, 255, 0.2), transparent 32%),
-            radial-gradient(circle at 80% 20%, rgba(217, 184, 255, 0.18), transparent 24%),
-            linear-gradient(145deg, var(--bg-night), var(--bg-deep) 55%, #3b1d63);
+            radial-gradient(circle at 12% 12%, rgba(110, 231, 255, 0.18), transparent 28%),
+            radial-gradient(circle at 82% 36%, rgba(255, 209, 102, 0.12), transparent 26%),
+            linear-gradient(145deg, #06070d 0%, #111624 52%, #171020 100%);
       }
+
       body::before {
          content: "";
          position: fixed;
          inset: 0;
+         z-index: -1;
          pointer-events: none;
          background-image:
-            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-         background-size: 32px 32px;
-         opacity: 0.25;
+            linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+         background-size: 44px 44px;
+         mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 78%);
       }
+
       a { color: inherit; text-decoration: none; }
-      .page-shell {
-         width: min(1180px, calc(100% - 32px));
-         margin: 0 auto;
-         padding: 24px 0 40px;
-      }
+
       .topbar {
+         position: fixed;
+         top: 18px;
+         left: 50%;
+         z-index: 20;
          display: flex;
          align-items: center;
          justify-content: space-between;
-         gap: 16px;
-         margin-bottom: 24px;
-         padding: 18px 22px;
+         width: min(1160px, calc(100% - 32px));
+         min-height: 68px;
+         padding: 12px 14px 12px 18px;
          border: 1px solid var(--line);
-         border-radius: 22px;
-         background: rgba(7, 13, 25, 0.75);
-         backdrop-filter: blur(16px);
+         border-radius: 999px;
+         background: rgba(5, 9, 16, 0.72);
          box-shadow: var(--shadow);
+         backdrop-filter: blur(22px);
+         transform: translateX(-50%);
       }
-      .brand h1 {
-         margin: 0;
-         font-size: clamp(1.4rem, 3vw, 2.2rem);
-         letter-spacing: 0.04em;
-         text-transform: uppercase;
-      }
-      .brand p {
-         margin: 6px 0 0;
-         color: var(--muted);
-         font-size: 0.96rem;
-      }
-      .topbar-actions {
+
+      .brand {
          display: flex;
          align-items: center;
          gap: 12px;
-         flex-wrap: wrap;
-         justify-content: flex-end;
+         min-width: 0;
       }
-      .chip {
-         padding: 10px 16px;
-         border-radius: 999px;
-         border: 1px solid rgba(180, 124, 255, 0.3);
-         background: rgba(180, 124, 255, 0.14);
-         color: var(--text);
-         font-weight: 700;
+
+      .brand-mark {
+         display: grid;
+         place-items: center;
+         flex: 0 0 42px;
+         width: 42px;
+         height: 42px;
+         border-radius: 14px;
+         color: #061018;
+         font-weight: 900;
+         background: linear-gradient(135deg, var(--cyan), var(--amber));
+         box-shadow: 0 16px 32px rgba(110, 231, 255, 0.22);
       }
+
+      .brand h1 {
+         margin: 0;
+         font-size: 1rem;
+         line-height: 1.1;
+         letter-spacing: 0;
+      }
+
+      .brand p {
+         margin: 3px 0 0;
+         color: var(--muted);
+         font-size: 0.82rem;
+         white-space: nowrap;
+      }
+
+      .topbar-actions {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+      }
+
+      .nav-link,
       .primary-btn,
       .secondary-btn {
          display: inline-flex;
          align-items: center;
          justify-content: center;
-         min-height: 48px;
-         padding: 0 22px;
+         min-height: 44px;
          border-radius: 999px;
+         font-weight: 800;
+         transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .nav-link {
+         padding: 0 14px;
+         color: var(--muted);
+      }
+
+      .primary-btn,
+      .secondary-btn {
+         padding: 0 20px;
          border: 1px solid transparent;
-         font-weight: 700;
-         cursor: pointer;
-         transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
       }
+
       .primary-btn {
-         color: #07131d;
-         background: linear-gradient(135deg, var(--accent-strong), #f1dcff);
-         box-shadow: 0 16px 28px rgba(180, 124, 255, 0.28);
+         color: #061018;
+         background: linear-gradient(135deg, var(--cyan), #f3f7ff 48%, var(--amber));
+         box-shadow: 0 18px 38px rgba(110, 231, 255, 0.22);
       }
+
       .secondary-btn {
          color: var(--text);
          background: rgba(255, 255, 255, 0.08);
          border-color: var(--line);
       }
+
+      .nav-link:hover,
       .primary-btn:hover,
       .secondary-btn:hover { transform: translateY(-2px); }
+
       .hero {
+         position: relative;
          display: grid;
-         grid-template-columns: 1.15fr 0.85fr;
-         gap: 24px;
-         align-items: stretch;
-         margin-bottom: 24px;
-      }
-      .hero-copy,
-      .hero-card,
-      .notice {
-         border: 1px solid var(--line);
-         border-radius: 28px;
-         background: var(--surface);
-         backdrop-filter: blur(14px);
-         box-shadow: var(--shadow);
-         transition: transform 0.3s ease, box-shadow 0.3s ease;
+         align-items: end;
+         min-height: 92vh;
+         padding: 130px max(20px, calc((100vw - 1160px) / 2)) 82px;
+         overflow: hidden;
+         isolation: isolate;
       }
 
-      .hero-copy:hover,
-      .hero-card:hover,
-      .notice:hover {
-         transform: translateY(-5px);
-         box-shadow: 0 32px 70px rgba(0, 0, 0, 0.5);
+      .hero-video {
+         position: absolute;
+         inset: 0;
+         z-index: -3;
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
       }
-      .hero-copy { padding: 36px; }
+
+      .hero::before,
+      .hero::after {
+         content: "";
+         position: absolute;
+         inset: 0;
+         pointer-events: none;
+      }
+
+      .hero::before {
+         z-index: -2;
+         background:
+            linear-gradient(90deg, rgba(6, 7, 13, 0.92) 0%, rgba(6, 7, 13, 0.7) 42%, rgba(6, 7, 13, 0.2) 100%),
+            linear-gradient(0deg, rgba(6, 7, 13, 0.96) 0%, rgba(6, 7, 13, 0.2) 46%, rgba(6, 7, 13, 0.68) 100%);
+      }
+
+      .hero::after {
+         z-index: -1;
+         background: linear-gradient(to bottom, transparent 72%, var(--bg) 100%);
+      }
+
+      .hero-content {
+         width: min(780px, 100%);
+      }
+
       .eyebrow {
          display: inline-flex;
          align-items: center;
          gap: 10px;
          margin-bottom: 18px;
-         padding: 8px 14px;
+         padding: 9px 14px;
+         border: 1px solid rgba(110, 231, 255, 0.28);
          border-radius: 999px;
-         background: rgba(180, 124, 255, 0.14);
-         color: var(--accent);
-         font-size: 0.88rem;
-         font-weight: 700;
-         letter-spacing: 0.04em;
+         background: rgba(8, 14, 22, 0.58);
+         color: var(--cyan);
+         font-size: 0.78rem;
+         font-weight: 900;
+         letter-spacing: 0;
          text-transform: uppercase;
+         backdrop-filter: blur(14px);
       }
-      .hero-copy h2 {
-         margin: 0 0 18px;
-         font-size: clamp(2.2rem, 5vw, 4.6rem);
-         line-height: 0.98;
+
+      .hero h2 {
+         max-width: 12ch;
+         margin: 0 0 20px;
+         font-size: clamp(3.1rem, 9vw, 7.8rem);
+         line-height: 0.86;
+         letter-spacing: 0;
       }
-      .hero-copy p {
-         margin: 0 0 24px;
-         max-width: 60ch;
-         color: var(--muted);
-         font-size: 1.05rem;
-         line-height: 1.7;
+
+      .hero p {
+         max-width: 62ch;
+         margin: 0 0 28px;
+         color: #d9e3ef;
+         font-size: clamp(1rem, 2vw, 1.18rem);
+         line-height: 1.72;
       }
+
       .hero-actions {
          display: flex;
          flex-wrap: wrap;
-         gap: 14px;
-         margin-bottom: 26px;
+         gap: 12px;
+         margin-bottom: 34px;
       }
-      .highlights {
+
+      .live-strip {
+         display: grid;
+         grid-template-columns: repeat(3, minmax(0, 1fr));
+         gap: 1px;
+         width: min(720px, 100%);
+         overflow: hidden;
+         border: 1px solid var(--line);
+         border-radius: 24px;
+         background: var(--line);
+         box-shadow: var(--shadow);
+         backdrop-filter: blur(20px);
+      }
+
+      .live-strip div {
+         min-height: 92px;
+         padding: 18px;
+         background: rgba(8, 12, 20, 0.74);
+      }
+
+      .live-strip strong {
+         display: block;
+         margin-bottom: 7px;
+         color: var(--text);
+         font-size: 1.02rem;
+      }
+
+      .live-strip span {
+         color: var(--muted);
+         font-size: 0.92rem;
+         line-height: 1.45;
+      }
+
+      .content {
+         width: min(1160px, calc(100% - 32px));
+         margin: 0 auto;
+         padding: 44px 0 52px;
+      }
+
+      .section-head {
+         display: flex;
+         align-items: end;
+         justify-content: space-between;
+         gap: 20px;
+         margin-bottom: 18px;
+      }
+
+      .section-head h3 {
+         margin: 0;
+         font-size: clamp(1.7rem, 3vw, 2.6rem);
+         letter-spacing: 0;
+      }
+
+      .section-head p {
+         width: min(520px, 100%);
+         margin: 0;
+         color: var(--muted);
+         line-height: 1.7;
+      }
+
+      .feature-grid {
          display: grid;
          grid-template-columns: repeat(3, minmax(0, 1fr));
          gap: 14px;
       }
-      .stat {
-         padding: 16px;
-         border-radius: 20px;
-         background: var(--surface-soft);
-         border: 1px solid rgba(255, 255, 255, 0.08);
+
+      .feature,
+      .notice {
+         border: 1px solid var(--line-soft);
+         background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035));
+         box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+         backdrop-filter: blur(16px);
       }
-      .stat strong {
-         display: block;
-         margin-bottom: 4px;
-         font-size: 1.1rem;
+
+      .feature {
+         min-height: 210px;
+         padding: 22px;
+         border-radius: 8px;
       }
-      .stat span {
-         color: var(--muted);
-         font-size: 0.92rem;
+
+      .feature small {
+         color: var(--amber);
+         font-weight: 900;
+         text-transform: uppercase;
       }
-      .hero-card {
-         overflow: hidden;
-         position: relative;
-         min-height: 100%;
+
+      .feature h4 {
+         margin: 38px 0 10px;
+         font-size: 1.25rem;
       }
-      .hero-card img {
-         display: block;
-         width: 100%;
-         height: 100%;
-         object-fit: cover;
-         min-height: 420px;
-      }
-      .hero-card-overlay {
-         position: absolute;
-         inset: auto 18px 18px;
-         padding: 18px;
-         border-radius: 20px;
-         background: linear-gradient(180deg, rgba(8, 17, 31, 0.2), rgba(8, 17, 31, 0.88));
-         border: 1px solid rgba(255, 255, 255, 0.12);
-      }
-      .hero-card-overlay h3 {
-         margin: 0 0 8px;
-         font-size: 1.3rem;
-      }
-      .hero-card-overlay p {
+
+      .feature p {
          margin: 0;
          color: var(--muted);
-         line-height: 1.6;
+         line-height: 1.65;
       }
+
       .notice {
          display: grid;
-         grid-template-columns: 220px 1fr;
+         grid-template-columns: 280px 1fr auto;
          gap: 24px;
-         padding: 24px;
+         align-items: center;
+         margin-top: 18px;
+         padding: 18px;
+         border-radius: 8px;
       }
+
       .notice img {
          width: 100%;
-         height: 100%;
-         min-height: 250px;
+         height: 210px;
          object-fit: cover;
-         border-radius: 22px;
+         border-radius: 6px;
       }
+
+      .warning {
+         display: inline-flex;
+         margin-bottom: 12px;
+         padding: 7px 11px;
+         border-radius: 999px;
+         color: #16080d;
+         background: var(--rose);
+         font-size: 0.78rem;
+         font-weight: 900;
+         text-transform: uppercase;
+      }
+
       .notice h3 {
-         margin: 0 0 10px;
-         font-size: 1.8rem;
+         margin: 0 0 8px;
+         font-size: clamp(1.5rem, 3vw, 2.2rem);
       }
+
       .notice p {
          margin: 0;
          color: var(--muted);
-         line-height: 1.75;
+         line-height: 1.7;
       }
-      .warning {
-         display: inline-flex;
-         margin-bottom: 14px;
-         padding: 7px 12px;
-         border-radius: 999px;
-         background: rgba(255, 143, 143, 0.12);
-         color: var(--danger);
-         font-weight: 700;
-         letter-spacing: 0.03em;
-         text-transform: uppercase;
-         font-size: 0.8rem;
-      }
+
       footer {
-         margin-top: 24px;
+         padding: 26px 16px 34px;
          text-align: center;
          color: var(--muted);
          font-size: 0.92rem;
       }
+
+      footer p { margin: 0; }
+
       @media (max-width: 900px) {
-         .hero,
-         .notice { grid-template-columns: 1fr; }
-         .hero-card img { min-height: 320px; }
-         .highlights { grid-template-columns: 1fr; }
-      }
-      @media (max-width: 640px) {
-         .page-shell {
-            width: min(100% - 20px, 100%);
-            padding-top: 16px;
-         }
-         .topbar,
-         .hero-copy,
-         .notice { padding: 18px; }
          .topbar {
-            align-items: flex-start;
-            flex-direction: column;
+            top: 12px;
+            width: calc(100% - 20px);
+            border-radius: 24px;
          }
-         .topbar-actions {
-            width: 100%;
-            justify-content: stretch;
+
+         .brand p,
+         .nav-link { display: none; }
+
+         .hero {
+            min-height: 88vh;
+            padding-top: 112px;
          }
-         .topbar-actions > * { flex: 1 1 auto; }
-         .hero-copy h2 { font-size: 2.4rem; }
+
+         .hero h2 { max-width: 9ch; }
+
+         .live-strip,
+         .feature-grid,
+         .notice { grid-template-columns: 1fr; }
+
+         .notice { align-items: stretch; }
+
+         .notice .primary-btn { width: 100%; }
+      }
+
+      @media (max-width: 560px) {
+         .topbar {
+            min-height: 62px;
+            padding: 10px;
+         }
+
+         .brand-mark {
+            width: 38px;
+            height: 38px;
+            flex-basis: 38px;
+         }
+
+         .brand h1 { font-size: 0.92rem; }
+
+         .topbar-actions { gap: 8px; }
+
+         .secondary-btn.top-login { display: none; }
+
+         .primary-btn,
+         .secondary-btn {
+            min-height: 42px;
+            padding: 0 14px;
+            font-size: 0.92rem;
+         }
+
+         .hero {
+            min-height: 92vh;
+            padding-bottom: 48px;
+         }
+
+         .hero p { font-size: 0.98rem; }
+
+         .hero-actions > * { flex: 1 1 100%; }
+
+         .live-strip div { min-height: auto; }
+
+         .content {
+            width: min(100% - 20px, 100%);
+            padding-top: 28px;
+         }
+
+         .section-head {
+            display: block;
+         }
+
+         .section-head p { margin-top: 10px; }
+
+         .notice { padding: 12px; }
       }
    </style>
 </head>
 <body>
-   <div class="page-shell">
-      <header class="topbar">
-         <div class="brand">
+   <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Accueil Escape the Ghost">
+         <span class="brand-mark">EG</span>
+         <span>
             <h1>Escape the Ghost</h1>
-            <p>Un univers fantomatique, des mises rapides, et des sorties au bon moment.</p>
-         </div>
-         <div class="topbar-actions">
-         </div>
-      </header>
+            <p>Crash game immersif et instantane</p>
+         </span>
+      </a>
+      <nav class="topbar-actions" aria-label="Navigation principale">
+         <a class="nav-link" href="#experience">Experience</a>
+         <a class="secondary-btn top-login" href="connec.html">Connexion</a>
+         <a class="primary-btn" href="inscri.html">Jouer</a>
+      </nav>
+   </header>
 
-      <main>
-         <section class="hero">
-            <div class="hero-copy">
-               <div class="eyebrow">Planet Ghost</div>
-               <h2>Entrez dans la partie avant que le fantome ne vous rattrape.</h2>
-               <p>
-                  Bienvenue dans la planete de Ghost, un monde brumeux ou chaque manche peut faire grimper votre gain.
-                  Placez votre mise, surveillez la cote, et retirez-vous au bon instant pour repartir avec vos benefices.
-               </p>
-               <div class="hero-actions">
-                  <a class="primary-btn" href="inscri.html">Jouer maintenant</a>
-                  <a class="secondary-btn" href="GhostRD.html">Tester la demo</a>
-               </div>
-               <div class="highlights">
-                  <div class="stat">
-                     <strong>Decisions rapides</strong>
-                     <span>Chaque seconde compte pendant la montee de la cote.</span>
-                  </div>
-                  <div class="stat">
-                     <strong>Univers immersif</strong>
-                     <span>Une ambiance nocturne pensee pour mettre la pression juste ce qu'il faut.</span>
-                  </div>
-                  <div class="stat">
-                     <strong>Partie immediate</strong>
-                     <span>Inscription simple, demo accessible, et navigation plus claire.</span>
-                  </div>
-               </div>
+   <main>
+      <section class="hero" aria-label="Presentation Escape the Ghost">
+         <video class="hero-video" autoplay muted loop playsinline poster="ima/EG.jpeg">
+            <source src="video_demo/km_dieze_1080p_30f_20260506_172714.mp4" type="video/mp4">
+         </video>
+
+         <div class="hero-content">
+            <div class="eyebrow">Interface nouvelle generation</div>
+            <h2>Quitte avant le Ghost.</h2>
+            <p>
+               Une experience rapide, tendue et visuelle : lance ta mise, regarde la cote grimper,
+               puis retire tes gains avant que l'interface ne bascule dans le rouge.
+            </p>
+            <div class="hero-actions">
+               <a class="primary-btn" href="inscri.html">Commencer maintenant</a>
+               <a class="secondary-btn" href="GhostRD.html">Voir la demo</a>
             </div>
 
-            <div class="hero-card">
-               <img src="ima/EG.jpeg" alt="Illustration de l'univers Escape the Ghost">
-               <div class="hero-card-overlay">
-                  <h3>La planete de Ghost</h3>
-                  <p>Explorez une atmosphere entre casino, science-fiction et monde hante.</p>
+            <div class="live-strip" aria-label="Points forts">
+               <div>
+                  <strong>Cote en direct</strong>
+                  <span>Lis la tension de la manche en un coup d'oeil.</span>
+               </div>
+               <div>
+                  <strong>Cashout rapide</strong>
+                  <span>Un rythme court pour des decisions nettes.</span>
+               </div>
+               <div>
+                  <strong>Univers premium</strong>
+                  <span>Video, lumiere et interface au service du jeu.</span>
                </div>
             </div>
-         </section>
+         </div>
+      </section>
+
+      <section class="content" id="experience">
+         <div class="section-head">
+            <h3>Une entree plus moderne dans l'univers Ghost.</h3>
+            <p>
+               La page met maintenant l'interface au premier plan, comme les sites recents :
+               moins de texte disperse, plus d'impact visuel, et des actions immediates.
+            </p>
+         </div>
+
+         <div class="feature-grid">
+            <article class="feature">
+               <small>01</small>
+               <h4>Ambiance cinematic</h4>
+               <p>La video d'interface donne une impression vivante des les premieres secondes.</p>
+            </article>
+            <article class="feature">
+               <small>02</small>
+               <h4>Parcours clair</h4>
+               <p>Jouer, tester la demo ou se connecter restent accessibles sans chercher.</p>
+            </article>
+            <article class="feature">
+               <small>03</small>
+               <h4>Mobile first</h4>
+               <p>La composition se replie proprement sur telephone avec des boutons faciles a toucher.</p>
+            </article>
+         </div>
 
          <section class="notice">
             <img src="ima/imgA.jpeg" alt="Visuel de prevention autour du jeu">
@@ -341,25 +538,40 @@
                <div class="warning">18 ans et plus</div>
                <h3>Jouez avec responsabilite</h3>
                <p>
-                  Escape the Ghost est reserve aux adultes. En jouant, vous confirmez avoir l'age legal dans votre juridiction.
-                  Fixez vos limites, ne misez jamais plus que ce que vous pouvez perdre, et faites une pause si le jeu cesse d'etre un loisir.
+                  Escape the Ghost est reserve aux adultes. Fixez vos limites, ne misez jamais plus que ce que
+                  vous pouvez perdre, et faites une pause si le jeu cesse d'etre un loisir.
                </p>
             </div>
+            <a class="primary-btn" href="inscri.html">Acceder au jeu</a>
          </section>
-      </main>
+      </section>
+   </main>
 
-      <footer>
-         <p>&copy; 2026 Escape the Ghost. Tous droits reserves.</p>
-      </footer>
-   </div>
+   <footer>
+      <p>&copy; 2026 Escape the Ghost. Tous droits reserves.</p>
+   </footer>
 
    <script>
       (function captureReferralFromHome() {
         const url = new URL(window.location.href);
         const referralCode = url.searchParams.get("ref");
+        const normalizedReferralCode = referralCode && window.AppApi
+          ? window.AppApi.setReferralCode(referralCode)
+          : window.AppApi?.getReferralCode();
 
-        if (referralCode && window.AppApi) {
-          window.AppApi.setReferralCode(referralCode);
+        if (!normalizedReferralCode) {
+          return;
+        }
+
+        document.querySelectorAll('a[href="inscri.html"], a[href="connec.html"]').forEach((link) => {
+          const targetUrl = new URL(link.getAttribute("href"), window.location.href);
+          targetUrl.searchParams.set("ref", normalizedReferralCode);
+          link.setAttribute("href", `${targetUrl.pathname.split("/").pop()}${targetUrl.search}`);
+        });
+
+        if (referralCode) {
+          url.searchParams.delete("ref");
+          window.history.replaceState({}, document.title, `${url.pathname}${url.search}${url.hash}`);
         }
       })();
    </script>

@@ -243,7 +243,7 @@
             </div>
             <button class="submit-btn" type="submit">Se connecter</button>
             <div class="meta-row">
-               <p>Pas encore de compte ? <a href="inscri.html">Creer un profil</a></p>
+               <p>Pas encore de compte ? <a id="signup-link" href="inscri.html">Creer un profil</a></p>
             </div>
             <div id="message" aria-live="polite"></div>
          </form>
@@ -286,6 +286,19 @@
               renderMessage(err.message, 'error');
           }
       });
+
+      (function captureReferralCodeOnLoginPage() {
+          const url = new URL(window.location.href);
+          const referralFromUrl = url.searchParams.get('ref');
+          const referralCode = referralFromUrl
+              ? window.AppApi.setReferralCode(referralFromUrl)
+              : window.AppApi.getReferralCode();
+          const signupLink = document.getElementById('signup-link');
+
+          if (referralCode && signupLink) {
+              signupLink.href = `inscri.html?ref=${encodeURIComponent(referralCode)}`;
+          }
+      })();
    </script>
 </body>
 </html>

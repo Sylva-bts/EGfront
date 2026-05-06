@@ -23,6 +23,7 @@
     globalRtpTop: document.getElementById("global-rtp-top"),
     dashboardCards: document.getElementById("dashboard-cards"),
     activityChart: document.getElementById("activity-chart"),
+    visitorsChart: document.getElementById("visitors-chart"),
     topOddsList: document.getElementById("top-odds-list"),
     alertsList: document.getElementById("alerts-list"),
     dashboardLogs: document.getElementById("dashboard-logs"),
@@ -118,7 +119,9 @@
       ["Depots", formatMoney(cards.totalDeposits || 0)],
       ["Retraits", formatMoney(cards.totalWithdrawals || 0)],
       ["Profit estime", formatMoney(cards.estimatedProfit || 0)],
-      ["House edge", `${Number(cards.houseEdge || 0).toFixed(2)}%`]
+      ["House edge", `${Number(cards.houseEdge || 0).toFixed(2)}%`],
+      ["Visiteurs aujourd'hui", cards.todayVisitors || 0],
+      ["Visites aujourd'hui", cards.todayVisits || 0]
     ];
 
     els.dashboardCards.innerHTML = items.map(([label, value]) => `
@@ -141,6 +144,19 @@
         <div class="metric-line"><span>Pertes: ${formatMoney(item.losses)}</span><span>Gains: ${formatMoney(item.gains)}</span></div>
       </article>
     `).join("") || '<div class="empty-state">Pas encore assez de donnees.</div>';
+
+    const visitorRows = state.dashboard?.visitors || [];
+    const maxVisitors = Math.max(...visitorRows.flatMap((item) => [item.uniqueVisitors || 0, item.visits || 0]), 1);
+    els.visitorsChart.innerHTML = visitorRows.map((item) => `
+      <article class="chart-row">
+        <div class="metric-line"><span>${item.day}</span><strong>${item.uniqueVisitors || 0} visiteurs</strong></div>
+        <div class="chart-bar-stack">
+          <div class="chart-bar visitors"><span style="width:${((item.uniqueVisitors || 0) / maxVisitors) * 100}%"></span></div>
+          <div class="chart-bar visits"><span style="width:${((item.visits || 0) / maxVisitors) * 100}%"></span></div>
+        </div>
+        <div class="metric-line"><span>Uniques: ${item.uniqueVisitors || 0}</span><span>Visites: ${item.visits || 0}</span></div>
+      </article>
+    `).join("") || '<div class="empty-state">Aucune visite enregistree.</div>';
 
     els.topOddsList.innerHTML = (state.dashboard?.topOdds || []).map((item) => `
       <article class="odds-item metric-line"><span>x${Number(item.multiplier || 0).toFixed(1)}</span><strong>${item.hits} fois</strong></article>

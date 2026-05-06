@@ -19,6 +19,24 @@ function setProfileStatus(message, isError = false) {
   profileStatusEl.style.color = isError ? "#ff8d9b" : "#d8ddff";
 }
 
+function buildPublicReferralLink(affiliation) {
+  const referralCode = String(affiliation?.referralCode || "").trim().toUpperCase();
+  const apiReferralLink = String(affiliation?.referralLink || "").trim();
+
+  if (!referralCode) {
+    return "";
+  }
+
+  try {
+    const sourceUrl = apiReferralLink ? new URL(apiReferralLink, window.location.origin) : null;
+    const url = new URL(sourceUrl?.pathname || "index.html", window.location.origin);
+    url.searchParams.set("ref", referralCode);
+    return url.href;
+  } catch {
+    return `${window.location.origin}/index.html?ref=${encodeURIComponent(referralCode)}`;
+  }
+}
+
 function fillProfileForm(user) {
   const username = user?.username || "";
   const email = user?.email || "";
@@ -28,7 +46,7 @@ function fillProfileForm(user) {
   const affiliateLockedText = typeof affiliation.lockedBalance === "number" ? `${affiliation.lockedBalance.toFixed(2)} USD` : "0.00 USD";
   const affiliateWithdrawableText = typeof affiliation.withdrawableBalance === "number" ? `${affiliation.withdrawableBalance.toFixed(2)} USD` : "0.00 USD";
   const referralCode = affiliation.referralCode || "";
-  const referralLink = affiliation.referralLink || "";
+  const referralLink = buildPublicReferralLink(affiliation);
 
   profileUsernameEl.value = username;
   profileEmailEl.value = email;

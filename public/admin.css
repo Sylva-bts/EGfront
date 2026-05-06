@@ -276,6 +276,8 @@ button:active {
 .chart-bar.players span { background: linear-gradient(90deg, #8b3dff, #c084fc); }
 .chart-bar.losses span { background: linear-gradient(90deg, #8af2ff, #c8fbff); }
 .chart-bar.gains span { background: linear-gradient(90deg, #d946ef, #ff9ff4); }
+.chart-bar.visitors span { background: linear-gradient(90deg, #22c55e, #86efac); }
+.chart-bar.visits span { background: linear-gradient(90deg, #f59e0b, #fde68a); }
 .switch-row { display: flex !important; justify-content: space-between; align-items: center; }
 .ghost-grid-form { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .powers-grid-form { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; }
