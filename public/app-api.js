@@ -4,6 +4,7 @@
   const REFERRAL_KEY = "ghostrReferralCode";
   const META_API_BASE_SELECTOR = 'meta[name="ghostr-api-base-url"]';
   const DEFAULT_RENDER_API_BASE_URL = "https://egback-1.onrender.com";
+  const PHANTOM_SIGNUP_BALANCE = 1000;
 
   function normalizeBaseUrl(value) {
     return String(value || "").trim().replace(/\/$/, "");
@@ -120,6 +121,70 @@
     localStorage.removeItem(USER_KEY);
   }
 
+  function isPhantomSignupBalance(user) {
+    if (!user || Number(user.balance) !== PHANTOM_SIGNUP_BALANCE) {
+      return false;
+    }
+
+    const affiliation = user.affiliation || {};
+    const affiliateValues = [
+      affiliation.totalEarned,
+      affiliation.lockedBalance,
+      affiliation.unlockedTotal,
+      affiliation.wageringProgress,
+      affiliation.wageringRemaining
+    ];
+
+    return affiliateValues.every((value) => Number(value || 0) === 0);
+  }
+
+  function normalizeUserBalance(user) {
+    if (!user || typeof user !== "object") {
+      return user;
+    }
+
+    if (!isPhantomSignupBalance(user)) {
+      return user;
+    }
+
+    const normalizedUser = {
+      ...user,
+      balance: 0
+    };
+
+    if (user.affiliation && typeof user.affiliation === "object") {
+      normalizedUser.affiliation = {
+        ...user.affiliation,
+        withdrawableBalance: 0
+      };
+    }
+
+    return normalizedUser;
+  }
+
+  function normalizePayload(path, payload) {
+    if (!payload || typeof payload !== "object") {
+      return payload;
+    }
+
+    const normalizedPayload = { ...payload };
+
+    if (normalizedPayload.user) {
+      normalizedPayload.user = normalizeUserBalance(normalizedPayload.user);
+    }
+
+    if (normalizedPayload.data && typeof normalizedPayload.data === "object") {
+      const normalizedData = { ...normalizedPayload.data };
+      if (Number(normalizedData.balance) === PHANTOM_SIGNUP_BALANCE && String(path || "").includes("/api/payments/balance")) {
+        normalizedData.balance = 0;
+        normalizedData.withdrawableBalance = 0;
+      }
+      normalizedPayload.data = normalizedData;
+    }
+
+    return normalizedPayload;
+  }
+
   function getReferralCode() {
     return String(localStorage.getItem(REFERRAL_KEY) || "").trim().toUpperCase();
   }
@@ -230,7 +295,7 @@
           throw new Error(errorMessage);
         }
 
-        return payload;
+        return normalizePayload(path, payload);
       } catch (error) {
         if (authFailureMessage) {
           throw new Error(authFailureMessage);

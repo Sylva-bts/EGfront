@@ -10,6 +10,8 @@
     transactionLimit: 30
   };
 
+  const MIN_WITHDRAWAL = 5;
+
   const els = {
     userBalance: document.getElementById("user-balance"),
     balanceStatus: document.getElementById("balance-status"),
@@ -434,8 +436,8 @@
       return;
     }
 
-    if (!Number.isFinite(amount) || amount < 0.5) {
-      setFeedback(els.withdrawFeedback, "Montant minimum: 0.50 USD.", true);
+    if (!Number.isFinite(amount) || amount < MIN_WITHDRAWAL) {
+      setFeedback(els.withdrawFeedback, `Montant minimum: ${MIN_WITHDRAWAL.toFixed(2)} USD.`, true);
       return;
     }
 
@@ -486,7 +488,7 @@
 
   function bindQuickActions() {
     els.withdrawMinBtn?.addEventListener("click", () => {
-      els.withdrawAmount.value = "0.50";
+      els.withdrawAmount.value = MIN_WITHDRAWAL.toFixed(2);
     });
 
     els.withdrawMaxBtn?.addEventListener("click", () => {
