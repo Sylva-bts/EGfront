@@ -271,11 +271,11 @@ header h4 {
 
 .cadreJeux {
   position: relative;
-  min-height: 70vh;
+  min-height: 60vh;
   width: min(100%, 700px);
   max-width: 100%;
   margin: 0;
-  padding: 2rem;
+  padding: 1px;
   border-radius: 20px;
   background: 
     radial-gradient(ellipse at center, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
@@ -1646,18 +1646,47 @@ input[type="number"]:focus,
   }
 }
 
+.cadreJeux {
+  padding: 1.15rem;
+}
+
 .game-shell {
-  gap: 0.75rem;
+  gap: 0.45rem;
+}
+
+.game-head {
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.cote {
+  margin-bottom: 0;
+  padding: 0.55rem 1.25rem;
+  font-size: 2.35rem;
+}
+
+.game-stage {
+  margin-top: -0.1rem;
+}
+
+.img {
+  height: 245px;
+  padding: 0.65rem 1rem;
+  padding-top: 72px;
+}
+
+.Acteurs {
+  margin-top: 8px;
 }
 
 .game-powers-panel {
-  padding: 0.68rem 0.8rem;
+  padding: 0.48rem 0.65rem;
   border-radius: 15px;
 }
 
 .game-powers-panel .panel-heading {
   align-items: center;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.18rem;
 }
 
 .game-powers-panel .game-kicker {
@@ -1670,13 +1699,13 @@ input[type="number"]:focus,
 }
 
 .pouvoir {
-  gap: 0.42rem;
-  max-width: 260px;
+  gap: 0.32rem;
+  max-width: 244px;
 }
 
 .pouvoir > div {
-  flex: 1 1 54px;
-  max-width: 58px;
+  flex: 1 1 50px;
+  max-width: 54px;
 }
 
 .power-slot {
@@ -1688,27 +1717,67 @@ input[type="number"]:focus,
 }
 
 .btn-pouvoir {
-  min-height: 38px;
+  min-height: 34px;
   border-radius: 10px;
   font-size: 0.82rem;
 }
 
 .commandes {
-  margin-top: -0.25rem;
+  margin-top: -0.15rem;
+  padding: 0.85rem;
+  gap: 0.65rem;
+}
+
+.commandes .panel-heading {
+  margin-bottom: -0.15rem;
+}
+
+.commandes-grid {
+  gap: 0.6rem;
+}
+
+.mise,
+.commandes-side {
+  padding: 0.75rem;
+  gap: 0.55rem;
+}
+
+input[type="number"] {
+  height: 44px;
+}
+
+.btn-mise,
+.retirer {
+  padding: 0.75rem 1.2rem;
 }
 
 @media (max-width: 768px) {
+  .cadreJeux {
+    padding: 0.7rem;
+  }
+
   .game-shell {
-    gap: 0.6rem;
+    gap: 0.42rem;
+  }
+
+  .cote {
+    padding: 0.48rem 0.65rem;
+    font-size: 1.55rem;
+  }
+
+  .img {
+    min-height: 190px;
+    padding: 0.5rem;
+    padding-top: 1rem;
   }
 
   .game-powers-panel {
-    padding: 0.6rem;
+    padding: 0.48rem;
   }
 
   .pouvoir {
-    gap: 0.32rem;
-    max-width: 236px;
+    gap: 0.26rem;
+    max-width: 224px;
   }
 
   .pouvoir > div {
@@ -1717,8 +1786,18 @@ input[type="number"]:focus,
   }
 
   .btn-pouvoir {
-    min-height: 34px;
+    min-height: 32px;
     font-size: 0.74rem;
+  }
+
+  .commandes {
+    padding: 0.62rem;
+    gap: 0.5rem;
+  }
+
+  .mise,
+  .commandes-side {
+    padding: 0.58rem;
   }
 }
 
@@ -1728,7 +1807,7 @@ input[type="number"]:focus,
   }
 
   .pouvoir {
-    max-width: 216px;
+    max-width: 204px;
   }
 
   .pouvoir > div {
@@ -1736,10 +1815,500 @@ input[type="number"]:focus,
   }
 
   .btn-pouvoir {
-    min-height: 32px;
+    min-height: 30px;
   }
 
   .power-label {
     font-size: 0.55rem;
+  }
+}
+
+/* Responsive game stage refinements */
+@media (max-width: 768px) {
+  .interface {
+    width: min(100% - 0.6rem, 720px);
+  }
+
+  .cadreJeux {
+    padding: 0.58rem;
+  }
+
+  .game-shell {
+    gap: 0.34rem;
+  }
+
+  .game-head {
+    gap: 0.28rem;
+  }
+
+  .cote {
+    font-size: clamp(1.65rem, 6vw, 2.25rem);
+    padding: 0.42rem 0.68rem;
+  }
+
+  .img {
+    position: relative;
+    height: clamp(200px, 44vw, 270px);
+    min-height: 200px;
+    padding: 0.5rem;
+    overflow: hidden;
+    background-size: 42px 42px;
+  }
+
+  .game-powers-panel {
+    padding: 0.38rem 0.5rem;
+  }
+
+  .game-powers-panel .panel-heading {
+    margin-bottom: 0.08rem;
+  }
+
+  .Acteurs {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  .stick1,
+  .stick {
+    position: absolute;
+    left: clamp(10px, 3vw, 22px);
+    bottom: 8px;
+    width: clamp(122px, 26vw, 172px);
+    height: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  .Ghost {
+    position: absolute;
+    right: clamp(10px, 3vw, 22px);
+    bottom: 12px;
+    width: clamp(88px, 20vw, 128px);
+    height: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  .game-powers-panel,
+  .commandes {
+    border-radius: 14px;
+  }
+
+  .commandes {
+    margin-top: -0.08rem;
+    padding: 0.5rem;
+    gap: 0.38rem;
+  }
+
+  .commandes .panel-heading {
+    margin-bottom: -0.22rem;
+  }
+
+  .commandes-grid {
+    gap: 0.38rem;
+  }
+
+  .mise,
+  .commandes-side {
+    padding: 0.48rem;
+    gap: 0.38rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .interface {
+    width: calc(100% - 0.5rem);
+    margin-top: 0.5rem;
+  }
+
+  .cadreJeux {
+    padding: 0.42rem;
+  }
+
+  .game-shell {
+    gap: 0.28rem;
+  }
+
+  .game-head {
+    align-items: stretch;
+  }
+
+  .img {
+    height: clamp(198px, 54vw, 230px);
+    min-height: 198px;
+    padding: 0.38rem;
+    background-size: 38px 38px;
+  }
+
+  .stick1,
+  .stick {
+    left: 8px;
+    bottom: 8px;
+    width: clamp(132px, 38vw, 152px);
+  }
+
+  .Ghost {
+    right: 8px;
+    bottom: 12px;
+    width: clamp(98px, 28vw, 116px);
+  }
+
+  .pouvoir {
+    max-width: none;
+    width: 100%;
+    gap: 0.3rem;
+  }
+
+  .pouvoir > div {
+    flex: 1 1 calc(25% - 0.4rem);
+    max-width: none;
+  }
+
+  .btn-pouvoir {
+    min-height: 42px;
+  }
+
+  .commandes-grid {
+    gap: 0.32rem;
+  }
+
+  .game-powers-panel {
+    padding: 0.32rem 0.42rem;
+  }
+
+  .commandes {
+    padding: 0.42rem;
+    gap: 0.32rem;
+  }
+
+  .mise,
+  .commandes-side {
+    padding: 0.42rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .img {
+    height: 206px;
+    min-height: 206px;
+  }
+
+  .stick1,
+  .stick {
+    width: 142px;
+  }
+
+  .Ghost {
+    width: 106px;
+  }
+}
+
+/* Community panels polish */
+.world-panel {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.world-card,
+.historique {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0.9rem;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(168, 85, 247, 0.14), transparent 34%),
+    linear-gradient(145deg, rgba(19, 10, 34, 0.92), rgba(12, 8, 24, 0.96));
+  border: 1px solid rgba(192, 132, 252, 0.24);
+  box-shadow: 0 18px 48px rgba(22, 8, 40, 0.42);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.world-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.72rem;
+}
+
+.world-card-head h3,
+.historique h3 {
+  margin: 0;
+  color: #fff;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.08rem;
+  letter-spacing: 0.03em;
+}
+
+.world-card-head span {
+  display: block;
+  margin-top: 0.18rem;
+  color: #b9c4ff;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.world-live,
+.world-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 54px;
+  padding: 0.22rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.world-live {
+  color: #caffea;
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(74, 222, 128, 0.24);
+}
+
+.world-feed,
+.world-chat-messages {
+  display: grid;
+  gap: 0.48rem;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 0.16rem;
+}
+
+.world-chat-card {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(217, 70, 239, 0.18), transparent 34%),
+    linear-gradient(145deg, rgba(19, 10, 34, 0.93), rgba(12, 8, 24, 0.97));
+}
+
+.world-chat-card .world-card-head {
+  margin-bottom: 0.62rem;
+  padding-bottom: 0.62rem;
+}
+
+.world-chat-messages {
+  max-height: 260px;
+  padding: 0.35rem;
+  border-radius: 14px;
+  background: rgba(7, 10, 22, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.world-feed-item,
+.world-chat-item,
+.transaction-item {
+  padding: 0.68rem 0.72rem;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.world-feed-item {
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.world-feed-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(192, 132, 252, 0.28);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.world-chat-item {
+  margin-right: 0;
+  border-radius: 15px 15px 15px 7px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(168, 85, 247, 0.09));
+}
+
+.world-feed-top,
+.world-chat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.32rem;
+}
+
+.world-player {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.world-badge.bet {
+  color: #ffd7a8;
+  background: rgba(255, 153, 51, 0.16);
+}
+
+.world-badge.gain {
+  color: #8affc7;
+  background: rgba(38, 180, 92, 0.16);
+}
+
+.world-feed-values,
+.world-chat-text {
+  color: #e2e8ff;
+  font-size: 0.84rem;
+  line-height: 1.42;
+}
+
+.world-feed-values strong {
+  color: #fff;
+}
+
+.world-time {
+  margin-top: 0.28rem;
+  color: #92a1dc;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.world-empty {
+  padding: 0.85rem 0.5rem;
+  color: #9ba8d9;
+  text-align: center;
+}
+
+.world-chat-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+  padding: 0.55rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.world-chat-form input {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 0.8rem;
+  border-radius: 11px;
+  border: 1px solid rgba(192, 132, 252, 0.24);
+  background: rgba(255, 255, 255, 0.055);
+  color: #fff;
+}
+
+.world-chat-form .btn-mise {
+  min-width: 105px;
+  padding: 0.62rem 0.85rem;
+  border-radius: 11px;
+}
+
+.historique {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.historique h3 {
+  margin-bottom: 0.78rem;
+  color: #d7bcff;
+  text-align: left;
+  font-size: 1.02rem;
+}
+
+.transaction-item {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.55rem;
+  border-left: 3px solid rgba(168, 85, 247, 0.8);
+}
+
+.transaction-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.transaction-type {
+  color: #fff;
+  font-weight: 900;
+}
+
+.transaction-time {
+  color: #92a1dc;
+  font-size: 0.72rem;
+}
+
+.transaction-amount {
+  font-weight: 900;
+}
+
+.btn-clear-history {
+  margin-top: 0.3rem;
+  padding: 0.72rem 0.9rem;
+  border-radius: 11px;
+}
+
+.world-feed::-webkit-scrollbar,
+.world-chat-messages::-webkit-scrollbar,
+.historique::-webkit-scrollbar {
+  width: 7px;
+}
+
+.world-feed::-webkit-scrollbar-track,
+.world-chat-messages::-webkit-scrollbar-track,
+.historique::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
+.world-feed::-webkit-scrollbar-thumb,
+.world-chat-messages::-webkit-scrollbar-thumb,
+.historique::-webkit-scrollbar-thumb {
+  background: linear-gradient(#d946ef, #a855f7);
+  border-radius: 999px;
+}
+
+@media (max-width: 768px) {
+  .world-panel {
+    gap: 0.65rem;
+  }
+
+  .world-card,
+  .historique {
+    padding: 0.68rem;
+    border-radius: 15px;
+  }
+
+  .world-card-head {
+    margin-bottom: 0.55rem;
+  }
+
+  .world-feed,
+  .world-chat-messages {
+    max-height: 170px;
+  }
+
+  .world-chat-form {
+    grid-template-columns: 1fr;
+    padding: 0.45rem;
+  }
+
+  .world-chat-form .btn-mise {
+    width: 100%;
+  }
+
+  .historique {
+    max-height: 230px;
+  }
+}
+
+@media (max-width: 390px) {
+  .world-card-head,
+  .world-feed-top,
+  .world-chat-top,
+  .transaction-info {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.28rem;
   }
 }

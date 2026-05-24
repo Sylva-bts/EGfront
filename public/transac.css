@@ -787,3 +787,399 @@ body {
     padding: 14px;
   }
 }
+
+/* Transaction page polish */
+body {
+  background:
+    radial-gradient(circle at 8% 10%, rgba(168, 85, 247, 0.22), transparent 28%),
+    radial-gradient(circle at 88% 8%, rgba(138, 242, 255, 0.1), transparent 24%),
+    linear-gradient(155deg, #090511 0%, #12081d 52%, #150a26 100%);
+}
+
+.finance-shell {
+  width: min(1220px, calc(100% - 24px));
+  padding: 16px 0 36px;
+}
+
+.finance-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgba(184, 132, 255, 0.16);
+  border-radius: 18px;
+  background: rgba(12, 8, 24, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.finance-topbar a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(184, 132, 255, 0.18);
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 0.55rem;
+}
+
+.topbar-actions a {
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  color: var(--muted);
+}
+
+.topbar-actions a:hover,
+.back-link:hover {
+  background: rgba(139, 61, 255, 0.15);
+  color: #fff;
+}
+
+.finance-hero {
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hero-copy,
+.hero-visual,
+.finance-panel,
+.glass-card {
+  border-radius: 18px;
+}
+
+.hero-copy,
+.hero-visual {
+  min-height: 0;
+}
+
+.hero-copy {
+  padding: 1.25rem;
+}
+
+.eyebrow {
+  margin-bottom: 0.65rem;
+  padding: 0.42rem 0.68rem;
+  font-size: 0.68rem;
+}
+
+.hero-copy h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
+.hero-text {
+  max-width: 520px;
+  margin: 0.7rem 0 1rem;
+  line-height: 1.5;
+}
+
+.hero-dashboard {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.85fr) minmax(260px, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.balance-card {
+  display: grid;
+  gap: 0.28rem;
+  padding: 0.95rem;
+  border-radius: 15px;
+  animation: none;
+}
+
+.balance-card strong {
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  line-height: 1;
+}
+
+.hero-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.hero-metrics div,
+.mini-stat,
+.step-chip,
+.status-box,
+.method-card,
+.warning-note,
+.address-hint,
+.payment-value,
+.history-empty {
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(184, 132, 255, 0.14);
+}
+
+.hero-metrics div {
+  display: grid;
+  align-content: center;
+  gap: 0.35rem;
+  padding: 0.85rem;
+}
+
+.hero-metrics strong {
+  color: #fff;
+}
+
+.hero-metrics span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.hero-visual {
+  min-height: auto;
+  padding: 1rem;
+}
+
+.ghost-frame {
+  width: min(100%, 240px);
+  padding: 0.7rem;
+  border-radius: 18px;
+}
+
+.hero-image {
+  width: 100%;
+  max-width: 220px;
+  animation: none;
+}
+
+.finance-panel {
+  padding: 0.85rem;
+}
+
+.tab-bar {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  padding: 0.42rem;
+  margin-bottom: 0.85rem;
+  border-radius: 16px;
+}
+
+.tab-button {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+}
+
+.grid-two {
+  gap: 0.85rem;
+}
+
+.glass-card {
+  padding: 1rem;
+}
+
+.section-head {
+  margin-bottom: 0.9rem;
+}
+
+.section-head h2 {
+  font-size: 1.18rem;
+}
+
+.mini-badge {
+  padding: 0.42rem 0.62rem;
+  font-size: 0.72rem;
+}
+
+.finance-form {
+  gap: 0.8rem;
+}
+
+.finance-form label {
+  gap: 0.45rem;
+}
+
+.finance-form input,
+.finance-form select,
+.history-actions select {
+  min-height: 44px;
+  padding: 0.72rem 0.85rem;
+  border-radius: 12px;
+}
+
+.primary-btn,
+.secondary-btn {
+  border-radius: 12px;
+}
+
+.primary-btn {
+  min-height: 46px;
+  padding: 0.75rem 1rem;
+}
+
+.secondary-btn {
+  min-height: 40px;
+  padding: 0.62rem 0.75rem;
+}
+
+.withdraw-intro,
+.history-summary {
+  gap: 0.55rem;
+  margin-bottom: 0.85rem;
+}
+
+.mini-stat {
+  padding: 0.75rem;
+}
+
+.quick-actions {
+  gap: 0.45rem;
+}
+
+.method-card,
+.status-box {
+  gap: 0.7rem;
+  padding: 0.75rem;
+}
+
+.warning-note,
+.address-hint {
+  padding: 0.75rem;
+}
+
+.history-card {
+  gap: 0.85rem;
+}
+
+.history-head p {
+  margin-top: 0.35rem;
+}
+
+.history-actions {
+  gap: 0.45rem;
+}
+
+.transaction-list {
+  gap: 0.55rem;
+}
+
+.transaction-item {
+  padding: 0.78rem;
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(139, 61, 255, 0.045));
+}
+
+.transaction-main strong {
+  font-size: 1.12rem;
+}
+
+.transaction-meta {
+  gap: 0.42rem;
+  font-size: 0.84rem;
+}
+
+.status-pill {
+  padding: 0.34rem 0.58rem;
+  font-size: 0.78rem;
+}
+
+.transaction-ref {
+  max-width: 340px;
+}
+
+.feedback {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .finance-hero,
+  .grid-two,
+  .hero-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-visual {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .finance-shell {
+    width: calc(100% - 0.7rem);
+    padding-top: 0.45rem;
+  }
+
+  .finance-topbar {
+    padding: 0.5rem;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .topbar-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .finance-topbar a {
+    text-align: center;
+  }
+
+  .hero-copy,
+  .finance-panel,
+  .glass-card {
+    padding: 0.75rem;
+    border-radius: 15px;
+  }
+
+  .hero-copy h1 {
+    font-size: 1.9rem;
+  }
+
+  .hero-text {
+    font-size: 0.92rem;
+  }
+
+  .hero-metrics,
+  .tab-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .section-head,
+  .history-head {
+    gap: 0.55rem;
+  }
+
+  .mini-badge {
+    white-space: normal;
+  }
+
+  .form-row,
+  .withdraw-intro,
+  .history-summary,
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .transaction-item {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  .transaction-meta {
+    justify-items: start;
+    text-align: left;
+  }
+}

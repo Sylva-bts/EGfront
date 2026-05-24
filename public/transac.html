@@ -9,19 +9,42 @@
 </head>
 <body>
     <div class="finance-shell">
+        <nav class="finance-topbar" aria-label="Navigation finance">
+            <a class="back-link" href="GhostR.html">Retour au jeu</a>
+            <div class="topbar-actions">
+                <a href="profile.html">Profil</a>
+                <a href="abonnement.html">Boutique</a>
+            </div>
+        </nav>
+
         <header class="finance-hero">
             <div class="hero-copy">
                 <p class="eyebrow">GhostR Secure Wallet</p>
-                <h1>Gestion financiere premium</h1>
+                <h1>Transactions</h1>
                 <p class="hero-text">
-                    Deposez, retirez et suivez vos transactions depuis une interface unique,
-                    inspiree des plateformes de casino modernes.
+                    Deposez, retirez et suivez vos operations depuis une seule interface.
                 </p>
 
-                <div class="balance-card">
-                    <span class="balance-label">Solde utilisateur</span>
-                    <strong id="user-balance">-- USD</strong>
-                    <span class="balance-status" id="balance-status">Synchronisation...</span>
+                <div class="hero-dashboard">
+                    <div class="balance-card">
+                        <span class="balance-label">Solde utilisateur</span>
+                        <strong id="user-balance">-- USD</strong>
+                        <span class="balance-status" id="balance-status">Synchronisation...</span>
+                    </div>
+                    <div class="hero-metrics" aria-label="Resume transactions">
+                        <div>
+                            <strong>Crypto</strong>
+                            <span>OxaPay</span>
+                        </div>
+                        <div>
+                            <strong>Retrait</strong>
+                            <span>USDT TRC20</span>
+                        </div>
+                        <div>
+                            <strong>Suivi</strong>
+                            <span>Temps reel</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -628,3 +628,363 @@ input[type="number"]:focus {
     margin-right: 0;
   }
 }
+
+/* Demo layout polish - scene block intentionally untouched */
+.interface {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 1.6rem auto 2.5rem;
+  display: grid;
+  grid-template-columns: minmax(320px, 650px) minmax(280px, 420px);
+  gap: 1rem;
+  align-items: start;
+}
+
+.cadreJeux {
+  width: 100%;
+  max-width: none;
+  min-height: auto;
+  margin: 0;
+  padding: 1.15rem;
+  justify-content: flex-start;
+  gap: 0.65rem;
+}
+
+.cadreJeux > * {
+  position: relative;
+  z-index: 1;
+}
+
+.demo-head {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.demo-pill {
+  justify-self: start;
+  padding: 0.4rem 0.72rem;
+  border: 1px solid rgba(192, 132, 252, 0.34);
+  border-radius: 999px;
+  color: #e9ddff;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cote {
+  margin: 0;
+  padding: 0.58rem 1.15rem;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  line-height: 1;
+}
+
+.pouvoir {
+  max-width: none;
+  margin: 0;
+  gap: 0.5rem;
+}
+
+.pouvoir > div {
+  flex: 1 1 62px;
+  max-width: 76px;
+}
+
+.btn-pouvoir {
+  min-height: 48px;
+  border-radius: 10px;
+  font-size: 1.18rem;
+}
+
+.commandes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 0.45fr);
+  align-items: stretch;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  border-radius: 16px;
+  border: 1px solid rgba(192, 132, 252, 0.22);
+}
+
+.mise {
+  gap: 0.55rem;
+  padding: 0.7rem;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mise p {
+  color: #ded3ff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+input[type="number"] {
+  max-width: none;
+  height: 44px;
+  font-size: 1rem;
+}
+
+.btn-mise,
+.retirer {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0.78rem 1rem;
+  border-radius: 11px;
+  font-size: 0.98rem;
+}
+
+.retirer {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+}
+
+.historique {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .interface {
+    grid-template-columns: 1fr;
+    width: min(100% - 1rem, 720px);
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  header {
+    padding: 0.7rem 0.85rem;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  header h4,
+  .solde {
+    text-align: center;
+  }
+
+  header h4 {
+    font-size: 1.08rem;
+    letter-spacing: 0.08em;
+  }
+
+  .solde {
+    font-size: 0.96rem;
+  }
+
+  .interface {
+    width: calc(100% - 0.6rem);
+    margin-top: 0.6rem;
+    gap: 0.7rem;
+  }
+
+  .cadreJeux {
+    padding: 0.62rem;
+    gap: 0.42rem;
+    border-radius: 16px;
+  }
+
+  .demo-head {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .demo-pill {
+    justify-self: center;
+    padding: 0.32rem 0.58rem;
+    font-size: 0.66rem;
+  }
+
+  .cote {
+    width: 100%;
+    padding: 0.46rem 0.7rem;
+    font-size: 1.7rem;
+    text-align: center;
+  }
+
+  .pouvoir {
+    gap: 0.34rem;
+  }
+
+  .pouvoir > div {
+    flex: 1 1 calc(20% - 0.34rem);
+    max-width: none;
+  }
+
+  .btn-pouvoir {
+    min-height: 40px;
+    font-size: 1rem;
+  }
+
+  .commandes {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+    padding: 0.45rem;
+  }
+
+  .mise {
+    padding: 0.48rem;
+    gap: 0.42rem;
+  }
+
+  input[type="number"] {
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .btn-mise,
+  .retirer {
+    padding: 0.68rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .historique {
+    padding: 0.85rem;
+    max-height: 260px;
+    border-radius: 16px;
+  }
+}
+
+@media (max-width: 380px) {
+  .cadreJeux {
+    padding: 0.48rem;
+    gap: 0.32rem;
+  }
+
+  .pouvoir {
+    gap: 0.26rem;
+  }
+
+  .btn-pouvoir {
+    min-height: 36px;
+    font-size: 0.92rem;
+  }
+
+  .mise p {
+    font-size: 0.78rem;
+  }
+}
+
+/* Tighter game frame spacing */
+.cadreJeux {
+  padding: 0.82rem;
+  gap: 0.38rem;
+}
+
+.demo-head {
+  gap: 0.42rem;
+}
+
+.demo-pill {
+  padding: 0.32rem 0.62rem;
+}
+
+.cote {
+  padding: 0.45rem 0.95rem;
+}
+
+.pouvoir {
+  gap: 0.34rem;
+}
+
+.pouvoir > div {
+  flex-basis: 54px;
+  max-width: 64px;
+}
+
+.btn-pouvoir {
+  min-height: 42px;
+  font-size: 1.02rem;
+}
+
+.commandes {
+  gap: 0.42rem;
+  padding: 0.52rem;
+}
+
+.mise {
+  gap: 0.38rem;
+  padding: 0.48rem;
+}
+
+input[type="number"] {
+  height: 40px;
+}
+
+.btn-mise,
+.retirer {
+  padding: 0.65rem 0.82rem;
+}
+
+@media (max-width: 640px) {
+  .cadreJeux {
+    padding: 0.42rem;
+    gap: 0.24rem;
+  }
+
+  .demo-head {
+    gap: 0.22rem;
+  }
+
+  .demo-pill {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .cote {
+    padding: 0.34rem 0.6rem;
+  }
+
+  .pouvoir {
+    gap: 0.22rem;
+  }
+
+  .btn-pouvoir {
+    min-height: 34px;
+    font-size: 0.9rem;
+  }
+
+  .commandes {
+    gap: 0.25rem;
+    padding: 0.34rem;
+  }
+
+  .mise {
+    gap: 0.3rem;
+    padding: 0.36rem;
+  }
+
+  input[type="number"] {
+    height: 36px;
+  }
+
+  .btn-mise,
+  .retirer {
+    padding: 0.56rem 0.7rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .cadreJeux {
+    gap: 0.18rem;
+    padding: 0.34rem;
+  }
+
+  .pouvoir {
+    gap: 0.18rem;
+  }
+
+  .commandes {
+    padding: 0.3rem;
+  }
+}
