@@ -24,6 +24,7 @@
     const windowOverrideUrl = readWindowApiBaseUrl();
     const metaApiBaseUrl = readMetaApiBaseUrl();
     const hostname = window.location.hostname;
+    const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
 
     if (overrideUrl) {
       return overrideUrl;
@@ -33,16 +34,20 @@
       return windowOverrideUrl;
     }
 
-    if (metaApiBaseUrl) {
-      return metaApiBaseUrl;
-    }
-
     if (window.location.protocol === "file:") {
       return "http://localhost:5000";
     }
 
-    if (hostname === "localhost" || hostname === "127.0.0.1") {
+    if (isLocalHost) {
       return "http://localhost:5000";
+    }
+
+    if (window.location.origin) {
+      return window.location.origin;
+    }
+
+    if (metaApiBaseUrl) {
+      return metaApiBaseUrl;
     }
 
     return window.location.origin;
