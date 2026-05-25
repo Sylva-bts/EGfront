@@ -235,6 +235,13 @@
     return Boolean(headers.Authorization || headers.authorization);
   }
 
+  function createHttpError(message, status) {
+    const error = new Error(message || "Erreur serveur.");
+    error.isHttpResponseError = true;
+    error.status = status;
+    return error;
+  }
+
   async function fetchJson(path, options) {
     const primaryBaseUrl = getApiBaseUrl();
     const baseUrls = [];
@@ -284,21 +291,25 @@
             if (/token invalide|authentification|reconnecter|session/i.test(authFailureMessage)) {
               clearToken();
             }
-            throw new Error(authFailureMessage);
+            throw createHttpError(authFailureMessage, response.status);
           }
 
           const errorMessage = payload.message || payload.error || "Erreur serveur.";
           if (response.status === 401 && /token requis|acces refuse|accès refusé/i.test(errorMessage)) {
-            throw new Error("Connexion requise. Veuillez vous reconnecter.");
+            throw createHttpError("Connexion requise. Veuillez vous reconnecter.", response.status);
           }
 
-          throw new Error(errorMessage);
+          throw createHttpError(errorMessage, response.status);
         }
 
         return normalizePayload(path, payload);
       } catch (error) {
         if (authFailureMessage) {
           throw new Error(authFailureMessage);
+        }
+
+        if (error && error.isHttpResponseError) {
+          throw error;
         }
 
         if (baseUrl === baseUrls[baseUrls.length - 1]) {
