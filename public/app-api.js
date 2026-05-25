@@ -51,7 +51,7 @@
   function addBaseUrlCandidate(baseUrls, candidate) {
     const normalizedCandidate = normalizeBaseUrl(candidate);
 
-    if (!baseUrls.includes(normalizedCandidate)) {
+    if (normalizedCandidate && !baseUrls.includes(normalizedCandidate)) {
       baseUrls.push(normalizedCandidate);
     }
   }
@@ -245,11 +245,14 @@
   async function fetchJson(path, options) {
     const primaryBaseUrl = getApiBaseUrl();
     const baseUrls = [];
+    const explicitApiBaseUrl = readMetaApiBaseUrl() || readWindowApiBaseUrl() || normalizeBaseUrl(localStorage.getItem("ghostrApiBaseUrl"));
     const configuredRenderUrl = readMetaApiBaseUrl() || DEFAULT_RENDER_API_BASE_URL;
 
     addBaseUrlCandidate(baseUrls, primaryBaseUrl);
 
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
+    if (explicitApiBaseUrl) {
+      addBaseUrlCandidate(baseUrls, explicitApiBaseUrl);
+    } else if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
       addBaseUrlCandidate(baseUrls, "http://localhost:5000");
       addBaseUrlCandidate(baseUrls, "http://localhost:3000");
       addBaseUrlCandidate(baseUrls, configuredRenderUrl);
