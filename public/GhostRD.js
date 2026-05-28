@@ -465,8 +465,8 @@ function start() {
       ghostPos += 0.05; // vitesse de déplacement du fantôme
       Ghost.style.right = ghostPos + "px";
     }
-if (ghostPos >= 150) {
-      ghostPos = 150;
+if (ghostPos >= 100) {
+      ghostPos = 100;
       Ghost.style.right = ghostPos + "px";
     }
     if (coteIni >= pouuf && window.bouclierActive) {
@@ -478,7 +478,7 @@ if (ghostPos >= 150) {
     if (coteIni >= pouuf) {
       clearInterval(gameInterval);
       showSecondChanceWindow();
-      ghostPos = 250;
+      ghostPos = 230;
       Ghost.style.right = ghostPos + "px";
       Stick.style.pointerEvents = "none";
       Stick.style.opacity = "0.5";

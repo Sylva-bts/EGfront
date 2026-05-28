@@ -1883,6 +1883,10 @@ input[type="number"] {
     margin: 0;
   }
 
+  .stick {
+    left: -24px;
+  }
+
   .Ghost {
     position: absolute;
     right: clamp(10px, 3vw, 22px);
@@ -1951,6 +1955,10 @@ input[type="number"] {
     width: clamp(132px, 38vw, 152px);
   }
 
+  .stick {
+    left: -42px;
+  }
+
   .Ghost {
     right: 8px;
     bottom: 12px;
@@ -2000,6 +2008,10 @@ input[type="number"] {
   .stick1,
   .stick {
     width: 142px;
+  }
+
+  .stick {
+    left: -48px;
   }
 
   .Ghost {

@@ -35,19 +35,19 @@
     }
 
     if (window.location.protocol === "file:") {
-      return "http://localhost:5000";
+      return "http://localhost:3000";
     }
 
     if (isLocalHost) {
-      return "http://localhost:5000";
-    }
-
-    if (window.location.origin) {
-      return window.location.origin;
+      return window.location.origin || "http://localhost:3000";
     }
 
     if (metaApiBaseUrl) {
       return metaApiBaseUrl;
+    }
+
+    if (window.location.origin) {
+      return window.location.origin;
     }
 
     return window.location.origin;
@@ -258,8 +258,8 @@
     if (explicitApiBaseUrl) {
       addBaseUrlCandidate(baseUrls, explicitApiBaseUrl);
     } else if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
-      addBaseUrlCandidate(baseUrls, "http://localhost:5000");
       addBaseUrlCandidate(baseUrls, "http://localhost:3000");
+      addBaseUrlCandidate(baseUrls, "http://localhost:5000");
       addBaseUrlCandidate(baseUrls, configuredRenderUrl);
     } else {
       if (primaryBaseUrl !== configuredRenderUrl) {

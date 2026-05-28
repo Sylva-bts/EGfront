@@ -214,7 +214,7 @@ header h4 {
 }
 
 .stick {
-  margin-right: 125px;
+  margin-right: 250px;
   transform: scaleX(-1);
 }
 
@@ -577,7 +577,7 @@ input[type="number"]:focus {
   }
 
   .stick {
-    margin-right: 10px;
+    margin-right: 300px;
 
   }
   .stick1 {
@@ -625,7 +625,7 @@ input[type="number"]:focus {
     min-width: 0;
   }
   .stick {
-    margin-right: 0;
+    margin-right: 300px;
   }
 }
 

@@ -86,14 +86,20 @@
   }
 
   async function adminFetch(path, options = {}) {
-    const response = await fetch(`${window.AppApi.getApiBaseUrl()}${path}`, {
+    const requestOptions = {
       ...options,
       headers: {
         "Content-Type": "application/json",
         ...(options.headers || {}),
         ...(state.token ? { Authorization: `Bearer ${state.token}` } : {})
       }
-    });
+    };
+
+    if (window.AppApi?.fetchJson) {
+      return window.AppApi.fetchJson(path, requestOptions);
+    }
+
+    const response = await fetch(`${window.AppApi.getApiBaseUrl()}${path}`, requestOptions);
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.message || "Erreur serveur");
     return payload;
