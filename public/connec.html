@@ -6,6 +6,7 @@
    <title>Connexion | Escape the Ghost</title>
    <link rel="stylesheet" href="GhostR.css">
    <meta name="ghostr-api-base-url" content="https://egback-1.onrender.com">
+   <meta name="ghostr-google-client-id" content="803396761586-r1uaco3d09mrqnn5a0cp53utdkkhgl5l.apps.googleusercontent.com">
    <style>
       :root {
          --bg-base: #140a1f;
@@ -276,8 +277,18 @@
 
    <script src="app-api.js?v=20260530-api-base"></script>
    <script>
-      const GOOGLE_CLIENT_ID = '803396761586-r1uaco3d09mrqnn5a0cp53utdkkhgl5l.apps.googleusercontent.com';
+      const GOOGLE_CLIENT_ID_FALLBACK = '803396761586-r1uaco3d09mrqnn5a0cp53utdkkhgl5l.apps.googleusercontent.com';
       let googleAuthInitialized = false;
+
+      function normalizeGoogleClientId(value) {
+          return String(value || '').trim();
+      }
+
+      function getGoogleClientId() {
+          const metaValue = document.querySelector('meta[name="ghostr-google-client-id"]')?.getAttribute('content');
+          const windowValue = window.__APP_CONFIG__?.googleClientId;
+          return normalizeGoogleClientId(metaValue) || normalizeGoogleClientId(windowValue) || GOOGLE_CLIENT_ID_FALLBACK;
+      }
 
       function renderMessage(message, state) {
           const messageDiv = document.getElementById('message');
@@ -323,8 +334,14 @@
           }
 
           googleAuthInitialized = true;
+          const clientId = getGoogleClientId();
+          if (!clientId) {
+              renderMessage('Configuration Google manquante.', 'error');
+              return;
+          }
+
           window.google.accounts.id.initialize({
-              client_id: GOOGLE_CLIENT_ID,
+              client_id: clientId,
               callback: authenticateWithGoogle,
               auto_select: false,
               cancel_on_tap_outside: false

@@ -355,7 +355,7 @@ async function refreshAccountFromServer(showStatus = true) {
   }
 
   try {
-    const payload = await powerApiFetch("/api/me", {
+    const payload = await powerApiFetch("/api/auth/profile", {
       method: "GET",
       headers: getPowerHeaders()
     });
