@@ -89,12 +89,12 @@
       return "http://localhost:3000";
     }
 
-    if (isLocalHost) {
-      return window.location.origin || "http://localhost:3000";
-    }
-
     if (metaApiBaseUrl) {
       return metaApiBaseUrl;
+    }
+
+    if (isLocalHost) {
+      return window.location.origin || "http://localhost:3000";
     }
 
     if (window.location.origin) {
