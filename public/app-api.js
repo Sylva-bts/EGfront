@@ -19,8 +19,59 @@
     return normalizeBaseUrl(window.__APP_CONFIG__ && window.__APP_CONFIG__.apiBaseUrl);
   }
 
+  function getStorageAreas() {
+    const areas = [];
+    for (const name of ["localStorage", "sessionStorage"]) {
+      try {
+        if (window[name]) {
+          areas.push(window[name]);
+        }
+      } catch {
+        // Storage can throw on access in restrictive browser modes.
+      }
+    }
+    return areas;
+  }
+
+  function readStoredValue(key) {
+    for (const storage of getStorageAreas()) {
+      try {
+        const value = storage.getItem(key);
+        if (value) {
+          return value;
+        }
+      } catch {
+        // Some browser privacy modes can block one storage area; try the next one.
+      }
+    }
+    return "";
+  }
+
+  function writeStoredValue(key, value) {
+    let stored = false;
+    for (const storage of getStorageAreas()) {
+      try {
+        storage.setItem(key, value);
+        stored = true;
+      } catch {
+        // Keep trying other storage areas.
+      }
+    }
+    return stored;
+  }
+
+  function removeStoredValue(key) {
+    for (const storage of getStorageAreas()) {
+      try {
+        storage.removeItem(key);
+      } catch {
+        // Ignore blocked storage.
+      }
+    }
+  }
+
   function getApiBaseUrl() {
-    const overrideUrl = normalizeBaseUrl(localStorage.getItem("ghostrApiBaseUrl"));
+    const overrideUrl = normalizeBaseUrl(readStoredValue("ghostrApiBaseUrl"));
     const windowOverrideUrl = readWindowApiBaseUrl();
     const metaApiBaseUrl = readMetaApiBaseUrl();
     const hostname = window.location.hostname;
@@ -63,13 +114,13 @@
 
   function getToken() {
     for (const key of TOKEN_KEYS) {
-      const value = normalizeToken(localStorage.getItem(key));
+      const value = normalizeToken(readStoredValue(key));
       if (value && isJwtLikeToken(value)) {
         return value;
       }
 
       if (value) {
-        localStorage.removeItem(key);
+        removeStoredValue(key);
       }
     }
     return "";
@@ -88,9 +139,9 @@
 
     TOKEN_KEYS.forEach((key) => {
       if (normalizedToken && isJwtLikeToken(normalizedToken)) {
-        localStorage.setItem(key, normalizedToken);
+        writeStoredValue(key, normalizedToken);
       } else {
-        localStorage.removeItem(key);
+        removeStoredValue(key);
       }
     });
 
@@ -100,14 +151,14 @@
   }
 
   function clearToken() {
-    TOKEN_KEYS.forEach((key) => localStorage.removeItem(key));
+    TOKEN_KEYS.forEach((key) => removeStoredValue(key));
   }
 
   function getUser() {
     try {
-      return JSON.parse(localStorage.getItem(USER_KEY) || "{}") || {};
+      return JSON.parse(readStoredValue(USER_KEY) || "{}") || {};
     } catch {
-      localStorage.removeItem(USER_KEY);
+      removeStoredValue(USER_KEY);
       return {};
     }
   }
@@ -115,7 +166,7 @@
   function setUser(user) {
     const safeUser = user && typeof user === "object" ? user : {};
     if (safeUser.email || safeUser.username || safeUser.id) {
-      localStorage.setItem(USER_KEY, JSON.stringify({
+      writeStoredValue(USER_KEY, JSON.stringify({
         id: safeUser.id || safeUser._id || "",
         username: safeUser.username || "",
         email: safeUser.email || ""
@@ -123,7 +174,7 @@
       return;
     }
 
-    localStorage.removeItem(USER_KEY);
+    removeStoredValue(USER_KEY);
   }
 
   function isPhantomSignupBalance(user) {
@@ -191,23 +242,23 @@
   }
 
   function getReferralCode() {
-    return String(localStorage.getItem(REFERRAL_KEY) || "").trim().toUpperCase();
+    return String(readStoredValue(REFERRAL_KEY) || "").trim().toUpperCase();
   }
 
   function setReferralCode(code) {
     const normalizedCode = String(code || "").trim().toUpperCase();
 
     if (normalizedCode) {
-      localStorage.setItem(REFERRAL_KEY, normalizedCode);
+      writeStoredValue(REFERRAL_KEY, normalizedCode);
       return normalizedCode;
     }
 
-    localStorage.removeItem(REFERRAL_KEY);
+    removeStoredValue(REFERRAL_KEY);
     return "";
   }
 
   function clearReferralCode() {
-    localStorage.removeItem(REFERRAL_KEY);
+    removeStoredValue(REFERRAL_KEY);
   }
 
   function authHeaders(extraHeaders) {
@@ -235,6 +286,18 @@
     return status === 401 && /token|authentification|reconnecter|session|connexion requise|acces refuse|accès refusé/i.test(message);
   }
 
+  function normalizeAuthMessage(message) {
+    return String(message || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  }
+
+  function isMissingTokenError(status, payload) {
+    const message = normalizeAuthMessage(payload && (payload.message || payload.error));
+    return status === 401 && message.includes("token requis");
+  }
+
   function hasAuthorizationHeader(options) {
     const headers = options && options.headers ? options.headers : {};
     return Boolean(headers.Authorization || headers.authorization);
@@ -250,7 +313,7 @@
   async function fetchJson(path, options) {
     const primaryBaseUrl = getApiBaseUrl();
     const baseUrls = [];
-    const explicitApiBaseUrl = readMetaApiBaseUrl() || readWindowApiBaseUrl() || normalizeBaseUrl(localStorage.getItem("ghostrApiBaseUrl"));
+    const explicitApiBaseUrl = readMetaApiBaseUrl() || readWindowApiBaseUrl() || normalizeBaseUrl(readStoredValue("ghostrApiBaseUrl"));
     const configuredRenderUrl = readMetaApiBaseUrl() || DEFAULT_RENDER_API_BASE_URL;
 
     addBaseUrlCandidate(baseUrls, primaryBaseUrl);
@@ -290,6 +353,10 @@
           }
 
           const canRetryRenderFallback = baseUrl !== configuredRenderUrl && baseUrls.includes(configuredRenderUrl);
+          if (isMissingTokenError(response.status, payload) && canRetryRenderFallback) {
+            continue;
+          }
+
           if (response.status >= 500 && canRetryRenderFallback) {
             continue;
           }

@@ -305,7 +305,7 @@
       </section>
    </div>
 
-   <script src="app-api.js"></script>
+   <script src="app-api.js?v=20260530-auth"></script>
    <script>
       const GOOGLE_CLIENT_ID = '803396761586-r1uaco3d09mrqnn5a0cp53utdkkhgl5l.apps.googleusercontent.com';
       let googleAuthInitialized = false;
@@ -394,9 +394,16 @@
                   body: JSON.stringify({ username, email, password, referralCode })
               });
 
-              if (data.token) {
-                  window.AppApi.setToken(data.token, data.user);
+              if (!data.token) {
+                  throw new Error('Inscription incomplete: token absent dans la reponse serveur.');
               }
+
+              window.AppApi.setToken(data.token, data.user);
+
+              if (!window.AppApi.getToken()) {
+                  throw new Error('Inscription impossible: le navigateur ne conserve pas la session.');
+              }
+
               window.AppApi.clearReferralCode();
               renderMessage(data.message, 'success');
 

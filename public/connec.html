@@ -274,7 +274,7 @@
       </section>
    </div>
 
-   <script src="app-api.js"></script>
+   <script src="app-api.js?v=20260530-auth"></script>
    <script>
       const GOOGLE_CLIENT_ID = '803396761586-r1uaco3d09mrqnn5a0cp53utdkkhgl5l.apps.googleusercontent.com';
       let googleAuthInitialized = false;
@@ -354,7 +354,16 @@
                   body: JSON.stringify({ email, password })
               });
 
+              if (!data.token) {
+                  throw new Error('Connexion incomplete: token absent dans la reponse serveur.');
+              }
+
               window.AppApi.setToken(data.token, data.user);
+
+              if (!window.AppApi.getToken()) {
+                  throw new Error('Connexion impossible: le navigateur ne conserve pas la session.');
+              }
+
               renderMessage(data.message, 'success');
 
               setTimeout(() => {
