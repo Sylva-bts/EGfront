@@ -321,8 +321,7 @@
 
           try {
               const referralCode = document.getElementById('referral_code').value.trim().toUpperCase();
-              const apiBaseUrl = window.AppApi.getApiBaseUrl();
-              const googleAuthResponse = await fetch(`${apiBaseUrl}/api/auth/google`, {
+              const data = await window.AppApi.fetchJson('/api/auth/google', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
@@ -330,13 +329,9 @@
                       referralCode
                   })
               });
-              const data = await googleAuthResponse.json().catch(() => ({}));
 
-              if (!googleAuthResponse.ok) {
-                  if (googleAuthResponse.status === 404) {
-                      throw new Error('Route Google absente sur le backend. Deployez aussi le backend Render.');
-                  }
-                  throw new Error(data.message || data.error || 'Inscription Google impossible.');
+              if (!data.token) {
+                  throw new Error('Inscription Google incomplete: token absent dans la reponse serveur.');
               }
 
               window.AppApi.setToken(data.token, data.user);
