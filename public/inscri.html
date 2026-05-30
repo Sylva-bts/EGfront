@@ -321,14 +321,23 @@
 
           try {
               const referralCode = document.getElementById('referral_code').value.trim().toUpperCase();
-              const data = await window.AppApi.fetchJson('/api/auth/google', {
+              const apiBaseUrl = window.AppApi.getApiBaseUrl();
+              const googleAuthResponse = await fetch(`${apiBaseUrl}/api/auth/google`, {
                   method: 'POST',
-                  headers: window.AppApi.authHeaders(),
+                  headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                       credential: response.credential,
                       referralCode
                   })
               });
+              const data = await googleAuthResponse.json().catch(() => ({}));
+
+              if (!googleAuthResponse.ok) {
+                  if (googleAuthResponse.status === 404) {
+                      throw new Error('Route Google absente sur le backend. Deployez aussi le backend Render.');
+                  }
+                  throw new Error(data.message || data.error || 'Inscription Google impossible.');
+              }
 
               window.AppApi.setToken(data.token, data.user);
               window.AppApi.clearReferralCode();
