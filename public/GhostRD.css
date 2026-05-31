@@ -988,3 +988,60 @@ input[type="number"] {
     padding: 0.3rem;
   }
 }
+
+/* Demo responsive boost */
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cadreJeux,
+.commandes,
+.historique {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 22px 58px rgba(8, 4, 18, 0.32);
+}
+
+.btn-mise,
+.demarer,
+.retirer,
+.btn-pouvoir {
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+input[type="number"] {
+  min-width: 0;
+}
+
+@media (max-width: 980px) {
+  header {
+    gap: 0.8rem;
+    padding-inline: 1rem;
+  }
+
+  header h4 {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+  }
+
+  .cadreJeux {
+    width: min(100% - 16px, 760px);
+  }
+}
+
+@media (max-width: 560px) {
+  header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .cadreJeux {
+    width: min(100% - 10px, 680px);
+    border-radius: 18px;
+  }
+
+  .commandes {
+    grid-template-columns: 1fr;
+  }
+}

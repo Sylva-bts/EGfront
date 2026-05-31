@@ -9,6 +9,17 @@ let miseEl = document.getElementById('Mise');
 let historyEl = document.getElementById('Story');
 const ghostDefaultSrc = Ghost.getAttribute('src');
 const ghostFrozenSrc = 'ima/Gost_froid.png';
+const FAHHH_PUMP_AUDIO_SRC = 'audio/fahhh-pump-sound.mp3';
+const MONEY_AUDIO_SRC = 'audio/money-soundfx.mp3';
+const PSYCHO_AUDIO_SRC = 'audio/psycho.mp3';
+
+const fahhhPumpAudio = new Audio(FAHHH_PUMP_AUDIO_SRC);
+const moneyAudio = new Audio(MONEY_AUDIO_SRC);
+const psychoAudio = new Audio(PSYCHO_AUDIO_SRC);
+
+fahhhPumpAudio.volume = 0.95;
+moneyAudio.volume = 0.9;
+psychoAudio.volume = 0.72;
 
 let coteIni = 1.0;
 let vitesse = 1010;
@@ -22,6 +33,7 @@ let secChanceUsed = false;
 let secChanceAvailable = false;
 let secondChanceTimeoutId;
 let endGameTimeoutId;
+let psychoTimeoutId;
 let visionUsed = false;
 let bouclierActive = false;
 let bouclierTimeoutId;
@@ -41,6 +53,7 @@ let mise = 0;
 let gameInterval;
 let ghostPos = 0;
 let notificationTimeoutId;
+const MIN_BET_AMOUNT = 1;
 
 // Initialiser le localStorage s'il n'existe pas
 if (!localStorage.getItem('gameHistory')) {
@@ -50,6 +63,43 @@ if (!localStorage.getItem('gameHistory')) {
 Ghost.style.display = "none";
 Stick.style.display = "none";
 Stick1.style.display = "block";
+
+function playAudio(audio, { restart = true } = {}) {
+  if (!audio) return;
+
+  if (restart) {
+    audio.currentTime = 0;
+  }
+
+  audio.play().catch(() => {});
+}
+
+function stopAudio(audio, { reset = false } = {}) {
+  if (!audio) return;
+
+  audio.pause();
+  if (reset) {
+    audio.currentTime = 0;
+  }
+}
+
+function clearPsychoCue() {
+  if (psychoTimeoutId) {
+    clearTimeout(psychoTimeoutId);
+    psychoTimeoutId = undefined;
+  }
+  stopAudio(psychoAudio, { reset: true });
+}
+
+function schedulePsychoCue() {
+  clearPsychoCue();
+  psychoTimeoutId = setTimeout(() => {
+    psychoTimeoutId = undefined;
+    if (jeuEnCours) {
+      playAudio(psychoAudio);
+    }
+  }, 20000);
+}
 
 
 // pouvoirs
@@ -162,6 +212,7 @@ function SecondeChance() {
     clearTimeout(endGameTimeoutId);
     endGameTimeoutId = undefined;
   }
+  clearPsychoCue();
 
   secChanceBtn.disabled = true;
   secChanceBtn.style.opacity = '0.5';
@@ -327,7 +378,7 @@ function showGameNotification(message, type = 'info') {
 
   notificationTimeoutId = setTimeout(() => {
     toast.classList.remove('show');
-  }, 1800);
+  }, 2000);
 }
 
 function notifyShieldStatus(status) {
@@ -383,10 +434,10 @@ function Miser() {
   mise = Number(miseEl.value);
   let solde = Number(soldeSpan.textContent);
 
-  if (mise < 2) {
-    alert("Trop petit ! 🤷");
+  if (!Number.isFinite(mise) || mise < MIN_BET_AMOUNT) {
+    showGameNotification('Mise minimale: 1.00 USD', 'warn');
   } else if (mise > solde) {
-    alert("Solde insuffisant 💰❓");
+    showGameNotification('Solde insuffisant', 'warn');
   } else {
     let newBalance = solde - mise;
     soldeSpan.textContent = newBalance.toFixed(2);
@@ -396,7 +447,7 @@ function Miser() {
 
 function GameOn() {
   clearInterval(gameInterval);
-  alert("Tu as misé !!");
+  showGameNotification('Mise acceptee', 'info');
   secChanceBtn.style.display = 'none'; // Masquer le bouton Seconde Chance au début de chaque partie
 
   // Réinitialiser l'état de la seconde chance
@@ -410,6 +461,7 @@ function GameOn() {
     clearTimeout(endGameTimeoutId);
     endGameTimeoutId = undefined;
   }
+  clearPsychoCue();
 
   coteIni = 1.0;
   vitesse = 1010;
@@ -445,6 +497,7 @@ function GameOn() {
   console.log("Perd à la cote : ×" + pouuf.toFixed(2));
 
   updateCote(coteIni);
+  schedulePsychoCue();
   start();            // démarre animation Ghost vs Stickman
   augmenterCote();    // démarre la montée de cote
 }
@@ -477,6 +530,8 @@ if (ghostPos >= 100) {
     }
     if (coteIni >= pouuf) {
       clearInterval(gameInterval);
+      clearPsychoCue();
+      playAudio(fahhhPumpAudio);
       showSecondChanceWindow();
       ghostPos = 230;
       Ghost.style.right = ghostPos + "px";
@@ -492,6 +547,7 @@ if (ghostPos >= 100) {
         jeuEnCours = false;
         // Si l'utilisateur n'a pas utilisé la seconde chance, enregistrer la perte
         if (!secChanceUsed) {
+          showGameNotification('Domage reessayer', 'warn');
           saveTransaction('Perte', -mise, coteIni);
         }
       }, 5000);
@@ -530,6 +586,7 @@ function retrait() {
   if (!jeuEnCours) return;
 
   jeuEnCours = false;
+  clearPsychoCue();
   clearInterval(gameInterval);
   if (bouclierTimeoutId) {
     clearTimeout(bouclierTimeoutId);
@@ -542,12 +599,12 @@ function retrait() {
   Stick.style.display = "none";
   Stick1.style.display = "block";
 
-  alert("Tu as retiré à ×" + coteIni.toFixed(2));
-
   let gain = mise * coteIni;
   let solde = Number(soldeSpan.textContent);
   solde += gain;
   soldeSpan.textContent = solde.toFixed(2);
+  playAudio(moneyAudio);
+  showGameNotification('Félicitation ! vous avez gagner ' + gain.toFixed(2) + ' USD', 'info');
   
   // Enregistrer la transaction dans le localStorage
   saveTransaction('Gain', gain, coteIni);

@@ -2324,3 +2324,111 @@ input[type="number"] {
     gap: 0.28rem;
   }
 }
+
+/* Site polish boost */
+button,
+a,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+.header-btn,
+.btn-mise,
+.demarer,
+.retirer,
+.btn-pouvoir {
+  touch-action: manipulation;
+}
+
+.cadreJeux,
+.commandes,
+.world-card,
+.historique,
+.profile-panel {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 22px 58px rgba(8, 4, 18, 0.32);
+}
+
+input[type="number"],
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  min-width: 0;
+}
+
+.header-actions .header-btn,
+.btn-mise,
+.demarer,
+.retirer {
+  min-height: 44px;
+}
+
+.cadreJeux {
+  width: min(100% - 18px, 680px);
+}
+
+.game-grid {
+  align-items: stretch;
+}
+
+@media (max-width: 980px) {
+  header {
+    gap: 0.8rem;
+    padding-inline: 1rem;
+  }
+
+  header h4 {
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+  }
+
+  .header-actions {
+    gap: 0.45rem;
+  }
+
+  .header-btn {
+    padding: 0.7rem 0.9rem;
+  }
+
+  .game-grid,
+  .world-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  header {
+    position: sticky;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .header-actions .header-btn {
+    width: 100%;
+    padding-inline: 0.55rem;
+    font-size: 0.86rem;
+  }
+
+  .header-icon-btn {
+    width: 100%;
+    height: 44px;
+  }
+
+  .cadreJeux {
+    width: min(100% - 10px, 760px);
+    border-radius: 18px;
+  }
+
+  .transaction-info,
+  .world-feed-top,
+  .world-chat-top {
+    min-width: 0;
+  }
+}

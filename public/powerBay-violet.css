@@ -266,21 +266,25 @@ body::before {
 
 .shop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
 }
 
 .power-option {
   position: relative;
-  padding: 24px 22px;
+  min-height: 430px;
+  padding: 28px 24px 24px;
   overflow: hidden;
-  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(192, 132, 252, 0.18), transparent 30%),
+    linear-gradient(145deg, rgba(12, 16, 34, 0.86), rgba(44, 18, 74, 0.72));
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
 }
 
 .power-option:hover {
-  transform: translateY(-4px);
-  border-color: rgba(192, 132, 252, 0.4);
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.28);
+  transform: translateY(-6px);
+  border-color: rgba(192, 132, 252, 0.58);
+  box-shadow: 0 30px 58px rgba(0, 0, 0, 0.34), 0 0 34px rgba(192, 132, 252, 0.14);
 }
 
 .power-option::before {
@@ -298,22 +302,37 @@ body::before {
 .Vision::before { background-color: #fbbf24; }
 
 .power-icon {
-  width: 58px;
-  height: 58px;
-  margin-bottom: 14px;
+  width: 104px;
+  height: 104px;
+  margin-bottom: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 1.5rem;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.2), transparent 34%),
+    rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 3rem;
   color: var(--accent-strong);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 18px 34px rgba(0, 0, 0, 0.24),
+    0 0 28px rgba(192, 132, 252, 0.16);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.power-option:hover .power-icon {
+  transform: scale(1.06) rotate(-2deg);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 22px 42px rgba(0, 0, 0, 0.28),
+    0 0 36px rgba(192, 132, 252, 0.24);
 }
 
 .power-option strong {
   display: block;
-  font-size: 1.42rem;
+  font-size: 1.55rem;
   margin-bottom: 10px;
   color: #fff;
 }
@@ -529,10 +548,10 @@ body::before {
   }
 
   .power-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 15px;
-    font-size: 1.25rem;
+    width: 78px;
+    height: 78px;
+    border-radius: 22px;
+    font-size: 2.15rem;
   }
 
   .power-option strong {

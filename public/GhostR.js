@@ -27,15 +27,24 @@ const ghostFrozenSrc = "ima/Gost_froid.png";
 const APPARITION_AUDIO_SRC = "audio/ApparutionEffet.mpeg";
 const PERTE_AUDIO_SRC = "audio/perteEffet.mpeg";
 const JEU_MUSIQUE_SRC = "audio/jeuMusique.mpeg";
+const FAHHH_PUMP_AUDIO_SRC = "audio/fahhh-pump-sound.mp3";
+const MONEY_AUDIO_SRC = "audio/money-soundfx.mp3";
+const PSYCHO_AUDIO_SRC = "audio/psycho.mp3";
 
 const apparitionAudio = new Audio(APPARITION_AUDIO_SRC);
 const perteAudio = new Audio(PERTE_AUDIO_SRC);
 const jeuMusiqueAudio = new Audio(JEU_MUSIQUE_SRC);
+const fahhhPumpAudio = new Audio(FAHHH_PUMP_AUDIO_SRC);
+const moneyAudio = new Audio(MONEY_AUDIO_SRC);
+const psychoAudio = new Audio(PSYCHO_AUDIO_SRC);
 
 jeuMusiqueAudio.loop = true;
 jeuMusiqueAudio.volume = 0.35;
 apparitionAudio.volume = 0.8;
 perteAudio.volume = 0.9;
+fahhhPumpAudio.volume = 0.95;
+moneyAudio.volume = 0.9;
+psychoAudio.volume = 0.72;
 
 let coteIni = 1.0;
 let vitesse = 1070;
@@ -48,6 +57,7 @@ let secChanceUsed = false;
 let secChanceAvailable = false;
 let secondChanceTimeoutId;
 let endGameTimeoutId;
+let psychoTimeoutId;
 let visionUsed = false;
 let bouclierActive = false;
 let bouclierTimeoutId;
@@ -95,6 +105,7 @@ const WORLD_CHAT_KEY = "ghostrWorldChat";
 const WORLD_ACTIVITY_LIMIT = 20;
 const WORLD_CHAT_LIMIT = 40;
 const WORLD_CHAT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
+const MIN_BET_AMOUNT = 1;
 
 if (!localStorage.getItem("gameHistory")) {
   localStorage.setItem("gameHistory", JSON.stringify([]));
@@ -136,6 +147,24 @@ function stopAudio(audio, { reset = false } = {}) {
   if (reset) {
     audio.currentTime = 0;
   }
+}
+
+function clearPsychoCue() {
+  if (psychoTimeoutId) {
+    clearTimeout(psychoTimeoutId);
+    psychoTimeoutId = undefined;
+  }
+  stopAudio(psychoAudio, { reset: true });
+}
+
+function schedulePsychoCue() {
+  clearPsychoCue();
+  psychoTimeoutId = setTimeout(() => {
+    psychoTimeoutId = undefined;
+    if (jeuEnCours) {
+      playAudio(psychoAudio);
+    }
+  }, 20000);
 }
 
 function getDefaultRuntimeConfig() {
@@ -711,6 +740,7 @@ async function SecondeChance() {
     clearTimeout(endGameTimeoutId);
     endGameTimeoutId = undefined;
   }
+  clearPsychoCue();
 
   refreshPowerButtons();
   GameOn();
@@ -870,7 +900,7 @@ function showGameNotification(message, type = "info") {
 
   notificationTimeoutId = setTimeout(() => {
     toast.classList.remove("show");
-  }, 1800);
+  }, 2000);
 }
 
 function notifyShieldStatus(status) {
@@ -944,18 +974,18 @@ async function Miser() {
   const solde = getDisplayedBalance();
 
   if (!powerState.token) {
-    alert("Connectez-vous d'abord depuis connec.html");
+    showGameNotification("Connexion requise pour miser", "warn");
     setPowerStatus("Session requise pour jouer.", true);
     return;
   }
 
-  if (!Number.isFinite(mise) || mise < 2) {
-    alert("Mise minimale: 2");
+  if (!Number.isFinite(mise) || mise < MIN_BET_AMOUNT) {
+    showGameNotification("Mise minimale: 1.00 USD", "warn");
     return;
   }
 
   if (mise > solde) {
-    alert("Solde insuffisant");
+    showGameNotification("Solde insuffisant", "warn");
     return;
   }
 
@@ -974,7 +1004,7 @@ async function Miser() {
     await refreshWorldPanels();
     GameOn();
   } catch (error) {
-    alert(error.message);
+    showGameNotification(error.message || "Mise impossible", "warn");
     setPowerStatus(error.message, true);
     await refreshAccountFromServer(false);
   } finally {
@@ -984,7 +1014,7 @@ async function Miser() {
 
 function GameOn() {
   clearInterval(gameInterval);
-  alert("Mise acceptee");
+  showGameNotification("Mise acceptee", "info");
 
   secChanceUsed = false;
   secChanceAvailable = false;
@@ -996,6 +1026,7 @@ function GameOn() {
     clearTimeout(endGameTimeoutId);
     endGameTimeoutId = undefined;
   }
+  clearPsychoCue();
 
   coteIni = 1.0;
   vitesse = 1010;
@@ -1019,6 +1050,7 @@ function GameOn() {
 
   pouuf = tirerCote();
   updateCote(coteIni);
+  schedulePsychoCue();
   start();
   augmenterCote();
 }
@@ -1056,8 +1088,10 @@ function start() {
 
     if (coteIni >= pouuf) {
       clearInterval(gameInterval);
+      clearPsychoCue();
       stopAudio(jeuMusiqueAudio, { reset: true });
       playAudio(perteAudio);
+      playAudio(fahhhPumpAudio);
       showSecondChanceWindow();
       ghostPos = 250;
       Ghost.style.right = `${ghostPos}px`;
@@ -1073,6 +1107,7 @@ function start() {
         jeuEnCours = false;
         refreshPowerButtons();
         if (!secChanceUsed) {
+          showGameNotification("Domage reessayer", "warn");
           saveTransaction("Perte", -mise, coteIni);
         }
       }, 5000);
@@ -1112,6 +1147,7 @@ async function retrait() {
   if (!jeuEnCours || cashoutRequestPending) return;
 
   jeuEnCours = false;
+  clearPsychoCue();
   clearInterval(gameInterval);
   stopAudio(jeuMusiqueAudio, { reset: true });
   if (bouclierTimeoutId) {
@@ -1151,11 +1187,12 @@ async function retrait() {
         multiplier: Number(coteIni.toFixed(2))
       });
     }
-    alert(`Retrait valide a x${coteIni.toFixed(2)}`);
     saveTransaction("Gain", gain, coteIni);
+    playAudio(moneyAudio);
+    showGameNotification(`Félicitation ! vous avez gagner ${formatMoney(gain)}`, "info");
     await refreshWorldPanels();
   } catch (error) {
-    alert(error.message);
+    showGameNotification(error.message || "Retrait impossible", "warn");
     setPowerStatus(error.message, true);
     await refreshAccountFromServer(false);
   } finally {

@@ -227,6 +227,24 @@
          .auth-aside,
          .auth-card { padding: 24px 20px; }
       }
+      .auth-layout {
+         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 30px 90px rgba(8, 4, 18, 0.5);
+      }
+      .feature-item,
+      .auth-card,
+      input,
+      .back-link {
+         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      }
+      .submit-btn,
+      .back-link {
+         width: 100%;
+      }
+      @media (max-width: 520px) {
+         .auth-layout { border-radius: 22px; }
+         .auth-aside h1 { font-size: 2.1rem; }
+         .meta-row { align-items: flex-start; flex-direction: column; }
+      }
    </style>
 </head>
 <body>

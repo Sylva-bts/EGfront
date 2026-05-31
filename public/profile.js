@@ -29,11 +29,12 @@ function buildPublicReferralLink(affiliation) {
 
   try {
     const sourceUrl = apiReferralLink ? new URL(apiReferralLink, window.location.origin) : null;
-    const url = new URL(sourceUrl?.pathname || "index.html", window.location.origin);
+    const url = new URL(sourceUrl?.pathname || "inscri.html", window.location.origin);
+    url.pathname = "/inscri.html";
     url.searchParams.set("ref", referralCode);
     return url.href;
   } catch {
-    return `${window.location.origin}/index.html?ref=${encodeURIComponent(referralCode)}`;
+    return `${window.location.origin}/inscri.html?ref=${encodeURIComponent(referralCode)}`;
   }
 }
 
@@ -43,7 +44,7 @@ function fillProfileForm(user) {
   const balanceText = typeof user?.balance === "number" ? `${user.balance.toFixed(2)} USD` : "0.00 USD";
   const affiliation = user?.affiliation || {};
   const affiliateTotalText = typeof affiliation.totalEarned === "number" ? `${affiliation.totalEarned.toFixed(2)} USD` : "0.00 USD";
-  const affiliateLockedText = typeof affiliation.lockedBalance === "number" ? `${affiliation.lockedBalance.toFixed(2)} USD` : "0.00 USD";
+  const affiliateLockedText = "0.00 USD";
   const affiliateWithdrawableText = typeof affiliation.withdrawableBalance === "number" ? `${affiliation.withdrawableBalance.toFixed(2)} USD` : "0.00 USD";
   const referralCode = affiliation.referralCode || "";
   const referralLink = buildPublicReferralLink(affiliation);
@@ -58,7 +59,7 @@ function fillProfileForm(user) {
   profileReferralLinkEl.value = referralLink;
   profileCurrentPasswordEl.value = "";
   profileNewPasswordEl.value = "";
-  profileAffiliateNoteEl.textContent = `Filleuls: ${affiliation.referredUsersCount || 0} | Debloque: ${typeof affiliation.unlockedTotal === "number" ? affiliation.unlockedTotal.toFixed(2) : "0.00"} USD | Reste a jouer: ${typeof affiliation.wageringRemaining === "number" ? affiliation.wageringRemaining.toFixed(2) : "0.00"} USD`;
+  profileAffiliateNoteEl.textContent = `Filleuls: ${affiliation.referredUsersCount || 0} | Bonus filleul: 1.00 USD | Bonus tuteur: 0.50 USD | Fonds disponibles immediatement`;
 
   // Re-apply values after paint so browser autofill does not leave stale values in the wrong field.
   requestAnimationFrame(() => {

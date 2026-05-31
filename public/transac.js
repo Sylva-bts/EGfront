@@ -11,6 +11,9 @@
   };
 
   const MIN_WITHDRAWAL = 5;
+  const HIDDEN_TRANSACTION_TYPES = new Set(["game_bet"]);
+  let withdrawMessageTimeoutId = null;
+  let financeToastTimeoutId = null;
 
   const els = {
     userBalance: document.getElementById("user-balance"),
@@ -46,7 +49,6 @@
     deposit: "Depot",
     withdraw: "Retrait",
     power_purchase: "Achat pouvoir",
-    game_bet: "Mise",
     game_cashout: "Gain",
     affiliate_credit: "Affiliation"
   };
@@ -94,7 +96,7 @@
   }
 
   function getTransactionSign(transaction) {
-    if (transaction.type === "withdraw" || transaction.type === "game_bet" || transaction.type === "power_purchase") {
+    if (transaction.type === "withdraw" || transaction.type === "power_purchase") {
       return "-";
     }
 
@@ -105,6 +107,37 @@
     if (!element) return;
     element.textContent = message || "";
     element.style.color = isError ? "#ff8c8c" : "";
+
+    if (element === els.withdrawFeedback && message) {
+      showFinanceToast(message, isError ? "error" : "success");
+      if (withdrawMessageTimeoutId) {
+        clearTimeout(withdrawMessageTimeoutId);
+      }
+      withdrawMessageTimeoutId = setTimeout(() => {
+        element.textContent = "";
+        element.style.color = "";
+      }, 2000);
+    }
+  }
+
+  function showFinanceToast(message, type = "success") {
+    let toast = document.querySelector(".finance-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.className = "finance-toast";
+      document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.className = `finance-toast ${type}`;
+    requestAnimationFrame(() => toast.classList.add("show"));
+
+    if (financeToastTimeoutId) {
+      clearTimeout(financeToastTimeoutId);
+    }
+    financeToastTimeoutId = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2000);
   }
 
   function setDepositStatus(status) {
@@ -158,14 +191,20 @@
   }
 
   function renderTransactions(transactions, pagination) {
-    renderHistorySummary(transactions, pagination);
+    const visibleTransactions = transactions.filter((transaction) => !HIDDEN_TRANSACTION_TYPES.has(transaction.type));
+    const visiblePagination = {
+      ...(pagination || {}),
+      total: typeof pagination?.total === "number" ? Math.max(0, pagination.total - (transactions.length - visibleTransactions.length)) : visibleTransactions.length
+    };
 
-    if (!transactions.length) {
+    renderHistorySummary(visibleTransactions, visiblePagination);
+
+    if (!visibleTransactions.length) {
       renderHistoryEmpty("Aucune transaction pour le moment.");
       return;
     }
 
-    els.transactionList.innerHTML = transactions.map((transaction) => {
+    els.transactionList.innerHTML = visibleTransactions.map((transaction) => {
       const type = typeLabels[transaction.type] || transaction.type || "Transaction";
       const status = statusLabels[transaction.status] || transaction.status || "--";
       const sign = getTransactionSign(transaction);
