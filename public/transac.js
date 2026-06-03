@@ -11,7 +11,7 @@
   };
 
   const MIN_WITHDRAWAL = 5;
-  const HIDDEN_TRANSACTION_TYPES = new Set(["game_bet"]);
+  const VISIBLE_TRANSACTION_TYPES = new Set(["deposit", "withdraw", "power_purchase"]);
   let withdrawMessageTimeoutId = null;
   let financeToastTimeoutId = null;
 
@@ -42,15 +42,14 @@
     historyFeedback: document.getElementById("history-feedback"),
     historyTotalCount: document.getElementById("history-total-count"),
     historyLastStatus: document.getElementById("history-last-status"),
-    historyLastAmount: document.getElementById("history-last-amount")
+    historyLastAmount: document.getElementById("history-last-amount"),
+    contactMailBtn: document.getElementById("contact-mail-btn")
   };
 
   const typeLabels = {
     deposit: "Depot",
     withdraw: "Retrait",
-    power_purchase: "Achat pouvoir",
-    game_cashout: "Gain",
-    affiliate_credit: "Affiliation"
+    power_purchase: "Achat pouvoir"
   };
 
   const statusLabels = {
@@ -191,7 +190,7 @@
   }
 
   function renderTransactions(transactions, pagination) {
-    const visibleTransactions = transactions.filter((transaction) => !HIDDEN_TRANSACTION_TYPES.has(transaction.type));
+    const visibleTransactions = transactions.filter((transaction) => VISIBLE_TRANSACTION_TYPES.has(transaction.type));
     const visiblePagination = {
       ...(pagination || {}),
       total: typeof pagination?.total === "number" ? Math.max(0, pagination.total - (transactions.length - visibleTransactions.length)) : visibleTransactions.length
@@ -543,8 +542,17 @@
     });
   }
 
+  function bindContactMail() {
+    els.contactMailBtn?.addEventListener("click", () => {
+      const account = ["dieze", "corporation"].join("");
+      const domain = ["gmail", "com"].join(".");
+      window.location.href = `mailto:${account}@${domain}`;
+    });
+  }
+
   bindTabs();
   bindQuickActions();
+  bindContactMail();
   prefillAccountEmail();
   els.depositForm?.addEventListener("submit", handleDepositSubmit);
   els.withdrawForm?.addEventListener("submit", handleWithdrawSubmit);

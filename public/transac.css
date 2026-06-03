@@ -829,6 +829,37 @@ body::before {
   row-gap: 10px;
 }
 
+.finance-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(184, 132, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(12, 8, 24, 0.72);
+  color: var(--muted);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.contact-mail-btn {
+  min-height: 40px;
+  padding: 0.62rem 0.9rem;
+  border: 1px solid rgba(184, 132, 255, 0.22);
+  border-radius: 12px;
+  background: rgba(139, 61, 255, 0.16);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.contact-mail-btn:hover {
+  background: rgba(139, 61, 255, 0.24);
+  border-color: rgba(184, 132, 255, 0.42);
+}
+
 .glass-card,
 .history-card,
 .method-card,
@@ -888,6 +919,7 @@ body::before {
   }
 
   .finance-topbar,
+  .finance-footer,
   .history-head,
   .history-actions,
   .quick-actions {
