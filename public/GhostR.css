@@ -2534,7 +2534,29 @@ input[type="password"] {
   }
 
   .game-head {
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    z-index: 8;
+    display: flex;
+    width: auto;
+    margin: 0;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .game-head > div {
     display: none;
+  }
+
+  .game-head .cote {
+    min-width: 118px;
+    margin: 0;
+    padding: 0.32rem 0.82rem;
+    font-size: 1.45rem;
+    line-height: 1;
+    text-align: center;
+    border-radius: 10px;
   }
 
   .img {
@@ -2622,7 +2644,8 @@ input[type="password"] {
     padding-top: 44px;
   }
 
-  .img .cote {
+  .img .cote,
+  .game-head .cote {
     top: 7px;
     min-width: 92px;
     padding: 0.26rem 0.62rem;
