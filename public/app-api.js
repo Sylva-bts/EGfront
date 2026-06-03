@@ -166,11 +166,25 @@
   function setUser(user) {
     const safeUser = user && typeof user === "object" ? user : {};
     if (safeUser.email || safeUser.username || safeUser.id) {
-      writeStoredValue(USER_KEY, JSON.stringify({
+      const storedUser = {
         id: safeUser.id || safeUser._id || "",
         username: safeUser.username || "",
         email: safeUser.email || ""
-      }));
+      };
+
+      if (typeof safeUser.balance === "number") {
+        storedUser.balance = safeUser.balance;
+      }
+
+      if (safeUser.affiliation && typeof safeUser.affiliation === "object") {
+        storedUser.affiliation = safeUser.affiliation;
+      }
+
+      if (safeUser.powers && typeof safeUser.powers === "object") {
+        storedUser.powers = safeUser.powers;
+      }
+
+      writeStoredValue(USER_KEY, JSON.stringify(storedUser));
       return;
     }
 

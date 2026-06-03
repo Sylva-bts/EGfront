@@ -231,7 +231,73 @@
          display: flex;
          flex-wrap: wrap;
          gap: 12px;
-         margin-bottom: 34px;
+         margin-bottom: 18px;
+      }
+
+      .hero-offer {
+         display: grid;
+         grid-template-columns: minmax(0, 1fr) minmax(180px, 0.5fr);
+         gap: 12px;
+         width: min(760px, 100%);
+         margin: 0 0 18px;
+      }
+
+      .offer-main,
+      .offer-mini {
+         position: relative;
+         overflow: hidden;
+         border: 1px solid rgba(255, 255, 255, 0.18);
+         background:
+            linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.045)),
+            rgba(6, 10, 18, 0.72);
+         box-shadow: 0 24px 58px rgba(0, 0, 0, 0.32);
+         backdrop-filter: blur(18px);
+      }
+
+      .offer-main {
+         padding: 18px;
+         border-radius: 8px;
+      }
+
+      .offer-mini {
+         display: grid;
+         align-content: center;
+         padding: 16px;
+         border-radius: 8px;
+      }
+
+      .offer-label {
+         display: inline-flex;
+         width: fit-content;
+         margin-bottom: 10px;
+         padding: 6px 9px;
+         border-radius: 999px;
+         color: #061018;
+         background: linear-gradient(135deg, var(--amber), #fff4c0);
+         font-size: 0.72rem;
+         font-weight: 1000;
+         text-transform: uppercase;
+      }
+
+      .offer-value {
+         display: block;
+         color: #fff;
+         font-size: clamp(2.1rem, 5vw, 4.3rem);
+         font-weight: 1000;
+         line-height: 0.9;
+      }
+
+      .offer-main p,
+      .offer-mini p {
+         margin: 8px 0 0;
+         color: #dce7f5;
+         line-height: 1.45;
+      }
+
+      .offer-mini strong {
+         color: var(--cyan);
+         font-size: clamp(1.7rem, 3vw, 2.8rem);
+         line-height: 1;
       }
 
       .live-strip {
@@ -297,6 +363,53 @@
          display: grid;
          grid-template-columns: repeat(3, minmax(0, 1fr));
          gap: 14px;
+      }
+
+      .bonus-grid {
+         display: grid;
+         grid-template-columns: 1.2fr repeat(2, minmax(0, 0.9fr));
+         gap: 14px;
+         margin-bottom: 18px;
+      }
+
+      .bonus-card {
+         position: relative;
+         min-height: 188px;
+         padding: 22px;
+         overflow: hidden;
+         border: 1px solid rgba(255, 255, 255, 0.14);
+         border-radius: 8px;
+         background:
+            radial-gradient(circle at 82% 0%, rgba(110, 231, 255, 0.18), transparent 28%),
+            linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
+         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+         backdrop-filter: blur(16px);
+      }
+
+      .bonus-card.featured {
+         background:
+            radial-gradient(circle at 84% 12%, rgba(255, 209, 102, 0.28), transparent 32%),
+            linear-gradient(145deg, rgba(110, 231, 255, 0.18), rgba(255, 255, 255, 0.04));
+      }
+
+      .bonus-card small {
+         color: var(--amber);
+         font-weight: 1000;
+         text-transform: uppercase;
+      }
+
+      .bonus-card strong {
+         display: block;
+         margin: 26px 0 8px;
+         color: #fff;
+         font-size: clamp(1.6rem, 4vw, 3.4rem);
+         line-height: 0.95;
+      }
+
+      .bonus-card p {
+         margin: 0;
+         color: var(--muted);
+         line-height: 1.6;
       }
 
       .feature,
@@ -397,6 +510,8 @@
          .hero h2 { max-width: 9ch; }
 
          .live-strip,
+         .hero-offer,
+         .bonus-grid,
          .feature-grid,
          .notice { grid-template-columns: 1fr; }
 
@@ -439,6 +554,12 @@
 
          .hero-actions > * { flex: 1 1 100%; }
 
+         .offer-main,
+         .offer-mini,
+         .bonus-card {
+            padding: 14px;
+         }
+
          .live-strip div { min-height: auto; }
 
          .content {
@@ -479,29 +600,42 @@
          </video>
 
          <div class="hero-content">
-            <div class="eyebrow">Interface nouvelle generation</div>
-            <h2>Quitte avant le Ghost.</h2>
+            <div class="eyebrow">Bonus de bienvenue actif</div>
+            <h2>Double ton depot. Invite tes amis.</h2>
             <p>
-               Une experience rapide, tendue et visuelle : lance ta mise, regarde la cote grimper,
-               puis retire tes gains avant que l'interface ne bascule dans le rouge.
+               Rejoins Escape the Ghost, lance ta mise, retire au bon moment et fais grandir ton solde
+               avec le bonus de premier depot et le programme de parrainage.
             </p>
             <div class="hero-actions">
-               <a class="primary-btn" href="inscri.html">Commencer maintenant</a>
+               <a class="primary-btn" href="inscri.html">Activer mes bonus</a>
                <a class="secondary-btn" href="GhostRD.html">Voir la demo</a>
+            </div>
+
+            <div class="hero-offer" aria-label="Offres de bienvenue">
+               <div class="offer-main">
+                  <span class="offer-label">Premier depot</span>
+                  <strong class="offer-value">+100%</strong>
+                  <p>Votre premier depot est double automatiquement apres confirmation du paiement.</p>
+               </div>
+               <div class="offer-mini">
+                  <span class="offer-label">Parrainage</span>
+                  <strong>1 USD</strong>
+                  <p>pour chaque filleul inscrit avec votre lien.</p>
+               </div>
             </div>
 
             <div class="live-strip" aria-label="Points forts">
                <div>
-                  <strong>Cote en direct</strong>
-                  <span>Lis la tension de la manche en un coup d'oeil.</span>
+                  <strong>Bonus immediat</strong>
+                  <span>Le filleul et le parrain voient leurs credits dans le solde.</span>
                </div>
                <div>
                   <strong>Cashout rapide</strong>
                   <span>Un rythme court pour des decisions nettes.</span>
                </div>
                <div>
-                  <strong>Univers premium</strong>
-                  <span>Video, lumiere et interface au service du jeu.</span>
+                  <strong>Lien partageable</strong>
+                  <span>Votre code d'affiliation reste accessible dans le profil.</span>
                </div>
             </div>
          </div>
@@ -509,28 +643,46 @@
 
       <section class="content" id="experience">
          <div class="section-head">
-            <h3>Une entree plus moderne dans l'univers Ghost.</h3>
+            <h3>Des bonus simples a comprendre, rapides a partager.</h3>
             <p>
-               La page met maintenant l'interface au premier plan, comme les sites recents :
-               moins de texte disperse, plus d'impact visuel, et des actions immediates.
+               Le marketing repose sur deux leviers directs : un premier depot plus fort pour demarrer,
+               et un parrainage clair pour faire venir de nouveaux joueurs.
             </p>
+         </div>
+
+         <div class="bonus-grid" aria-label="Bonus Escape the Ghost">
+            <article class="bonus-card featured">
+               <small>Offre principale</small>
+               <strong>100% bonus premier depot</strong>
+               <p>Deposez une premiere fois, le systeme ajoute automatiquement le meme montant en bonus.</p>
+            </article>
+            <article class="bonus-card">
+               <small>Filleul</small>
+               <strong>+1 USD</strong>
+               <p>Chaque nouveau joueur inscrit via un lien de parrainage recoit son bonus d'arrivee.</p>
+            </article>
+            <article class="bonus-card">
+               <small>Parrain</small>
+               <strong>+0.50 USD</strong>
+               <p>Le parrain gagne aussi un credit a chaque inscription valide depuis son lien.</p>
+            </article>
          </div>
 
          <div class="feature-grid">
             <article class="feature">
                <small>01</small>
-               <h4>Ambiance cinematic</h4>
-               <p>La video d'interface donne une impression vivante des les premieres secondes.</p>
+               <h4>Inscription fluide</h4>
+               <p>Le code de parrainage se conserve depuis le lien jusqu'a l'inscription classique ou Google.</p>
             </article>
             <article class="feature">
                <small>02</small>
-               <h4>Parcours clair</h4>
-               <p>Jouer, tester la demo ou se connecter restent accessibles sans chercher.</p>
+               <h4>Solde visible</h4>
+               <p>Les bonus apparaissent dans le profil, les transactions et les zones de solde du joueur.</p>
             </article>
             <article class="feature">
                <small>03</small>
-               <h4>Mobile first</h4>
-               <p>La composition se replie proprement sur telephone avec des boutons faciles a toucher.</p>
+               <h4>Partage facile</h4>
+               <p>Chaque joueur dispose d'un lien personnel pour inviter rapidement ses amis.</p>
             </article>
          </div>
 
