@@ -1,6 +1,7 @@
 let Img = document.querySelector(".img");
 let soldeSpan = document.querySelector("#Solde span");
 let coteSpan = document.querySelector("#cote span");
+let mess = document.getElementById("message");
 
 let Stick = document.getElementById("stick0");
 let Stick1 = document.getElementById("stick1");
@@ -27,24 +28,15 @@ const ghostFrozenSrc = "ima/Gost_froid.png";
 const APPARITION_AUDIO_SRC = "audio/ApparutionEffet.mpeg";
 const PERTE_AUDIO_SRC = "audio/perteEffet.mpeg";
 const JEU_MUSIQUE_SRC = "audio/jeuMusique.mpeg";
-const FAHHH_PUMP_AUDIO_SRC = "audio/fahhh-pump-sound.mp3";
-const MONEY_AUDIO_SRC = "audio/money-soundfx.mp3";
-const PSYCHO_AUDIO_SRC = "audio/psycho.mp3";
 
 const apparitionAudio = new Audio(APPARITION_AUDIO_SRC);
 const perteAudio = new Audio(PERTE_AUDIO_SRC);
 const jeuMusiqueAudio = new Audio(JEU_MUSIQUE_SRC);
-const fahhhPumpAudio = new Audio(FAHHH_PUMP_AUDIO_SRC);
-const moneyAudio = new Audio(MONEY_AUDIO_SRC);
-const psychoAudio = new Audio(PSYCHO_AUDIO_SRC);
 
 jeuMusiqueAudio.loop = true;
 jeuMusiqueAudio.volume = 0.35;
 apparitionAudio.volume = 0.8;
 perteAudio.volume = 0.9;
-fahhhPumpAudio.volume = 0.95;
-moneyAudio.volume = 0.9;
-psychoAudio.volume = 0.72;
 
 let coteIni = 1.0;
 let vitesse = 1070;
@@ -57,7 +49,6 @@ let secChanceUsed = false;
 let secChanceAvailable = false;
 let secondChanceTimeoutId;
 let endGameTimeoutId;
-let psychoTimeoutId;
 let visionUsed = false;
 let bouclierActive = false;
 let bouclierTimeoutId;
@@ -147,24 +138,6 @@ function stopAudio(audio, { reset = false } = {}) {
   if (reset) {
     audio.currentTime = 0;
   }
-}
-
-function clearPsychoCue() {
-  if (psychoTimeoutId) {
-    clearTimeout(psychoTimeoutId);
-    psychoTimeoutId = undefined;
-  }
-  stopAudio(psychoAudio, { reset: true });
-}
-
-function schedulePsychoCue() {
-  clearPsychoCue();
-  psychoTimeoutId = setTimeout(() => {
-    psychoTimeoutId = undefined;
-    if (jeuEnCours) {
-      playAudio(psychoAudio);
-    }
-  }, 20000);
 }
 
 function getDefaultRuntimeConfig() {
@@ -740,7 +713,6 @@ async function SecondeChance() {
     clearTimeout(endGameTimeoutId);
     endGameTimeoutId = undefined;
   }
-  clearPsychoCue();
 
   refreshPowerButtons();
   GameOn();
@@ -1026,7 +998,6 @@ function GameOn() {
     clearTimeout(endGameTimeoutId);
     endGameTimeoutId = undefined;
   }
-  clearPsychoCue();
 
   coteIni = 1.0;
   vitesse = 1010;
@@ -1050,7 +1021,6 @@ function GameOn() {
 
   pouuf = tirerCote();
   updateCote(coteIni);
-  schedulePsychoCue();
   start();
   augmenterCote();
 }
@@ -1088,10 +1058,8 @@ function start() {
 
     if (coteIni >= pouuf) {
       clearInterval(gameInterval);
-      clearPsychoCue();
       stopAudio(jeuMusiqueAudio, { reset: true });
       playAudio(perteAudio);
-      playAudio(fahhhPumpAudio);
       showSecondChanceWindow();
       ghostPos = 250;
       Ghost.style.right = `${ghostPos}px`;
@@ -1107,7 +1075,6 @@ function start() {
         jeuEnCours = false;
         refreshPowerButtons();
         if (!secChanceUsed) {
-          showGameNotification("Domage reessayer", "warn");
           saveTransaction("Perte", -mise, coteIni);
         }
       }, 5000);
@@ -1147,7 +1114,6 @@ async function retrait() {
   if (!jeuEnCours || cashoutRequestPending) return;
 
   jeuEnCours = false;
-  clearPsychoCue();
   clearInterval(gameInterval);
   stopAudio(jeuMusiqueAudio, { reset: true });
   if (bouclierTimeoutId) {
@@ -1187,9 +1153,8 @@ async function retrait() {
         multiplier: Number(coteIni.toFixed(2))
       });
     }
+    showGameNotification(`Retrait valide x${coteIni.toFixed(2)}`, "info");
     saveTransaction("Gain", gain, coteIni);
-    playAudio(moneyAudio);
-    showGameNotification(`Félicitation ! vous avez gagner ${formatMoney(gain)}`, "info");
     await refreshWorldPanels();
   } catch (error) {
     showGameNotification(error.message || "Retrait impossible", "warn");
