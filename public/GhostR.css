@@ -3111,7 +3111,7 @@ input:focus-visible {
 
   .stick {
     margin-right: clamp(18px, 9vw, 44px);
-    transform: translateY(-20px) scaleX(-2);
+    transform: translateY(-20px) scaleX(-1);
   }
 
   .Ghost {
