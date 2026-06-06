@@ -180,13 +180,13 @@
   function renderUsers() {
     els.usersTableBody.innerHTML = state.users.map((user) => `
       <tr class="js-open-user-row" data-user-id="${user.id}">
-        <td><strong>${escapeHtml(user.username)}</strong><br><span>${escapeHtml(user.email)}</span></td>
-        <td>${formatMoney(user.balance)}</td>
-        <td>${user.adminGameControl?.forcedCrashValue ? `x${Number(user.adminGameControl.forcedCrashValue).toFixed(2)}` : "Auto"}</td>
-        <td>${Number(user.gameStats?.rtp || 0).toFixed(2)}%</td>
-        <td>${statusPill(user.isBanned ? "banned" : "active")}</td>
-        <td>${formatDate(user.lastSeenAt)}</td>
-        <td><button type="button" data-user-id="${user.id}" class="ghost-button js-open-user">Voir</button></td>
+        <td data-label="Joueur"><strong>${escapeHtml(user.username)}</strong><br><span>${escapeHtml(user.email)}</span></td>
+        <td data-label="Solde">${formatMoney(user.balance)}</td>
+        <td data-label="Cote forcee">${user.adminGameControl?.forcedCrashValue ? `x${Number(user.adminGameControl.forcedCrashValue).toFixed(2)}` : "Auto"}</td>
+        <td data-label="RTP">${Number(user.gameStats?.rtp || 0).toFixed(2)}%</td>
+        <td data-label="Statut">${statusPill(user.isBanned ? "banned" : "active")}</td>
+        <td data-label="Derniere activite">${formatDate(user.lastSeenAt)}</td>
+        <td data-label="Action"><button type="button" data-user-id="${user.id}" class="ghost-button js-open-user">Voir</button></td>
       </tr>
     `).join("") || '<tr><td colspan="7">Aucun utilisateur.</td></tr>';
   }
@@ -251,12 +251,12 @@
         : (transaction.type === "withdraw" ? "Traite" : "Aucune");
       return `
         <tr>
-          <td>${transaction.type}</td>
-          <td><strong>${transaction.user?.username || "Joueur"}</strong><br><span>${transaction.user?.email || ""}</span>${transaction.address ? `<br><span>${transaction.crypto || ""}: ${transaction.address}</span>` : ""}</td>
-          <td>${formatMoney(transaction.amount_fiat)}</td>
-          <td>${statusPill(transaction.status)}</td>
-          <td>${formatDate(transaction.createdAt)}</td>
-          <td>${actions}</td>
+          <td data-label="Type">${transaction.type}</td>
+          <td data-label="Joueur"><strong>${transaction.user?.username || "Joueur"}</strong><br><span>${transaction.user?.email || ""}</span>${transaction.address ? `<br><span>${transaction.crypto || ""}: ${transaction.address}</span>` : ""}</td>
+          <td data-label="Montant">${formatMoney(transaction.amount_fiat)}</td>
+          <td data-label="Statut">${statusPill(transaction.status)}</td>
+          <td data-label="Date">${formatDate(transaction.createdAt)}</td>
+          <td data-label="Action">${actions}</td>
         </tr>
       `;
     }).join("") || '<tr><td colspan="6">Aucune transaction.</td></tr>';

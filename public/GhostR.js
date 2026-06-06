@@ -28,15 +28,24 @@ const ghostFrozenSrc = "ima/Gost_froid.png";
 const APPARITION_AUDIO_SRC = "audio/ApparutionEffet.mpeg";
 const PERTE_AUDIO_SRC = "audio/perteEffet.mpeg";
 const JEU_MUSIQUE_SRC = "audio/jeuMusique.mpeg";
+const FAHHH_PUMP_AUDIO_SRC = "audio/fahhh-pump-sound.mp3";
+const MONEY_AUDIO_SRC = "audio/money-soundfx.mp3";
+const PSYCHO_AUDIO_SRC = "audio/psycho.mp3";
 
 const apparitionAudio = new Audio(APPARITION_AUDIO_SRC);
 const perteAudio = new Audio(PERTE_AUDIO_SRC);
 const jeuMusiqueAudio = new Audio(JEU_MUSIQUE_SRC);
+const fahhhPumpAudio = new Audio(FAHHH_PUMP_AUDIO_SRC);
+const moneyAudio = new Audio(MONEY_AUDIO_SRC);
+const psychoAudio = new Audio(PSYCHO_AUDIO_SRC);
 
 jeuMusiqueAudio.loop = true;
 jeuMusiqueAudio.volume = 0.35;
 apparitionAudio.volume = 0.8;
 perteAudio.volume = 0.9;
+fahhhPumpAudio.volume = 0.95;
+moneyAudio.volume = 0.9;
+psychoAudio.volume = 0.72;
 
 let coteIni = 1.0;
 let vitesse = 1070;
@@ -49,6 +58,7 @@ let secChanceUsed = false;
 let secChanceAvailable = false;
 let secondChanceTimeoutId;
 let endGameTimeoutId;
+let psychoTimeoutId;
 let visionUsed = false;
 let bouclierActive = false;
 let bouclierTimeoutId;
@@ -138,6 +148,24 @@ function stopAudio(audio, { reset = false } = {}) {
   if (reset) {
     audio.currentTime = 0;
   }
+}
+
+function clearPsychoCue() {
+  if (psychoTimeoutId) {
+    clearTimeout(psychoTimeoutId);
+    psychoTimeoutId = undefined;
+  }
+  stopAudio(psychoAudio, { reset: true });
+}
+
+function schedulePsychoCue() {
+  clearPsychoCue();
+  psychoTimeoutId = setTimeout(() => {
+    psychoTimeoutId = undefined;
+    if (jeuEnCours) {
+      playAudio(psychoAudio);
+    }
+  }, 20000);
 }
 
 function getDefaultRuntimeConfig() {
@@ -622,9 +650,9 @@ async function Gel() {
   if (!consumed) return;
 
   gelUsed = true;
-  window.gelActive = true;
+  window.gelActive = true;l
   pouuf += 0.35;
-  Ghost.src = ghostFrozenSrc;
+  Ghost.src = Gost_froid.png;
   Ghost.style.filter = "brightness(1.05)";
   refreshPowerButtons();
 
@@ -986,6 +1014,7 @@ async function Miser() {
 
 function GameOn() {
   clearInterval(gameInterval);
+  clearPsychoCue();
   showGameNotification("Mise acceptee", "info");
 
   secChanceUsed = false;
@@ -1021,6 +1050,7 @@ function GameOn() {
 
   pouuf = tirerCote();
   updateCote(coteIni);
+  schedulePsychoCue();
   start();
   augmenterCote();
 }
@@ -1058,8 +1088,9 @@ function start() {
 
     if (coteIni >= pouuf) {
       clearInterval(gameInterval);
+      clearPsychoCue();
       stopAudio(jeuMusiqueAudio, { reset: true });
-      playAudio(perteAudio);
+      playAudio(fahhhPumpAudio);
       showSecondChanceWindow();
       ghostPos = 250;
       Ghost.style.right = `${ghostPos}px`;
@@ -1114,6 +1145,7 @@ async function retrait() {
   if (!jeuEnCours || cashoutRequestPending) return;
 
   jeuEnCours = false;
+  clearPsychoCue();
   clearInterval(gameInterval);
   stopAudio(jeuMusiqueAudio, { reset: true });
   if (bouclierTimeoutId) {
@@ -1144,6 +1176,7 @@ async function retrait() {
       setDisplayedBalance(payload.user.balance);
       return payload;
     });
+    playAudio(moneyAudio);
     if (worldApiUnavailable) {
       appendLocalWorldActivity({
         type: "gain",
