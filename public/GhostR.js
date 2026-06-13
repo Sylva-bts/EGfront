@@ -12,6 +12,9 @@ let worldFeedEl = document.getElementById("world-feed");
 let worldChatMessagesEl = document.getElementById("world-chat-messages");
 let worldChatFormEl = document.getElementById("world-chat-form");
 let worldChatInputEl = document.getElementById("world-chat-input");
+let worldPanelEl = document.getElementById("world-panel");
+let worldPanelToggleEl = document.getElementById("world-panel-toggle");
+let worldPanelToggleBadgeEl = document.getElementById("world-panel-toggle-badge");
 let powerAuthStatusEl = document.getElementById("power-auth-status");
 let profileToggleEl = document.getElementById("profile-toggle");
 let profilePanelEl = document.getElementById("profile-panel");
@@ -38,6 +41,14 @@ const jeuMusiqueAudio = new Audio(JEU_MUSIQUE_SRC);
 const fahhhPumpAudio = new Audio(FAHHH_PUMP_AUDIO_SRC);
 const moneyAudio = new Audio(MONEY_AUDIO_SRC);
 const psychoAudio = new Audio(PSYCHO_AUDIO_SRC);
+const gameAudios = [
+  apparitionAudio,
+  perteAudio,
+  jeuMusiqueAudio,
+  fahhhPumpAudio,
+  moneyAudio,
+  psychoAudio
+];
 
 jeuMusiqueAudio.loop = true;
 jeuMusiqueAudio.volume = 0.35;
@@ -46,6 +57,9 @@ perteAudio.volume = 0.9;
 fahhhPumpAudio.volume = 0.95;
 moneyAudio.volume = 0.9;
 psychoAudio.volume = 0.72;
+gameAudios.forEach((audio) => {
+  audio.preload = "auto";
+});
 
 let coteIni = 1.0;
 let vitesse = 1070;
@@ -98,6 +112,7 @@ let gameInterval;
 let ghostPos = 0;
 let notificationTimeoutId;
 let worldRefreshIntervalId;
+let runtimeConfigRefreshIntervalId;
 let worldApiUnavailable = false;
 let gameRuntimeConfig = null;
 
@@ -107,6 +122,8 @@ const WORLD_ACTIVITY_LIMIT = 20;
 const WORLD_CHAT_LIMIT = 40;
 const WORLD_CHAT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 const MIN_BET_AMOUNT = 1;
+const WORLD_REFRESH_MS = 9000;
+const RUNTIME_CONFIG_REFRESH_MS = 45000;
 
 if (!localStorage.getItem("gameHistory")) {
   localStorage.setItem("gameHistory", JSON.stringify([]));
@@ -139,6 +156,12 @@ function playAudio(audio, { restart = true } = {}) {
   }
 
   audio.play().catch(() => {});
+}
+
+function warmGameAudio() {
+  gameAudios.forEach((audio) => {
+    audio.load();
+  });
 }
 
 function stopAudio(audio, { reset = false } = {}) {
@@ -288,6 +311,27 @@ function appendLocalWorldChatMessage(message) {
     createdAt: new Date().toISOString()
   });
   writeWorldStore(WORLD_CHAT_KEY, items.slice(-WORLD_CHAT_LIMIT), WORLD_CHAT_LIMIT);
+}
+
+function updateWorldPanelBadge(count) {
+  if (!worldPanelToggleBadgeEl) return;
+  const safeCount = Math.max(0, Number(count) || 0);
+  worldPanelToggleBadgeEl.textContent = safeCount > 99 ? "99+" : String(safeCount);
+  worldPanelToggleBadgeEl.hidden = safeCount === 0;
+}
+
+function setWorldPanelOpen(isOpen) {
+  if (!worldPanelEl || !worldPanelToggleEl) return;
+
+  document.body.classList.toggle("world-panel-open", isOpen);
+  worldPanelEl.setAttribute("aria-hidden", isOpen ? "false" : "true");
+  worldPanelEl.toggleAttribute("inert", !isOpen);
+  worldPanelToggleEl.setAttribute("aria-expanded", isOpen ? "true" : "false");
+  worldPanelToggleEl.setAttribute("aria-label", isOpen ? "Fermer les messages" : "Ouvrir les messages");
+
+  if (isOpen) {
+    updateWorldPanelBadge(0);
+  }
 }
 
 Ghost.style.display = "none";
@@ -558,27 +602,34 @@ function renderWorldChat(items) {
   if (!worldChatMessagesEl) return;
 
   const freshItems = pruneExpiredWorldChatMessages(items);
+  updateWorldPanelBadge(document.body.classList.contains("world-panel-open") ? 0 : freshItems.length);
 
   if (!Array.isArray(freshItems) || freshItems.length === 0) {
     worldChatMessagesEl.innerHTML = '<p class="world-empty">Aucun message pour le moment.</p>';
     return;
   }
 
-  worldChatMessagesEl.innerHTML = freshItems.map((item) => `
-    <article class="world-chat-item">
+  const currentUsername = getCurrentUsername();
+  worldChatMessagesEl.innerHTML = freshItems.map((item) => {
+    const isOwnMessage = (item.username || "Joueur") === currentUsername;
+    return `
+    <article class="world-chat-item ${isOwnMessage ? "own-message" : ""}">
       <div class="world-chat-top">
         <span class="world-player">${escapeHtml(item.username || "Joueur")}</span>
         <span class="world-time">${formatWorldTimestamp(item.createdAt)}</span>
       </div>
       <div class="world-chat-text">${escapeHtml(item.message || "")}</div>
     </article>
-  `).join("");
+  `;
+  }).join("");
   worldChatMessagesEl.scrollTop = worldChatMessagesEl.scrollHeight;
 }
 
 async function refreshWorldPanels() {
   try {
-    await loadGameRuntimeConfig();
+    if (!gameRuntimeConfig) {
+      await loadGameRuntimeConfig();
+    }
     const [activityPayload, chatPayload] = await Promise.all([
       fetchWorldActivity(),
       fetchWorldChat()
@@ -603,9 +654,13 @@ function startWorldRefreshLoop() {
   if (worldRefreshIntervalId) {
     clearInterval(worldRefreshIntervalId);
   }
+  if (runtimeConfigRefreshIntervalId) {
+    clearInterval(runtimeConfigRefreshIntervalId);
+  }
 
   refreshWorldPanels();
-  worldRefreshIntervalId = setInterval(refreshWorldPanels, 4000);
+  worldRefreshIntervalId = setInterval(refreshWorldPanels, WORLD_REFRESH_MS);
+  runtimeConfigRefreshIntervalId = setInterval(loadGameRuntimeConfig, RUNTIME_CONFIG_REFRESH_MS);
 }
 
 async function refreshPowersFromServer() {
@@ -650,9 +705,9 @@ async function Gel() {
   if (!consumed) return;
 
   gelUsed = true;
-  window.gelActive = true;l
+  window.gelActive = true;
   pouuf += 0.35;
-  Ghost.src = Gost_froid.png;
+  Ghost.src = ghostFrozenSrc;
   Ghost.style.filter = "brightness(1.05)";
   refreshPowerButtons();
 
@@ -1091,6 +1146,7 @@ function start() {
       clearPsychoCue();
       stopAudio(jeuMusiqueAudio, { reset: true });
       playAudio(fahhhPumpAudio);
+      playAudio(perteAudio);
       showSecondChanceWindow();
       ghostPos = 250;
       Ghost.style.right = `${ghostPos}px`;
@@ -1352,7 +1408,7 @@ if (worldChatFormEl) {
     if (!message) return;
 
     if (!window.AppApi.getToken()) {
-      alert("Connectez-vous pour envoyer un message dans le chat monde.");
+      showGameNotification("Connexion requise pour le chat", "warn");
       return;
     }
 
@@ -1361,7 +1417,22 @@ if (worldChatFormEl) {
       worldChatInputEl.value = "";
       await refreshWorldPanels();
     } catch (error) {
-      alert(error.message);
+      showGameNotification(error.message || "Message impossible", "warn");
     }
   });
 }
+
+if (worldPanelToggleEl) {
+  worldPanelToggleEl.addEventListener("click", () => {
+    setWorldPanelOpen(!document.body.classList.contains("world-panel-open"));
+  });
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    setWorldPanelOpen(false);
+  }
+});
+
+document.addEventListener("pointerdown", warmGameAudio, { once: true });
+document.addEventListener("keydown", warmGameAudio, { once: true });

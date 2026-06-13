@@ -119,7 +119,7 @@
          </div>
       </section>
 
-      <aside class="world-panel" aria-label="Panneaux communautaires">
+      <aside class="world-panel" id="world-panel" aria-label="Panneaux communautaires" aria-hidden="true" inert>
          <section class="world-card">
             <div class="world-card-head">
                <div>
@@ -151,6 +151,10 @@
 
          <section class="historique" id="Story" aria-live="polite"></section>
       </aside>
+      <button class="world-panel-toggle" type="button" id="world-panel-toggle" aria-controls="world-panel" aria-expanded="false" aria-label="Ouvrir les messages">
+         <span class="world-panel-toggle-icon" aria-hidden="true">💬</span>
+         <span class="world-panel-toggle-badge" id="world-panel-toggle-badge">0</span>
+      </button>
       <script src="app-api.js?v=20260530-api-base"></script>
       <script src="GhostR.js"></script>
    </main>
