@@ -1045,3 +1045,66 @@ input[type="number"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* Stage actor baseline: keep every ticker on the same floor line */
+.img {
+  position: relative;
+  overflow: hidden;
+  --stage-floor: 10px;
+  --runner-size: clamp(118px, 22vw, 148px);
+  --ghost-size: clamp(78px, 16vw, 104px);
+}
+
+.img > .stick1,
+.Acteurs .stick,
+.Acteurs .Ghost {
+  top: auto !important;
+  bottom: var(--stage-floor) !important;
+  height: auto !important;
+  margin: 0 !important;
+}
+
+.img > .stick1 {
+  position: absolute;
+  left: clamp(12px, 4vw, 28px);
+  width: var(--runner-size) !important;
+}
+
+.img .Acteurs {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  display: block;
+  pointer-events: none;
+}
+
+.Acteurs .stick {
+  position: absolute;
+  left: clamp(12px, 4vw, 28px) !important;
+  width: var(--runner-size) !important;
+  transform: scaleX(-1) !important;
+}
+
+.Acteurs .Ghost {
+  position: absolute;
+  width: var(--ghost-size) !important;
+  animation: none !important;
+}
+
+@media (max-width: 560px) {
+  .img {
+    --stage-floor: 8px;
+    --runner-size: clamp(110px, 34vw, 136px);
+    --ghost-size: clamp(72px, 25vw, 94px);
+  }
+}
+
+@media (max-width: 390px) {
+  .img {
+    --stage-floor: 7px;
+    --runner-size: 122px;
+    --ghost-size: 86px;
+  }
+}

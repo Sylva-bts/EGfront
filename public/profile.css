@@ -10,17 +10,22 @@
 .profile-card {
   width: min(92vw, 620px);
   padding: 2rem;
-  border-radius: 24px;
+  border-radius: 28px;
   background:
-    radial-gradient(circle at top right, rgba(168, 85, 247, 0.14), transparent 36%),
-    linear-gradient(145deg, rgba(19, 10, 34, 0.96), rgba(12, 8, 24, 0.96));
-  border: 1px solid rgba(192, 132, 252, 0.28);
-  box-shadow: 0 24px 70px rgba(22, 8, 40, 0.62);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+    radial-gradient(circle at 0% 0%, rgba(168, 85, 247, 0.15), transparent 40%),
+    linear-gradient(145deg, #110a1e, #09060f);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Optimisation Mobile */
+  @media (max-width: 768px) {
+    backdrop-filter: none;
+    background: #110a1e;
+  }
 }
 
 .profile-card:hover {
@@ -37,6 +42,9 @@
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.05), transparent);
   animation: violetShimmer 8s infinite;
+  @media (max-width: 768px) {
+    animation: none; /* Désactiver l'animation de fond sur mobile */
+  }
 }
 
 @keyframes violetShimmer {
@@ -81,19 +89,19 @@
   min-height: 50px;
   margin-top: 0.35rem;
   padding: 0 1rem;
-  border-radius: 12px;
-  border: 2px solid rgba(192, 132, 252, 0.22);
-  background: rgba(255, 255, 255, 0.055);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
   color: #fff;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
   outline: none;
 }
 
 .profile-page-form input:focus {
-  border-color: #c084fc;
-  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.14);
-  background: rgba(255, 255, 255, 0.075);
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.1);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .profile-page-form input:hover {

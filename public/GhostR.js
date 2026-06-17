@@ -124,6 +124,9 @@ const WORLD_CHAT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 const MIN_BET_AMOUNT = 1;
 const WORLD_REFRESH_MS = 9000;
 const RUNTIME_CONFIG_REFRESH_MS = 45000;
+const DESKTOP_STAGE_REFERENCE_WIDTH = 560;
+const GHOST_CHASE_LIMIT_DESKTOP = 150;
+const GHOST_CRASH_POS_DESKTOP = 250;
 
 if (!localStorage.getItem("gameHistory")) {
   localStorage.setItem("gameHistory", JSON.stringify([]));
@@ -146,6 +149,17 @@ function formatMoney(value) {
 function formatWorldTimestamp(value) {
   const date = value ? new Date(value) : new Date();
   return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+}
+
+function scaleStagePosition(desktopPosition) {
+  const stageWidth = Img?.getBoundingClientRect?.().width || DESKTOP_STAGE_REFERENCE_WIDTH;
+  const scale = Math.min(1, stageWidth / DESKTOP_STAGE_REFERENCE_WIDTH);
+  return Math.max(0, Math.round(desktopPosition * scale));
+}
+
+function setGhostPosition(position) {
+  ghostPos = position;
+  Ghost.style.right = `${ghostPos}px`;
 }
 
 function playAudio(audio, { restart = true } = {}) {
@@ -1117,9 +1131,8 @@ function start() {
   Stick.style.pointerEvents = "none";
   Stick.style.opacity = "1";
   Stick.style.filter = "none";
-  ghostPos = 0;
   Ghost.style.position = "absolute";
-  Ghost.style.right = `${ghostPos}px`;
+  setGhostPosition(0);
 
   playAudio(apparitionAudio);
   playAudio(jeuMusiqueAudio, { restart: true });
@@ -1130,9 +1143,9 @@ function start() {
       Ghost.style.right = `${ghostPos}px`;
     }
 
-    if (ghostPos >= 150) {
-      ghostPos = 150;
-      Ghost.style.right = `${ghostPos}px`;
+    const ghostChaseLimit = scaleStagePosition(GHOST_CHASE_LIMIT_DESKTOP);
+    if (ghostPos >= ghostChaseLimit) {
+      setGhostPosition(ghostChaseLimit);
     }
 
     if (coteIni >= pouuf && window.bouclierActive) {
@@ -1148,8 +1161,7 @@ function start() {
       playAudio(fahhhPumpAudio);
       playAudio(perteAudio);
       showSecondChanceWindow();
-      ghostPos = 250;
-      Ghost.style.right = `${ghostPos}px`;
+      setGhostPosition(scaleStagePosition(GHOST_CRASH_POS_DESKTOP));
       Stick.style.pointerEvents = "none";
       Stick.style.opacity = "0.5";
       Stick.style.filter = "grayscale(100%)";

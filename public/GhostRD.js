@@ -54,6 +54,9 @@ let gameInterval;
 let ghostPos = 0;
 let notificationTimeoutId;
 const MIN_BET_AMOUNT = 1;
+const DESKTOP_STAGE_REFERENCE_WIDTH = 560;
+const GHOST_CHASE_LIMIT_DESKTOP = 100;
+const GHOST_CRASH_POS_DESKTOP = 230;
 
 // Initialiser le localStorage s'il n'existe pas
 if (!localStorage.getItem('gameHistory')) {
@@ -72,6 +75,17 @@ function playAudio(audio, { restart = true } = {}) {
   }
 
   audio.play().catch(() => {});
+}
+
+function scaleStagePosition(desktopPosition) {
+  const stageWidth = Img?.getBoundingClientRect?.().width || DESKTOP_STAGE_REFERENCE_WIDTH;
+  const scale = Math.min(1, stageWidth / DESKTOP_STAGE_REFERENCE_WIDTH);
+  return Math.max(0, Math.round(desktopPosition * scale));
+}
+
+function setGhostPosition(position) {
+  ghostPos = position;
+  Ghost.style.right = ghostPos + "px";
 }
 
 function stopAudio(audio, { reset = false } = {}) {
@@ -509,18 +523,17 @@ function start() {
   Stick.style.pointerEvents = "none";
   Stick.style.opacity = "1";
   Stick.style.filter = "none";
-  ghostPos = 0;
   Ghost.style.position = "absolute";
-  Ghost.style.right = ghostPos + "px";
+  setGhostPosition(0);
 
   gameInterval = setInterval(() => {
     if (!window.gelActive) {
       ghostPos += 0.05; // vitesse de déplacement du fantôme
       Ghost.style.right = ghostPos + "px";
     }
-if (ghostPos >= 100) {
-      ghostPos = 100;
-      Ghost.style.right = ghostPos + "px";
+    const ghostChaseLimit = scaleStagePosition(GHOST_CHASE_LIMIT_DESKTOP);
+    if (ghostPos >= ghostChaseLimit) {
+      setGhostPosition(ghostChaseLimit);
     }
     if (coteIni >= pouuf && window.bouclierActive) {
       deactivateShield('blocked');
@@ -533,8 +546,7 @@ if (ghostPos >= 100) {
       clearPsychoCue();
       playAudio(fahhhPumpAudio);
       showSecondChanceWindow();
-      ghostPos = 230;
-      Ghost.style.right = ghostPos + "px";
+      setGhostPosition(scaleStagePosition(GHOST_CRASH_POS_DESKTOP));
       Stick.style.pointerEvents = "none";
       Stick.style.opacity = "0.5";
       Stick.style.filter = "grayscale(100%)";
