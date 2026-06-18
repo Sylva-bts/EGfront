@@ -2,17 +2,10 @@
   const TOKEN_KEYS = ["token", "ghostrAuthToken"];
   const USER_KEY = "ghostrUser";
   const REFERRAL_KEY = "ghostrReferralCode";
-  const META_API_BASE_SELECTOR = 'meta[name="ghostr-api-base-url"]';
-  const DEFAULT_RENDER_API_BASE_URL = "https://egback-1.onrender.com";
   const PHANTOM_SIGNUP_BALANCE = 1000;
 
   function normalizeBaseUrl(value) {
     return String(value || "").trim().replace(/\/$/, "");
-  }
-
-  function readMetaApiBaseUrl() {
-    const meta = document.querySelector(META_API_BASE_SELECTOR);
-    return normalizeBaseUrl(meta ? meta.getAttribute("content") : "");
   }
 
   function readWindowApiBaseUrl() {
@@ -73,7 +66,6 @@
   function getApiBaseUrl() {
     const overrideUrl = normalizeBaseUrl(readStoredValue("ghostrApiBaseUrl"));
     const windowOverrideUrl = readWindowApiBaseUrl();
-    const metaApiBaseUrl = readMetaApiBaseUrl();
     const hostname = window.location.hostname;
     const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
 
@@ -87,10 +79,6 @@
 
     if (window.location.protocol === "file:") {
       return "http://localhost:3000";
-    }
-
-    if (metaApiBaseUrl) {
-      return metaApiBaseUrl;
     }
 
     if (isLocalHost) {
@@ -300,18 +288,6 @@
     return status === 401 && /token|authentification|reconnecter|session|connexion requise|acces refuse|accès refusé/i.test(message);
   }
 
-  function normalizeAuthMessage(message) {
-    return String(message || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase();
-  }
-
-  function isMissingTokenError(status, payload) {
-    const message = normalizeAuthMessage(payload && (payload.message || payload.error));
-    return status === 401 && message.includes("token requis");
-  }
-
   function hasAuthorizationHeader(options) {
     const headers = options && options.headers ? options.headers : {};
     return Boolean(headers.Authorization || headers.authorization);
@@ -327,8 +303,7 @@
   async function fetchJson(path, options) {
     const primaryBaseUrl = getApiBaseUrl();
     const baseUrls = [];
-    const explicitApiBaseUrl = readMetaApiBaseUrl() || readWindowApiBaseUrl() || normalizeBaseUrl(readStoredValue("ghostrApiBaseUrl"));
-    const configuredRenderUrl = readMetaApiBaseUrl() || DEFAULT_RENDER_API_BASE_URL;
+    const explicitApiBaseUrl = readWindowApiBaseUrl() || normalizeBaseUrl(readStoredValue("ghostrApiBaseUrl"));
 
     addBaseUrlCandidate(baseUrls, primaryBaseUrl);
 
@@ -337,11 +312,7 @@
     } else if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
       addBaseUrlCandidate(baseUrls, "http://localhost:3000");
       addBaseUrlCandidate(baseUrls, "http://localhost:5000");
-      addBaseUrlCandidate(baseUrls, configuredRenderUrl);
     } else {
-      if (primaryBaseUrl !== configuredRenderUrl) {
-        addBaseUrlCandidate(baseUrls, configuredRenderUrl);
-      }
       if (window.location.protocol !== "file:") {
         addBaseUrlCandidate(baseUrls, window.location.origin);
       }
@@ -363,15 +334,6 @@
 
           const noAuthRequest = !hasAuthorizationHeader(options);
           if (response.status === 401 && noAuthRequest && baseUrl !== baseUrls[baseUrls.length - 1]) {
-            continue;
-          }
-
-          const canRetryRenderFallback = baseUrl !== configuredRenderUrl && baseUrls.includes(configuredRenderUrl);
-          if (isMissingTokenError(response.status, payload) && canRetryRenderFallback) {
-            continue;
-          }
-
-          if (response.status >= 500 && canRetryRenderFallback) {
             continue;
           }
 
