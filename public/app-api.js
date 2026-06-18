@@ -3,6 +3,7 @@
   const USER_KEY = "ghostrUser";
   const REFERRAL_KEY = "ghostrReferralCode";
   const PHANTOM_SIGNUP_BALANCE = 1000;
+  const DEFAULT_REMOTE_API_BASE_URL = "https://egback-1.onrender.com";
 
   function normalizeBaseUrl(value) {
     return String(value || "").trim().replace(/\/$/, "");
@@ -68,6 +69,7 @@
     const windowOverrideUrl = readWindowApiBaseUrl();
     const hostname = window.location.hostname;
     const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
+    const defaultRemoteApiHostname = new URL(DEFAULT_REMOTE_API_BASE_URL).hostname;
 
     if (overrideUrl) {
       return overrideUrl;
@@ -83,6 +85,10 @@
 
     if (isLocalHost) {
       return window.location.origin || "http://localhost:3000";
+    }
+
+    if (hostname && hostname !== defaultRemoteApiHostname) {
+      return DEFAULT_REMOTE_API_BASE_URL;
     }
 
     if (window.location.origin) {
@@ -313,6 +319,7 @@
       addBaseUrlCandidate(baseUrls, "http://localhost:3000");
       addBaseUrlCandidate(baseUrls, "http://localhost:5000");
     } else {
+      addBaseUrlCandidate(baseUrls, DEFAULT_REMOTE_API_BASE_URL);
       if (window.location.protocol !== "file:") {
         addBaseUrlCandidate(baseUrls, window.location.origin);
       }
