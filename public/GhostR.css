@@ -380,6 +380,15 @@ header h4 {
   gap: 1rem;
 }
 
+.world-panel > :not(.world-chat-card) {
+  display: none !important;
+}
+
+.world-side-panel {
+  display: grid;
+  gap: 1rem;
+}
+
 .world-card,
 .historique {
   border-radius: 22px;
@@ -2037,7 +2046,8 @@ input[type="number"] {
 }
 
 /* Community panels polish */
-.world-panel {
+.world-panel,
+.world-side-panel {
   display: grid;
   gap: 0.85rem;
 }
@@ -3290,11 +3300,16 @@ input:focus-visible {
 
 /* Floating community drawer */
 .interface {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
 }
 
 .cadreJeux {
   justify-self: center;
+}
+
+.world-side-panel {
+  width: 100%;
+  align-self: start;
 }
 
 .world-panel {
@@ -3359,8 +3374,22 @@ input:focus-visible {
 }
 
 .world-panel-toggle-icon {
-  font-size: 1.4rem;
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
   line-height: 1;
+}
+
+.chat-toggle-svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
 }
 
 .world-panel-toggle-badge {
@@ -3477,10 +3506,19 @@ input:focus-visible {
 }
 
 @media (max-width: 900px) {
+  .interface {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .world-side-panel {
+    width: min(100%, 560px);
+    justify-self: center;
+  }
+
   .world-panel {
     top: 92px;
     right: 10px;
-    max-height: calc(10svh - 118px);
+    max-height: calc(100svh - 118px);
   }
 }
 
@@ -3502,6 +3540,44 @@ input:focus-visible {
 
   .world-chat-item {
     max-width: 92%;
+  }
+}
+
+/* Mobile chat button: keep it visible and anchored to the viewport */
+@media (max-width: 760px) {
+  :root {
+    --chat-toggle-size: 58px;
+    --chat-toggle-gap: 14px;
+    --chat-toggle-bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
+  .world-panel-toggle {
+    position: fixed !important;
+    right: max(12px, env(safe-area-inset-right)) !important;
+    bottom: var(--chat-toggle-bottom) !important;
+    z-index: 9999 !important;
+    width: var(--chat-toggle-size) !important;
+    height: var(--chat-toggle-size) !important;
+    min-width: var(--chat-toggle-size);
+    min-height: var(--chat-toggle-size);
+    border-radius: 18px;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+  }
+
+  .world-panel-open .world-panel-toggle {
+    transform: translate3d(0, -2px, 0) !important;
+  }
+
+  .world-panel {
+    position: fixed !important;
+    top: auto !important;
+    right: 8px !important;
+    bottom: calc(var(--chat-toggle-bottom) + var(--chat-toggle-size) + var(--chat-toggle-gap)) !important;
+    width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - var(--chat-toggle-bottom) - var(--chat-toggle-size) - 32px) !important;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 }
 
@@ -3565,5 +3641,48 @@ input:focus-visible {
     --stage-floor: 7px;
     --runner-size: 122px;
     --ghost-size: 86px;
+  }
+}
+
+/* Final mobile chat anchor override */
+@media (max-width: 760px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  body > .world-panel-toggle {
+    position: fixed !important;
+    top: auto !important;
+    left: auto !important;
+    right: 12px !important;
+    bottom: var(--chat-toggle-bottom, 14px) !important;
+    z-index: 2147483000 !important;
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    contain: layout paint;
+  }
+
+  body.world-panel-open > .world-panel-toggle {
+    transform: none !important;
+  }
+
+  body > .world-panel {
+    position: fixed !important;
+    top: auto !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: calc(var(--chat-toggle-bottom, 14px) + 72px) !important;
+    z-index: 2147482990 !important;
+    width: auto !important;
+    max-height: min(68dvh, calc(100dvh - var(--chat-toggle-bottom, 14px) - 88px)) !important;
+  }
+
+  .interface > .world-side-panel {
+    width: 100%;
+    padding-bottom: calc(var(--chat-toggle-size, 58px) + 24px);
   }
 }

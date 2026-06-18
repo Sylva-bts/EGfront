@@ -15,6 +15,7 @@ let worldChatInputEl = document.getElementById("world-chat-input");
 let worldPanelEl = document.getElementById("world-panel");
 let worldPanelToggleEl = document.getElementById("world-panel-toggle");
 let worldPanelToggleBadgeEl = document.getElementById("world-panel-toggle-badge");
+let worldPanelToggleIconEl = document.querySelector(".world-panel-toggle-icon");
 let powerAuthStatusEl = document.getElementById("power-auth-status");
 let profileToggleEl = document.getElementById("profile-toggle");
 let profilePanelEl = document.getElementById("profile-panel");
@@ -58,7 +59,7 @@ fahhhPumpAudio.volume = 0.95;
 moneyAudio.volume = 0.9;
 psychoAudio.volume = 0.72;
 gameAudios.forEach((audio) => {
-  audio.preload = "auto";
+  audio.preload = "none";
 });
 
 let coteIni = 1.0;
@@ -348,9 +349,39 @@ function setWorldPanelOpen(isOpen) {
   }
 }
 
+function mountWorldPanelToBody() {
+  if (worldPanelEl && worldPanelEl.parentElement !== document.body) {
+    document.body.appendChild(worldPanelEl);
+  }
+
+  if (worldPanelToggleEl && worldPanelToggleEl.parentElement !== document.body) {
+    document.body.appendChild(worldPanelToggleEl);
+  }
+}
+
+function syncMobileChatTogglePosition() {
+  if (!worldPanelToggleEl || !window.visualViewport || window.innerWidth > 760) {
+    document.documentElement.style.removeProperty("--chat-toggle-bottom");
+    return;
+  }
+
+  const viewportGap = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
+  const keyboardLikelyOpen = viewportGap > 120;
+  const safeBottom = keyboardLikelyOpen ? Math.round(viewportGap + 14) : 14;
+  document.documentElement.style.setProperty("--chat-toggle-bottom", `${safeBottom}px`);
+}
+
 Ghost.style.display = "none";
 Stick.style.display = "none";
 Stick1.style.display = "block";
+if (worldPanelToggleIconEl) {
+  worldPanelToggleIconEl.innerHTML = `
+    <svg class="chat-toggle-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M21 11.5a8.4 8.4 0 0 1-8.7 8.2 9.6 9.6 0 0 1-3.9-.8L3 20l1.4-4.4A8 8 0 0 1 3.2 11.5 8.4 8.4 0 0 1 12 3.3a8.4 8.4 0 0 1 9 8.2Z"></path>
+      <path d="M8.2 10.6h7.6M8.2 13.6h5.2"></path>
+    </svg>
+  `;
+}
 
 function setPowerStatus(message, isError = false) {
   if (!powerAuthStatusEl) return;
@@ -1435,10 +1466,16 @@ if (worldChatFormEl) {
 }
 
 if (worldPanelToggleEl) {
+  mountWorldPanelToBody();
   worldPanelToggleEl.addEventListener("click", () => {
     setWorldPanelOpen(!document.body.classList.contains("world-panel-open"));
   });
 }
+
+syncMobileChatTogglePosition();
+window.addEventListener("resize", syncMobileChatTogglePosition);
+window.visualViewport?.addEventListener("resize", syncMobileChatTogglePosition);
+window.visualViewport?.addEventListener("scroll", syncMobileChatTogglePosition);
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
