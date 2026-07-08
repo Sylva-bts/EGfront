@@ -1,5 +1,6 @@
 let Img = document.querySelector(".img");
-let soldeSpan = document.querySelector("#Solde span");
+let soldeSpan = document.getElementById("solde-display") || document.querySelector("#Solde span");
+let soldeCurrencyEl = document.getElementById("solde-devise");
 let coteSpan = document.querySelector("#cote span");
 let mess = document.getElementById("message");
 
@@ -7,6 +8,8 @@ let Stick = document.getElementById("stick0");
 let Stick1 = document.getElementById("stick1");
 let Ghost = document.getElementById("Ghost");
 let miseEl = document.getElementById("Mise");
+let miseCurrencyEl = document.getElementById("mise-devise");
+let miseMinimumEl = document.getElementById("mise-minimum");
 let historyEl = document.getElementById("Story");
 let worldFeedEl = document.getElementById("world-feed");
 let worldChatMessagesEl = document.getElementById("world-chat-messages");
@@ -122,7 +125,22 @@ const WORLD_CHAT_KEY = "ghostrWorldChat";
 const WORLD_ACTIVITY_LIMIT = 20;
 const WORLD_CHAT_LIMIT = 40;
 const WORLD_CHAT_MAX_AGE_MS = 72 * 60 * 60 * 1000;
-const MIN_BET_AMOUNT = 1;
+const MIN_BET_USD = 0.26;
+const MIN_BET_BY_CURRENCY = {
+  USD: 0.26,
+  EUR: 0.23,
+  XOF: 150
+};
+const BET_USD_VALUE_BY_CURRENCY = {
+  USD: 1,
+  EUR: 0.26 / 0.23,
+  XOF: 0.26 / 150
+};
+const FALLBACK_RATES_FROM_USD = {
+  USD: 1,
+  EUR: 0.92,
+  XOF: 600
+};
 const WORLD_REFRESH_MS = 9000;
 const RUNTIME_CONFIG_REFRESH_MS = 45000;
 const DESKTOP_STAGE_REFERENCE_WIDTH = 560;
@@ -145,6 +163,110 @@ function escapeHtml(value) {
 
 function formatMoney(value) {
   return `${Number(value || 0).toFixed(2)} USD`;
+}
+
+const currencyState = {
+  balanceUsd: 0,
+  rates: { ...FALLBACK_RATES_FROM_USD },
+  source: "fallback"
+};
+
+function getSelectedCurrency(selectEl, fallback = "USD") {
+  const currency = String(selectEl?.value || fallback).toUpperCase();
+  return ["USD", "EUR", "XOF"].includes(currency) ? currency : fallback;
+}
+
+function formatCurrencyAmount(value, currency) {
+  const normalizedCurrency = getSelectedCurrency({ value: currency }, "USD");
+  return new Intl.NumberFormat(normalizedCurrency === "XOF" ? "fr-CI" : "fr-FR", {
+    style: "currency",
+    currency: normalizedCurrency,
+    maximumFractionDigits: normalizedCurrency === "XOF" ? 0 : 2
+  }).format(Number(value || 0));
+}
+
+function convertUsdToCurrency(amountUsd, currency) {
+  const rate = Number(currencyState.rates[currency] || 1);
+  return Number((Number(amountUsd || 0) * rate).toFixed(currency === "XOF" ? 0 : 2));
+}
+
+function convertCurrencyToUsd(amount, currency) {
+  const rate = Number(currencyState.rates[currency] || 1);
+  if (!rate) return 0;
+  return Number((Number(amount || 0) / rate).toFixed(2));
+}
+
+function convertBetCurrencyToUsd(amount, currency) {
+  const rate = Number(BET_USD_VALUE_BY_CURRENCY[currency] || 1);
+  return Number((Number(amount || 0) * rate).toFixed(2));
+}
+
+function renderDisplayedBalance() {
+  if (!soldeSpan) return;
+  const currency = getSelectedCurrency(soldeCurrencyEl, "USD");
+  soldeSpan.textContent = formatCurrencyAmount(convertUsdToCurrency(currencyState.balanceUsd, currency), currency);
+}
+
+function updateBetMinimumHint() {
+  const currency = getSelectedCurrency(miseCurrencyEl, "USD");
+  const minimum = MIN_BET_BY_CURRENCY[currency] || MIN_BET_USD;
+  if (miseEl) {
+    miseEl.min = String(minimum);
+    miseEl.step = currency === "XOF" ? "1" : "0.01";
+    miseEl.placeholder = `Minimum ${formatCurrencyAmount(minimum, currency)}`;
+  }
+  if (miseMinimumEl) {
+    miseMinimumEl.textContent = `Minimum: ${formatCurrencyAmount(minimum, currency)}`;
+  }
+}
+
+async function loadCurrencyRates() {
+  if (!window.AppApi?.getToken?.()) {
+    renderDisplayedBalance();
+    updateBetMinimumHint();
+    return;
+  }
+
+  try {
+    const payload = await window.AppApi.fetchJson("/api/payments/rates", {
+      method: "GET",
+      headers: window.AppApi.authHeaders()
+    });
+    const data = payload.data || {};
+    currencyState.rates = {
+      USD: Number(data.rates?.USD || 1),
+      EUR: Number(data.rates?.EUR || currencyState.rates.EUR),
+      XOF: Number(data.rates?.XOF || currencyState.rates.XOF)
+    };
+    currencyState.source = data.source || "server";
+    if (typeof data.balance?.USD === "number") {
+      currencyState.balanceUsd = Number(data.balance.USD || 0);
+    }
+  } catch (error) {
+    console.warn("Currency rates unavailable:", error.message);
+  } finally {
+    renderDisplayedBalance();
+    updateBetMinimumHint();
+  }
+}
+
+function getBetAmountUsdFromInput() {
+  const currency = getSelectedCurrency(miseCurrencyEl, "USD");
+  const enteredAmount = Number(miseEl.value);
+  const minimum = MIN_BET_BY_CURRENCY[currency] || MIN_BET_USD;
+
+  if (!Number.isFinite(enteredAmount) || enteredAmount < minimum) {
+    return { valid: false, enteredAmount, minimum, currency, amountUsd: 0 };
+  }
+
+  const convertedAmount = convertBetCurrencyToUsd(enteredAmount, currency);
+  return {
+    valid: true,
+    enteredAmount,
+    minimum,
+    currency,
+    amountUsd: Number(Math.max(convertedAmount, MIN_BET_USD).toFixed(2))
+  };
 }
 
 function formatWorldTimestamp(value) {
@@ -390,11 +512,12 @@ function setPowerStatus(message, isError = false) {
 }
 
 function setDisplayedBalance(amount) {
-  soldeSpan.textContent = Number(amount || 0).toFixed(2);
+  currencyState.balanceUsd = Number(amount || 0);
+  renderDisplayedBalance();
 }
 
 function getDisplayedBalance() {
-  return Number(soldeSpan.textContent || 0);
+  return Number(currencyState.balanceUsd || 0);
 }
 
 function toSuperscript(value) {
@@ -436,7 +559,7 @@ function fillProfileForm(user) {
   if (!profileFormEl) return;
   profileUsernameEl.value = user?.username || "";
   profileEmailEl.value = user?.email || "";
-  profileBalanceEl.value = typeof user?.balance === "number" ? `${user.balance.toFixed(2)} USD` : "0.00 USD";
+  profileBalanceEl.value = typeof user?.balance === "number" ? formatCurrencyAmount(user.balance, "USD") : formatCurrencyAmount(0, "USD");
   profileCurrentPasswordEl.value = "";
   profileNewPasswordEl.value = "";
 }
@@ -553,7 +676,11 @@ async function debitGameBalance(amount) {
   const payload = await powerApiFetch("/api/game/debit", {
     method: "POST",
     headers: getPowerHeaders(),
-    body: JSON.stringify({ amount })
+    body: JSON.stringify({
+      amount,
+      inputAmount: Number(miseEl?.value || 0),
+      inputCurrency: getSelectedCurrency(miseCurrencyEl, "USD")
+    })
   });
   setDisplayedBalance(payload.user.balance);
   return payload;
@@ -1056,21 +1183,25 @@ window.addEventListener("load", () => {
   loadGameRuntimeConfig().finally(() => {
     refreshWorldPanels();
   });
-  refreshAccountFromServer(true);
+  refreshAccountFromServer(true).finally(loadCurrencyRates);
   startWorldRefreshLoop();
 });
 
 window.addEventListener("storage", (event) => {
   if (window.AppApi.TOKEN_KEYS.includes(event.key)) {
-    refreshAccountFromServer(true);
+    refreshAccountFromServer(true).finally(loadCurrencyRates);
   }
 });
+
+soldeCurrencyEl?.addEventListener("change", renderDisplayedBalance);
+miseCurrencyEl?.addEventListener("change", updateBetMinimumHint);
 
 async function Miser() {
   if (betRequestPending || jeuEnCours) return;
 
   powerState.token = window.AppApi.getToken();
-  mise = Number(miseEl.value);
+  const betInput = getBetAmountUsdFromInput();
+  mise = betInput.amountUsd;
   const solde = getDisplayedBalance();
 
   if (!powerState.token) {
@@ -1079,8 +1210,8 @@ async function Miser() {
     return;
   }
 
-  if (!Number.isFinite(mise) || mise < MIN_BET_AMOUNT) {
-    showGameNotification("Mise minimale: 1.00 USD", "warn");
+  if (!betInput.valid) {
+    showGameNotification(`Mise minimale: ${formatCurrencyAmount(betInput.minimum, betInput.currency)}`, "warn");
     return;
   }
 

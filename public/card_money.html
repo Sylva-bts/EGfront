@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Depot / Retrait</title>
+  <link rel="stylesheet" href="card_money.css">
+</head>
+<body>
+  <div class="container">
+    <a href="transaction.html" class="back-link">&larr; Retour</a>
+    <h1>Mon compte</h1>
+
+    <div class="solde-box">
+      <div class="balance-topline">
+        <span>Solde actuel</span>
+        <select id="devise-solde" aria-label="Devise du solde">
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="XOF">XOF</option>
+        </select>
+      </div>
+      <strong id="solde">...</strong>
+      <small id="rates-meta">Conversion en cours...</small>
+    </div>
+
+    <div class="tabs">
+      <button id="tab-depot" class="tab active" onclick="switchTab('depot')">Depot</button>
+      <button id="tab-retrait" class="tab" onclick="switchTab('retrait')">Retrait</button>
+    </div>
+
+    <div id="form-depot" class="form-panel active">
+      <label for="tel-depot">Numero de telephone</label>
+      <input type="text" id="tel-depot" inputmode="tel" placeholder="Ex: +2250700000000">
+
+      <div class="amount-row">
+        <label for="montant-depot">Montant a deposer</label>
+        <select id="devise-depot" aria-label="Devise du depot">
+          <option value="XOF">XOF</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </div>
+      <input type="number" id="montant-depot" min="1" step="0.01" placeholder="Montant">
+      <small class="hint">Vous serez redirige vers la facture GeniusPay securisee.</small>
+
+      <button class="btn-primary" id="btn-depot" onclick="effectuerDepot()">Payer avec GeniusPay</button>
+    </div>
+
+    <div id="form-retrait" class="form-panel hidden">
+      <label for="tel-retrait">Numero de telephone</label>
+      <input type="text" id="tel-retrait" inputmode="tel" placeholder="Ex: +2250700000000">
+
+      <label for="montant-retrait">Montant a retirer</label>
+      <input type="number" id="montant-retrait" placeholder="Montant en USD">
+
+      <button class="btn-primary" onclick="effectuerRetrait()">Effectuer le retrait</button>
+    </div>
+
+    <p id="message"></p>
+  </div>
+
+  <script src="app-api.js?v=20260708-geniuspay"></script>
+  <script src="script.js?v=20260708-geniuspay"></script>
+</body>
+</html>

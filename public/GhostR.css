@@ -2867,9 +2867,51 @@ input:focus-visible {
   white-space: nowrap;
 }
 
-.site-header .solde span {
+.site-header .solde strong {
   color: #fff;
   font-weight: 900;
+}
+
+.site-header .solde select,
+.bet-input-row select {
+  min-width: 72px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(12, 15, 29, 0.72);
+  color: #fff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  outline: none;
+}
+
+.site-header .solde select {
+  padding: 0.35rem 0.45rem;
+}
+
+.site-header .solde option,
+.bet-input-row option {
+  color: #111827;
+}
+
+.bet-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.bet-input-row select {
+  align-self: stretch;
+  padding: 0 0.65rem;
+}
+
+.mise-minimum {
+  display: block;
+  margin-top: 0.45rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .header-quick-actions {

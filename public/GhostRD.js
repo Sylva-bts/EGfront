@@ -53,7 +53,7 @@ let mise = 0;
 let gameInterval;
 let ghostPos = 0;
 let notificationTimeoutId;
-const MIN_BET_AMOUNT = 1;
+const MIN_BET_AMOUNT = 0.26;
 const DESKTOP_STAGE_REFERENCE_WIDTH = 560;
 const GHOST_CHASE_LIMIT_DESKTOP = 100;
 const GHOST_CRASH_POS_DESKTOP = 230;
@@ -449,7 +449,7 @@ function Miser() {
   let solde = Number(soldeSpan.textContent);
 
   if (!Number.isFinite(mise) || mise < MIN_BET_AMOUNT) {
-    showGameNotification('Mise minimale: 1.00 USD', 'warn');
+    showGameNotification('Mise minimale: 0.26 USD', 'warn');
   } else if (mise > solde) {
     showGameNotification('Solde insuffisant', 'warn');
   } else {
