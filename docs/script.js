@@ -87,9 +87,28 @@ function getApi() {
 async function loadBalanceAndRates() {
   try {
     const api = getApi();
-    const payload = await api.fetchJson("/api/payments/rates", {
-      headers: api.authHeaders()
-    });
+    let payload;
+
+    try {
+      payload = await api.fetchJson("/api/payments/rates", {
+        headers: api.authHeaders()
+      });
+    } catch (ratesError) {
+      const balancePayload = await api.fetchJson("/api/payments/balance", {
+        headers: api.authHeaders()
+      });
+      const balanceData = balancePayload.data || {};
+
+      payload = {
+        data: {
+          balance: {
+            USD: Number(balanceData.balance || balanceData.withdrawableBalance || 0)
+          },
+          rates: state.rates,
+          source: "secours"
+        }
+      };
+    }
 
     const data = payload.data || {};
     state.balanceUsd = Number(data.balance?.USD || 0);

@@ -2,6 +2,7 @@
   const TOKEN_KEYS = ["token", "ghostrAuthToken"];
   const USER_KEY = "ghostrUser";
   const REFERRAL_KEY = "ghostrReferralCode";
+  const API_BASE_URL_KEY = "ghostrApiBaseUrl";
   const PHANTOM_SIGNUP_BALANCE = 1000;
   const DEFAULT_REMOTE_API_BASE_URL = "https://egback-1.onrender.com";
 
@@ -10,7 +11,9 @@
   }
 
   function readWindowApiBaseUrl() {
-    return normalizeBaseUrl(window.__APP_CONFIG__ && window.__APP_CONFIG__.apiBaseUrl);
+    const configUrl = window.__APP_CONFIG__ && window.__APP_CONFIG__.apiBaseUrl;
+    const metaUrl = document.querySelector('meta[name="ghostr-api-base-url"]')?.getAttribute("content");
+    return normalizeBaseUrl(configUrl || metaUrl);
   }
 
   function getStorageAreas() {
@@ -65,7 +68,7 @@
   }
 
   function getApiBaseUrl() {
-    const overrideUrl = normalizeBaseUrl(readStoredValue("ghostrApiBaseUrl"));
+    const overrideUrl = normalizeBaseUrl(readStoredValue(API_BASE_URL_KEY));
     const windowOverrideUrl = readWindowApiBaseUrl();
     const hostname = window.location.hostname;
     const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
@@ -289,6 +292,39 @@
     return `Impossible de contacter l'API. Verifiez le proxy Netlify, l'URL Render et le demarrage du backend (${list}).`;
   }
 
+  function rememberApiBaseUrl(baseUrl) {
+    const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
+
+    if (normalizedBaseUrl) {
+      writeStoredValue(API_BASE_URL_KEY, normalizedBaseUrl);
+    }
+  }
+
+  async function readJsonResponse(response) {
+    const contentType = String(response.headers.get("content-type") || "").toLowerCase();
+    const text = await response.text().catch(() => "");
+
+    if (!text) {
+      return {};
+    }
+
+    if (!contentType.includes("application/json")) {
+      const error = new Error("Reponse API invalide: le serveur a renvoye du HTML au lieu du JSON.");
+      error.isNonJsonResponse = true;
+      error.status = response.status;
+      throw error;
+    }
+
+    try {
+      return JSON.parse(text);
+    } catch {
+      const error = new Error("Reponse API invalide: JSON illisible.");
+      error.isNonJsonResponse = true;
+      error.status = response.status;
+      throw error;
+    }
+  }
+
   function isAuthError(status, payload) {
     const message = String((payload && (payload.message || payload.error)) || "");
     return status === 401 && /token|authentification|reconnecter|session|connexion requise|acces refuse|accès refusé/i.test(message);
@@ -309,13 +345,14 @@
   async function fetchJson(path, options) {
     const primaryBaseUrl = getApiBaseUrl();
     const baseUrls = [];
-    const explicitApiBaseUrl = readWindowApiBaseUrl() || normalizeBaseUrl(readStoredValue("ghostrApiBaseUrl"));
+    const configuredApiBaseUrl = readWindowApiBaseUrl();
+    const storedApiBaseUrl = normalizeBaseUrl(readStoredValue(API_BASE_URL_KEY));
 
     addBaseUrlCandidate(baseUrls, primaryBaseUrl);
+    addBaseUrlCandidate(baseUrls, configuredApiBaseUrl);
+    addBaseUrlCandidate(baseUrls, storedApiBaseUrl);
 
-    if (explicitApiBaseUrl) {
-      addBaseUrlCandidate(baseUrls, explicitApiBaseUrl);
-    } else if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
       addBaseUrlCandidate(baseUrls, "http://localhost:3000");
       addBaseUrlCandidate(baseUrls, "http://localhost:5000");
     } else {
@@ -331,7 +368,7 @@
     for (const baseUrl of baseUrls) {
       try {
         const response = await fetch(`${baseUrl}${path}`, options || {});
-        const payload = await response.json().catch(() => ({}));
+        const payload = await readJsonResponse(response);
         lastPayload = payload;
 
         if (!response.ok) {
@@ -360,6 +397,7 @@
           throw createHttpError(errorMessage, response.status);
         }
 
+        rememberApiBaseUrl(baseUrl);
         return normalizePayload(path, payload);
       } catch (error) {
         if (authFailureMessage) {
@@ -368,6 +406,10 @@
 
         if (error && error.isHttpResponseError) {
           throw error;
+        }
+
+        if (error && error.isNonJsonResponse && baseUrl !== baseUrls[baseUrls.length - 1]) {
+          continue;
         }
 
         if (baseUrl === baseUrls[baseUrls.length - 1]) {
@@ -384,6 +426,7 @@
     TOKEN_KEYS,
     USER_KEY,
     REFERRAL_KEY,
+    API_BASE_URL_KEY,
     getApiBaseUrl,
     getToken,
     setToken,
