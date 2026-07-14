@@ -61,7 +61,12 @@
     <p id="message"></p>
   </div>
 
-  <script src="app-api.js?v=20260714-hosted-api-fix"></script>
+  <script>
+    window.__APP_CONFIG__ = {
+      apiBaseUrl: "https://egback-1.onrender.com"
+    };
+  </script>
+  <script src="app-api.js?v=20260714-render-api-force"></script>
   <script src="script.js?v=20260714-geniuspay-url-fix"></script>
 </body>
 </html>

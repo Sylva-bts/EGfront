@@ -116,6 +116,29 @@
       || /\.github\.io$/i.test(hostname);
   }
 
+  function isLocalApiBaseUrl(value) {
+    try {
+      const hostname = new URL(value).hostname;
+      return hostname === "localhost" || hostname === "127.0.0.1";
+    } catch {
+      return false;
+    }
+  }
+
+  function getStoredApiBaseUrlCandidate() {
+    const storedApiBaseUrl = normalizeBaseUrl(readStoredValue(API_BASE_URL_KEY));
+    if (!storedApiBaseUrl) {
+      return "";
+    }
+
+    if (isHostedStaticOrigin() && (storedApiBaseUrl === window.location.origin || isLocalApiBaseUrl(storedApiBaseUrl))) {
+      removeStoredValue(API_BASE_URL_KEY);
+      return "";
+    }
+
+    return storedApiBaseUrl;
+  }
+
   function getToken() {
     for (const key of TOKEN_KEYS) {
       const value = normalizeToken(readStoredValue(key));
@@ -361,7 +384,7 @@
     const primaryBaseUrl = getApiBaseUrl();
     const baseUrls = [];
     const configuredApiBaseUrl = readWindowApiBaseUrl();
-    const storedApiBaseUrl = normalizeBaseUrl(readStoredValue(API_BASE_URL_KEY));
+    const storedApiBaseUrl = getStoredApiBaseUrlCandidate();
 
     addBaseUrlCandidate(baseUrls, configuredApiBaseUrl);
     addBaseUrlCandidate(baseUrls, primaryBaseUrl);
