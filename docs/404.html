@@ -9,10 +9,12 @@
    <script>
       (function redirectKnownGameRoutes() {
          const url = new URL(window.location.href);
-         const lastSegment = url.pathname.split("/").filter(Boolean).pop() || "";
+         const segments = url.pathname.split("/").filter(Boolean);
+         const lastSegment = segments[segments.length - 1] || "";
 
          if (/^ghostr(?:\.html)?$/i.test(lastSegment)) {
-            url.pathname = url.pathname.replace(/[^/]*$/, "GhostR.html");
+            segments[segments.length - 1] = "GhostR.html";
+            url.pathname = `/${segments.join("/")}`;
             window.location.replace(url.href);
          }
       })();
