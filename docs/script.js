@@ -70,6 +70,19 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function normalizeGeniusPayCheckoutUrl(value) {
+  const rawUrl = String(value || "").trim();
+  if (!rawUrl) return "";
+  if (/^https?:\/\//i.test(rawUrl)) return rawUrl;
+  if (rawUrl.startsWith("//")) return `https:${rawUrl}`;
+
+  try {
+    return new URL(rawUrl, "https://geniuspay.ci/").href;
+  } catch {
+    return rawUrl;
+  }
+}
+
 function setDepositLoading(isLoading) {
   if (!depositButton) return;
   depositButton.disabled = isLoading;
@@ -230,7 +243,7 @@ async function effectuerDepot() {
       })
     });
 
-    const checkoutUrl = payload.data?.checkout_url || payload.data?.payment_url;
+    const checkoutUrl = normalizeGeniusPayCheckoutUrl(payload.data?.checkout_url || payload.data?.payment_url);
     if (!checkoutUrl) {
       throw new Error("Lien GeniusPay introuvable.");
     }

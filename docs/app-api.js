@@ -74,12 +74,12 @@
     const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
     const defaultRemoteApiHostname = new URL(DEFAULT_REMOTE_API_BASE_URL).hostname;
 
-    if (overrideUrl) {
-      return overrideUrl;
-    }
-
     if (windowOverrideUrl) {
       return windowOverrideUrl;
+    }
+
+    if (overrideUrl && (isLocalHost || overrideUrl !== window.location.origin)) {
+      return overrideUrl;
     }
 
     if (window.location.protocol === "file:") {
@@ -107,6 +107,13 @@
     if (normalizedCandidate && !baseUrls.includes(normalizedCandidate)) {
       baseUrls.push(normalizedCandidate);
     }
+  }
+
+  function isHostedStaticOrigin() {
+    const hostname = window.location.hostname;
+    return hostname === "ghostdieze.com"
+      || hostname === "www.ghostdieze.com"
+      || /\.github\.io$/i.test(hostname);
   }
 
   function getToken() {
@@ -356,8 +363,8 @@
     const configuredApiBaseUrl = readWindowApiBaseUrl();
     const storedApiBaseUrl = normalizeBaseUrl(readStoredValue(API_BASE_URL_KEY));
 
-    addBaseUrlCandidate(baseUrls, primaryBaseUrl);
     addBaseUrlCandidate(baseUrls, configuredApiBaseUrl);
+    addBaseUrlCandidate(baseUrls, primaryBaseUrl);
     addBaseUrlCandidate(baseUrls, storedApiBaseUrl);
 
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
@@ -365,7 +372,7 @@
       addBaseUrlCandidate(baseUrls, "http://localhost:5000");
     } else {
       addBaseUrlCandidate(baseUrls, DEFAULT_REMOTE_API_BASE_URL);
-      if (window.location.protocol !== "file:") {
+      if (window.location.protocol !== "file:" && !isHostedStaticOrigin()) {
         addBaseUrlCandidate(baseUrls, window.location.origin);
       }
     }
