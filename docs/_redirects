@@ -1,4 +1,5 @@
-/ghostr /GhostR.html 200
-/ghostr.html /GhostR.html 200
-/GhostR /GhostR.html 200
+/ghostr /ghostr/ 200
+/ghostr.html /ghostr/ 200
+/GhostR /ghostr/ 200
+/GhostR.html /ghostr/ 200
 /api/* https://egback-1.onrender.com/api/:splat 200

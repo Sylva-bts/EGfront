@@ -282,7 +282,7 @@
   }
 
   function getGameUrl() {
-    return new URL("GhostR.html", window.location.href).href;
+    return new URL("ghostr/", window.location.href).href;
   }
 
   function goToGame() {

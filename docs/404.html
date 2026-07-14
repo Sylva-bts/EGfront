@@ -13,8 +13,8 @@
          const lastSegment = segments[segments.length - 1] || "";
 
          if (/^ghostr(?:\.html)?$/i.test(lastSegment)) {
-            segments[segments.length - 1] = "GhostR.html";
-            url.pathname = `/${segments.join("/")}`;
+            segments[segments.length - 1] = "ghostr";
+            url.pathname = `/${segments.join("/")}/`;
             window.location.replace(url.href);
          }
       })();
