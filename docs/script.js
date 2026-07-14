@@ -137,8 +137,11 @@ async function fetchGeniusPayStatus(orderId, reference) {
   const query = new URLSearchParams();
   if (orderId) query.set("order_id", orderId);
 
-  const pathReference = reference ? encodeURIComponent(reference) : "_";
-  return api.fetchJson(`/api/payments/geniuspay/status/${pathReference}?${query.toString()}`, {
+  const statusPath = reference
+    ? `/api/payments/geniuspay/status/${encodeURIComponent(reference)}?${query.toString()}`
+    : `/api/payments/geniuspay/status?${query.toString()}`;
+
+  return api.fetchJson(statusPath, {
     headers: api.authHeaders()
   });
 }
@@ -179,6 +182,11 @@ async function refreshReturnedGeniusPayPayment() {
     }
 
     await loadBalanceAndRates();
+
+    if (typeof payload?.data?.balance === "number") {
+      state.balanceUsd = payload.data.balance;
+      updateSolde();
+    }
 
     if (paymentStatus === "paid" || paymentStatus === "completed") {
       const creditedTotal = Number(payload?.data?.credited_total || 0);
