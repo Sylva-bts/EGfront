@@ -281,6 +281,14 @@
     };
   }
 
+  function getGameUrl() {
+    return new URL("GhostR.html", window.location.href).href;
+  }
+
+  function goToGame() {
+    window.location.assign(getGameUrl());
+  }
+
   function isLikelyNetworkError(error) {
     const message = String(error && error.message ? error.message : "").toLowerCase();
     return message.includes("failed to fetch") || message.includes("networkerror") || message.includes("load failed");
@@ -437,6 +445,8 @@
     setReferralCode,
     clearReferralCode,
     authHeaders,
+    getGameUrl,
+    goToGame,
     fetchJson
   };
 })();

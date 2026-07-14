@@ -292,7 +292,7 @@
       </section>
    </div>
 
-   <script src="app-api.js?v=20260530-api-base"></script>
+   <script src="app-api.js?v=20260714-gh-pages-game-redirect"></script>
    <script>
       const GOOGLE_CLIENT_ID_FALLBACK = '803396761586-r1uaco3d09mrqnn5a0cp53utdkkhgl5l.apps.googleusercontent.com';
       let googleAuthInitialized = false;
@@ -335,7 +335,7 @@
               renderMessage(data.message, 'success');
 
               setTimeout(() => {
-                  window.location.href = 'GhostR.html';
+                  window.AppApi.goToGame();
               }, 1000);
           } catch (err) {
               renderMessage(err.message, 'error');
@@ -401,7 +401,7 @@
               renderMessage(data.message, 'success');
 
               setTimeout(() => {
-                  window.location.href = 'GhostR.html';
+                  window.AppApi.goToGame();
               }, 1500);
 
           } catch (err) {

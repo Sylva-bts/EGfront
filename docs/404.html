@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Page introuvable | Escape the Ghost</title>
+</head>
+<body>
+   <script>
+      (function redirectKnownGameRoutes() {
+         const url = new URL(window.location.href);
+         const lastSegment = url.pathname.split("/").filter(Boolean).pop() || "";
+
+         if (/^ghostr(?:\.html)?$/i.test(lastSegment)) {
+            url.pathname = url.pathname.replace(/[^/]*$/, "GhostR.html");
+            window.location.replace(url.href);
+         }
+      })();
+   </script>
+   <p>Page introuvable.</p>
+</body>
+</html>
