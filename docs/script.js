@@ -10,9 +10,13 @@ const depositButton = document.getElementById("btn-depot");
 const GENIUSPAY_RETURN_POLL_ATTEMPTS = 10;
 const GENIUSPAY_RETURN_POLL_DELAY_MS = 2500;
 const GENIUSPAY_DEPOSIT_PATHS = [
+  "/api/geniuspay/deposit",
   "/api/payments/geniuspay/deposit",
-  "/api/payments/geniuspay/create",
-  "/api/payments/geniuspay"
+  "/api/payments/geniuspay/create"
+];
+const GENIUSPAY_STATUS_PATHS = [
+  "/api/geniuspay/status",
+  "/api/payments/geniuspay/status"
 ];
 
 const state = {
@@ -155,13 +159,26 @@ async function fetchGeniusPayStatus(orderId, reference) {
   const query = new URLSearchParams();
   if (orderId) query.set("order_id", orderId);
 
-  const statusPath = reference
-    ? `/api/payments/geniuspay/status/${encodeURIComponent(reference)}${query.toString() ? `?${query.toString()}` : ""}`
-    : `/api/payments/geniuspay/status${query.toString() ? `?${query.toString()}` : ""}`;
+  let lastError = null;
 
-  return api.fetchJson(statusPath, {
-    headers: api.authHeaders()
-  });
+  for (const basePath of GENIUSPAY_STATUS_PATHS) {
+    const statusPath = reference
+      ? `${basePath}/${encodeURIComponent(reference)}${query.toString() ? `?${query.toString()}` : ""}`
+      : `${basePath}${query.toString() ? `?${query.toString()}` : ""}`;
+
+    try {
+      return await api.fetchJson(statusPath, {
+        headers: api.authHeaders()
+      });
+    } catch (error) {
+      lastError = error;
+      if (!isMissingRouteError(error)) {
+        throw error;
+      }
+    }
+  }
+
+  throw new Error(lastError?.message || "Verification GeniusPay indisponible.");
 }
 
 function isMissingRouteError(error) {
@@ -187,7 +204,7 @@ async function createGeniusPayDeposit(api, body) {
     }
   }
 
-  throw new Error("Route GeniusPay absente sur le backend de production. Redeployez Render avec les routes /api/payments/geniuspay/deposit.");
+  throw new Error(lastError?.message || "Integration GeniusPay indisponible sur le backend de production.");
 }
 
 async function refreshReturnedGeniusPayPayment() {
