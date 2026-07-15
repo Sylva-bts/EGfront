@@ -54,6 +54,12 @@ function renderCatalog() {
   });
 }
 
+function isSessionExpiredError(error) {
+  const message = String(error?.message || "");
+  return error?.status === 401
+    && /token|authentification|reconnecter|session|connexion requise|acces refuse|accès refusé/i.test(message);
+}
+
 async function refreshStoreUser() {
   storeState.token = window.AppApi.getToken();
 
@@ -79,7 +85,10 @@ async function refreshStoreUser() {
   } catch (error) {
     storeState.user = null;
     storeState.catalog = {};
-    window.AppApi.clearToken();
+    if (isSessionExpiredError(error)) {
+      window.AppApi.clearToken();
+      storeState.token = "";
+    }
     renderCatalog();
     renderStoreUser();
     setStoreStatus(error.message, true);

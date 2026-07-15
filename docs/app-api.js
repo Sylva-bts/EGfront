@@ -327,7 +327,7 @@
   function buildNetworkErrorMessage(baseUrls) {
     const candidates = baseUrls.map((value) => value || window.location.origin);
     const list = candidates.length ? candidates.join(" ou ") : window.location.origin;
-    return `Impossible de contacter l'API. Verifiez le proxy Netlify, l'URL Render et le demarrage du backend (${list}).`;
+    return `Impossible de contacter l'API. Verifiez l'URL Render, le demarrage du backend et la configuration CORS (${list}).`;
   }
 
   function rememberApiBaseUrl(baseUrl) {
@@ -401,7 +401,7 @@
     }
 
     let lastPayload = {};
-    let authFailureMessage = "";
+    let authFailureError = null;
 
     for (const baseUrl of baseUrls) {
       try {
@@ -420,11 +420,12 @@
           }
 
           if (isAuthError(response.status, payload)) {
-            authFailureMessage = payload.message || payload.error || "Session invalide.";
+            const authFailureMessage = payload.message || payload.error || "Session invalide.";
             if (/token invalide|authentification|reconnecter|session/i.test(authFailureMessage)) {
               clearToken();
             }
-            throw createHttpError(authFailureMessage, response.status);
+            authFailureError = createHttpError(authFailureMessage, response.status);
+            throw authFailureError;
           }
 
           const errorMessage = payload.message || payload.error || "Erreur serveur.";
@@ -438,8 +439,8 @@
         rememberApiBaseUrl(baseUrl);
         return normalizePayload(path, payload);
       } catch (error) {
-        if (authFailureMessage) {
-          throw new Error(authFailureMessage);
+        if (authFailureError) {
+          throw authFailureError;
         }
 
         if (error && error.isHttpResponseError) {
@@ -454,7 +455,7 @@
           if (isLikelyNetworkError(error)) {
             throw new Error(buildNetworkErrorMessage(baseUrls));
           }
-          throw new Error(authFailureMessage || lastPayload.message || lastPayload.error || error.message || "Erreur serveur.");
+          throw new Error(lastPayload.message || lastPayload.error || error.message || "Erreur serveur.");
         }
       }
     }
