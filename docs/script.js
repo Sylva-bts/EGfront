@@ -7,8 +7,13 @@ const balanceCurrencySelect = document.getElementById("devise-solde");
 const depositCurrencySelect = document.getElementById("devise-depot");
 const ratesMetaElement = document.getElementById("rates-meta");
 const depositButton = document.getElementById("btn-depot");
-const GENIUSPAY_RETURN_POLL_ATTEMPTS = 6;
+const GENIUSPAY_RETURN_POLL_ATTEMPTS = 10;
 const GENIUSPAY_RETURN_POLL_DELAY_MS = 2500;
+const GENIUSPAY_DEPOSIT_PATHS = [
+  "/api/payments/geniuspay/deposit",
+  "/api/payments/geniuspay/create",
+  "/api/payments/geniuspay"
+];
 
 const state = {
   balanceUsd: 0,
@@ -151,12 +156,38 @@ async function fetchGeniusPayStatus(orderId, reference) {
   if (orderId) query.set("order_id", orderId);
 
   const statusPath = reference
-    ? `/api/payments/geniuspay/status/${encodeURIComponent(reference)}?${query.toString()}`
-    : `/api/payments/geniuspay/status?${query.toString()}`;
+    ? `/api/payments/geniuspay/status/${encodeURIComponent(reference)}${query.toString() ? `?${query.toString()}` : ""}`
+    : `/api/payments/geniuspay/status${query.toString() ? `?${query.toString()}` : ""}`;
 
   return api.fetchJson(statusPath, {
     headers: api.authHeaders()
   });
+}
+
+function isMissingRouteError(error) {
+  const message = String(error?.message || "").toLowerCase();
+  return Number(error?.status) === 404 || message.includes("route non trouve") || message.includes("route non trouv");
+}
+
+async function createGeniusPayDeposit(api, body) {
+  let lastError = null;
+
+  for (const path of GENIUSPAY_DEPOSIT_PATHS) {
+    try {
+      return await api.fetchJson(path, {
+        method: "POST",
+        headers: api.authHeaders(),
+        body: JSON.stringify(body)
+      });
+    } catch (error) {
+      lastError = error;
+      if (!isMissingRouteError(error)) {
+        throw error;
+      }
+    }
+  }
+
+  throw new Error("Route GeniusPay absente sur le backend de production. Redeployez Render avec les routes /api/payments/geniuspay/deposit.");
 }
 
 async function refreshReturnedGeniusPayPayment() {
@@ -232,15 +263,11 @@ async function effectuerDepot() {
     showMessage("Creation de la facture GeniusPay...", "");
 
     const api = getApi();
-    const payload = await api.fetchJson("/api/payments/geniuspay/deposit", {
-      method: "POST",
-      headers: api.authHeaders(),
-      body: JSON.stringify({
-        phone: tel,
-        amount,
-        currency,
-        country: "CI"
-      })
+    const payload = await createGeniusPayDeposit(api, {
+      phone: tel,
+      amount,
+      currency,
+      country: "CI"
     });
 
     const checkoutUrl = normalizeGeniusPayCheckoutUrl(payload.data?.checkout_url || payload.data?.payment_url);
