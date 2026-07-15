@@ -43,9 +43,9 @@
         </select>
       </div>
       <input type="number" id="montant-depot" min="1" step="0.01" placeholder="Montant">
-      <small class="hint">Vous serez redirige vers la facture GeniusPay securisee.</small>
+      <small class="hint">Vous serez redirige vers une facture de paiement securisee.</small>
 
-      <button class="btn-primary" id="btn-depot" onclick="effectuerDepot()">Payer avec GeniusPay</button>
+      <button class="btn-primary" id="btn-depot" onclick="effectuerDepot()">Payer maintenant</button>
     </div>
 
     <div id="form-retrait" class="form-panel hidden">
@@ -58,6 +58,16 @@
       <button class="btn-primary" onclick="effectuerRetrait()">Effectuer le retrait</button>
     </div>
 
+    <section class="history-box" aria-labelledby="history-title">
+      <div class="history-head">
+        <h2 id="history-title">Historiques</h2>
+        <button type="button" class="btn-ghost" id="btn-history-refresh" onclick="loadTransactionHistory()">Actualiser</button>
+      </div>
+      <div id="history-list" class="history-list">
+        <p class="history-empty">Chargement des historiques...</p>
+      </div>
+    </section>
+
     <p id="message"></p>
   </div>
 
@@ -67,6 +77,6 @@
     };
   </script>
   <script src="app-api.js?v=20260714-render-api-force"></script>
-  <script src="script.js?v=20260715-geniuspay-rebuild"></script>
+  <script src="script.js?v=20260715-payment-rebuild"></script>
 </body>
 </html>

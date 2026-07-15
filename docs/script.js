@@ -7,6 +7,8 @@ const balanceCurrencySelect = document.getElementById("devise-solde");
 const depositCurrencySelect = document.getElementById("devise-depot");
 const ratesMetaElement = document.getElementById("rates-meta");
 const depositButton = document.getElementById("btn-depot");
+const historyListElement = document.getElementById("history-list");
+const historyRefreshButton = document.getElementById("btn-history-refresh");
 const GENIUSPAY_RETURN_POLL_ATTEMPTS = 10;
 const GENIUSPAY_RETURN_POLL_DELAY_MS = 2500;
 const GENIUSPAY_DEPOSIT_PATHS = [
@@ -58,6 +60,83 @@ function formatMoney(value, currency) {
   }).format(Number(value || 0));
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function formatDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
+}
+
+function getTransactionLabel(type) {
+  const labels = {
+    deposit: "Depot",
+    withdraw: "Retrait",
+    power_purchase: "Achat de pouvoir"
+  };
+
+  return labels[type] || "Transaction";
+}
+
+function getTransactionStatusLabel(status) {
+  const labels = {
+    pending: "en attente",
+    paid: "paye",
+    completed: "termine",
+    rejected: "refuse",
+    expired: "expire",
+    failed: "echoue"
+  };
+
+  return labels[status] || status || "";
+}
+
+function getStatusClass(status) {
+  return String(status || "").toLowerCase().replace(/[^a-z0-9_-]/g, "");
+}
+
+function renderTransactionHistory(transactions) {
+  if (!historyListElement) return;
+
+  if (!Array.isArray(transactions) || transactions.length === 0) {
+    historyListElement.innerHTML = '<p class="history-empty">Aucun historique pour le moment.</p>';
+    return;
+  }
+
+  historyListElement.innerHTML = transactions.map((transaction) => {
+    const type = String(transaction.type || "");
+    const status = String(transaction.status || "");
+    const amount = Number(transaction.amount_fiat || 0);
+    const signedAmount = type === "withdraw" || type === "power_purchase" ? -amount : amount;
+    const amountText = `${signedAmount < 0 ? "-" : "+"}${formatMoney(Math.abs(signedAmount), "USD")}`;
+    const dateText = formatDate(transaction.createdAt || transaction.updatedAt);
+    return `
+      <article class="history-item">
+        <div class="history-title">${escapeHtml(getTransactionLabel(type))}</div>
+        <div class="history-amount">${escapeHtml(amountText)}</div>
+        <div class="history-date">${escapeHtml(dateText)}</div>
+        <div class="history-status ${getStatusClass(status)}">${escapeHtml(getTransactionStatusLabel(status))}</div>
+      </article>
+    `;
+  }).join("");
+}
+
 function convertFromUsd(amountUsd, currency) {
   const rate = Number(state.rates[currency] || 1);
   return Number((Number(amountUsd || 0) * rate).toFixed(currency === "XOF" ? 0 : 2));
@@ -95,7 +174,7 @@ function normalizeGeniusPayCheckoutUrl(value) {
 function setDepositLoading(isLoading) {
   if (!depositButton) return;
   depositButton.disabled = isLoading;
-  depositButton.textContent = isLoading ? "Creation de la facture..." : "Payer avec GeniusPay";
+  depositButton.textContent = isLoading ? "Creation de la facture..." : "Payer maintenant";
 }
 
 function getApi() {
@@ -154,6 +233,31 @@ async function loadBalanceAndRates() {
   }
 }
 
+async function loadTransactionHistory() {
+  if (!historyListElement) return;
+
+  try {
+    const api = getApi();
+    if (historyRefreshButton) {
+      historyRefreshButton.disabled = true;
+      historyRefreshButton.textContent = "Chargement...";
+    }
+
+    const payload = await api.fetchJson("/api/payments/transactions?limit=10", {
+      headers: api.authHeaders()
+    });
+
+    renderTransactionHistory(payload.data?.transactions || []);
+  } catch (error) {
+    historyListElement.innerHTML = `<p class="history-empty">${escapeHtml(error.message || "Historique indisponible.")}</p>`;
+  } finally {
+    if (historyRefreshButton) {
+      historyRefreshButton.disabled = false;
+      historyRefreshButton.textContent = "Actualiser";
+    }
+  }
+}
+
 async function fetchGeniusPayStatus(orderId, reference) {
   const api = getApi();
   const query = new URLSearchParams();
@@ -178,7 +282,7 @@ async function fetchGeniusPayStatus(orderId, reference) {
     }
   }
 
-  throw new Error(lastError?.message || "Verification GeniusPay indisponible.");
+  throw new Error(lastError?.message || "Verification du paiement indisponible.");
 }
 
 function isMissingRouteError(error) {
@@ -204,7 +308,7 @@ async function createGeniusPayDeposit(api, body) {
     }
   }
 
-  throw new Error(lastError?.message || "Integration GeniusPay indisponible sur le backend de production.");
+  throw new Error(lastError?.message || "Paiement indisponible sur le backend de production.");
 }
 
 async function refreshReturnedGeniusPayPayment() {
@@ -217,13 +321,13 @@ async function refreshReturnedGeniusPayPayment() {
 
   if (!orderId && !reference) {
     if (status === "error") {
-      showMessage("Le paiement GeniusPay n'a pas abouti.", "error");
+      showMessage("Le paiement n'a pas abouti.", "error");
     }
     return;
   }
 
   try {
-    showMessage("Verification du paiement GeniusPay...", "");
+    showMessage("Verification du paiement...", "");
 
     let payload = null;
     let paymentStatus = "";
@@ -237,12 +341,13 @@ async function refreshReturnedGeniusPayPayment() {
       }
 
       if (attempt < GENIUSPAY_RETURN_POLL_ATTEMPTS) {
-        showMessage("Paiement en attente de confirmation GeniusPay...", "");
+        showMessage("Paiement en attente de confirmation...", "");
         await wait(GENIUSPAY_RETURN_POLL_DELAY_MS);
       }
     }
 
     await loadBalanceAndRates();
+    await loadTransactionHistory();
 
     if (typeof payload?.data?.balance === "number") {
       state.balanceUsd = payload.data.balance;
@@ -254,14 +359,14 @@ async function refreshReturnedGeniusPayPayment() {
       const creditedText = creditedTotal > 0 ? ` Montant credite: ${formatMoney(creditedTotal, "USD")}.` : "";
       showMessage(`Depot confirme. Votre solde a ete mis a jour.${creditedText}`, "success");
     } else if (["failed", "expired", "rejected"].includes(paymentStatus)) {
-      showMessage("Le paiement GeniusPay n'a pas ete valide.", "error");
+      showMessage("Le paiement n'a pas ete valide.", "error");
     } else {
-      showMessage("Paiement en attente de confirmation GeniusPay. Le solde sera mis a jour automatiquement apres validation.", "");
+      showMessage("Paiement en attente de confirmation. Le solde sera mis a jour automatiquement apres validation.", "");
     }
 
     window.history.replaceState({}, document.title, window.location.pathname);
   } catch (error) {
-    showMessage(error.message || "Verification GeniusPay impossible.", "error");
+    showMessage(error.message || "Verification du paiement impossible.", "error");
   }
 }
 
@@ -277,7 +382,7 @@ async function effectuerDepot() {
 
   try {
     setDepositLoading(true);
-    showMessage("Creation de la facture GeniusPay...", "");
+    showMessage("Creation de la facture de paiement...", "");
 
     const api = getApi();
     const payload = await createGeniusPayDeposit(api, {
@@ -289,13 +394,13 @@ async function effectuerDepot() {
 
     const checkoutUrl = normalizeGeniusPayCheckoutUrl(payload.data?.checkout_url || payload.data?.payment_url);
     if (!checkoutUrl) {
-      throw new Error("Lien GeniusPay introuvable.");
+      throw new Error("Lien de paiement introuvable.");
     }
 
     window.location.href = checkoutUrl;
   } catch (error) {
     setDepositLoading(false);
-    showMessage(error.message || "Impossible de creer le depot GeniusPay.", "error");
+    showMessage(error.message || "Impossible de creer le depot.", "error");
   }
 }
 
@@ -308,10 +413,14 @@ balanceCurrencySelect?.addEventListener("change", updateSolde);
 window.addEventListener("DOMContentLoaded", async () => {
   if (!window.AppApi?.getToken?.()) {
     showMessage("Connexion requise. Veuillez vous reconnecter.", "error");
+    if (historyListElement) {
+      historyListElement.innerHTML = '<p class="history-empty">Connectez-vous pour afficher vos historiques.</p>';
+    }
     updateSolde();
     return;
   }
 
   await loadBalanceAndRates();
+  await loadTransactionHistory();
   await refreshReturnedGeniusPayPayment();
 });
