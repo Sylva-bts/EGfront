@@ -326,8 +326,13 @@
 
   function buildNetworkErrorMessage(baseUrls) {
     const candidates = baseUrls.map((value) => value || window.location.origin);
-    const list = candidates.length ? candidates.join(" ou ") : window.location.origin;
-    return `Impossible de contacter l'API. Verifiez l'URL Render, le demarrage du backend et la configuration CORS (${list}).`;
+    const error = new Error("Connexion au service impossible. Verifiez votre connexion puis reessayez.");
+    error.isNetworkUnavailable = true;
+    error.diagnostics = {
+      checkedBaseUrls: candidates,
+      pageOrigin: window.location.origin || ""
+    };
+    return error;
   }
 
   function rememberApiBaseUrl(baseUrl) {
@@ -453,7 +458,11 @@
 
         if (baseUrl === baseUrls[baseUrls.length - 1]) {
           if (isLikelyNetworkError(error)) {
-            throw new Error(buildNetworkErrorMessage(baseUrls));
+            const networkError = buildNetworkErrorMessage(baseUrls);
+            if (networkError.diagnostics) {
+              console.warn("API network diagnostics:", networkError.diagnostics);
+            }
+            throw networkError;
           }
           throw new Error(lastPayload.message || lastPayload.error || error.message || "Erreur serveur.");
         }
