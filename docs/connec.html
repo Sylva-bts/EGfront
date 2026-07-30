@@ -197,11 +197,18 @@
          color: var(--muted);
       }
       .meta-row a,
+      .forgot-link,
       .back-link {
          color: var(--accent);
          text-decoration: none;
          font-weight: 700;
       }
+      .forgot-link {
+         display: block;
+         color: var(--accent-2);
+         text-align: right;
+      }
+      .forgot-link:hover { color: var(--text); }
       .back-link {
          margin-top: 22px;
          border: 1px solid var(--line);
@@ -280,8 +287,9 @@
                <input type="password" id="password" name="login_password" autocomplete="current-password" placeholder="Votre mot de passe" required>
             </div>
             <button class="submit-btn" type="submit">Se connecter</button>
+           <!-- <a class="forgot-link" id="forgot-link" href="forgot-password.html">Mot de passe oublie ?</a>-->
             <div class="meta-row">
-               <p>Pas encore de compte ? <a id="signup-link" href="inscri.html">Creer un profil</a></p>
+             <p>Pas encore de compte ? <a id="signup-link" href="inscri.html">Creer un profil</a></p>
             </div>
             <div id="message" aria-live="polite"></div>
          </form>
@@ -409,13 +417,26 @@
           }
       });
 
+      document.getElementById('forgot-link').addEventListener('click', (event) => {
+          const email = document.getElementById('email').value.trim();
+          if (email) {
+              event.currentTarget.href = `forgot-password.html?email=${encodeURIComponent(email)}`;
+          }
+      });
+
       (function captureReferralCodeOnLoginPage() {
           const url = new URL(window.location.href);
+          const emailFromUrl = url.searchParams.get('email');
           const referralFromUrl = url.searchParams.get('ref');
           const referralCode = referralFromUrl
               ? window.AppApi.setReferralCode(referralFromUrl)
               : window.AppApi.getReferralCode();
           const signupLink = document.getElementById('signup-link');
+          const emailInput = document.getElementById('email');
+
+          if (emailFromUrl && emailInput) {
+              emailInput.value = emailFromUrl.trim().toLowerCase();
+          }
 
           if (referralCode && signupLink) {
               signupLink.href = `inscri.html?ref=${encodeURIComponent(referralCode)}`;

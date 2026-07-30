@@ -44,6 +44,23 @@
       <input type="number" id="montant-depot" min="1" step="0.01" placeholder="Montant">
       <small class="hint">Vous serez redirige vers une facture de paiement securisee.</small>
 
+      <div class="payment-methods" aria-label="Methodes de paiement disponibles">
+        <div class="payment-methods-head">
+          <span>Paiements acceptes</span>
+          <small>Carte, mobile money et crypto</small>
+        </div>
+        <div class="payment-logo-grid">
+          <span class="payment-logo visa">VISA</span>
+          <span class="payment-logo mastercard"><span></span><span></span></span>
+          <span class="payment-logo mobile-money">MOMO</span>
+          <span class="payment-logo wave">WAVE</span>
+          <span class="payment-logo usdt">USDT</span>
+          <span class="payment-logo btc">BTC</span>
+          <span class="payment-logo oxapay">OxaPay</span>
+          <span class="payment-logo geniuspay">GeniusPay</span>
+        </div>
+      </div>
+
       <button class="btn-primary" id="btn-depot" onclick="effectuerDepot()">Payer maintenant</button>
     </div>
 
@@ -69,6 +86,14 @@
 
     <p id="message"></p>
   </div>
+
+  <footer class="account-footer">
+    <div>
+      <strong>Escape the Ghost</strong>
+      <span>Paiements securises, depots rapides, retraits suivis.</span>
+    </div>
+    <a href="mailto:diezecorporation@gmail.com">diezecorporation@gmail.com</a>
+  </footer>
 
   <script src="app-api.js?v=20260714-render-api-force"></script>
   <script src="script.js?v=20260715-payment-rebuild"></script>

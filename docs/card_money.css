@@ -19,9 +19,11 @@
 body {
   margin: 0;
   min-height: 100vh;
-  display: flex;
+  display: grid;
+  grid-template-rows: 1fr auto;
   justify-content: center;
   align-items: center;
+  gap: 18px;
   padding: 24px 15px;
   color: var(--text);
   background:
@@ -150,7 +152,7 @@ h1 {
 
 .form-panel {
   opacity: 1;
-  max-height: 320px;
+  max-height: 560px;
   overflow: hidden;
   transition: all 0.35s ease;
 }
@@ -161,6 +163,117 @@ h1 {
   max-height: 0;
   pointer-events: none;
   transform: translateY(8px);
+}
+
+.payment-methods {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 16px;
+  background: rgba(5, 8, 16, 0.22);
+}
+
+.payment-methods-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.payment-methods-head span {
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.payment-methods-head small {
+  color: rgba(255,255,255,0.62);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.payment-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.payment-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 38px;
+  padding: 7px 8px;
+  border-radius: 10px;
+  background: #fff;
+  color: #111827;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.18);
+}
+
+.payment-logo.visa {
+  color: #1a1f71;
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.payment-logo.mastercard {
+  position: relative;
+  gap: 0;
+  background: #111827;
+}
+
+.payment-logo.mastercard span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+.payment-logo.mastercard span:first-child {
+  background: #eb001b;
+  transform: translateX(5px);
+}
+
+.payment-logo.mastercard span:last-child {
+  background: #f79e1b;
+  mix-blend-mode: screen;
+  transform: translateX(-5px);
+}
+
+.payment-logo.mobile-money {
+  background: linear-gradient(135deg, #ff7900, #ffd23f);
+  color: #241100;
+}
+
+.payment-logo.wave {
+  background: linear-gradient(135deg, #00a6ff, #7df0ff);
+  color: #052033;
+}
+
+.payment-logo.usdt {
+  background: #26a17b;
+  color: #fff;
+}
+
+.payment-logo.btc {
+  background: #f7931a;
+  color: #fff;
+}
+
+.payment-logo.oxapay {
+  background: linear-gradient(135deg, #18181b, #52525b);
+  color: #fff;
+}
+
+.payment-logo.geniuspay {
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  color: #fff;
+  font-size: 0.66rem;
 }
 
 .form-panel label {
@@ -364,6 +477,41 @@ h1 {
   color: #93c5fd;
 }
 
+.account-footer {
+  width: min(440px, 100%);
+  padding: 15px 18px;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  background: rgba(5, 8, 16, 0.32);
+  color: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+}
+
+.account-footer div {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.account-footer strong {
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.account-footer span,
+.account-footer a {
+  color: rgba(255,255,255,0.66);
+  font-size: 0.8rem;
+}
+
+.account-footer a {
+  text-decoration: none;
+}
+
+.account-footer a:hover {
+  color: white;
+}
+
 @media (max-width: 480px) {
   .container {
     padding: 22px;
@@ -379,6 +527,20 @@ h1 {
 
   .history-amount,
   .history-status {
+    text-align: left;
+  }
+
+  .payment-logo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .payment-methods-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .payment-methods-head small {
     text-align: left;
   }
 }
