@@ -124,6 +124,8 @@
       ["Joueurs actifs", cards.activePlayers || 0],
       ["Depots", formatMoney(cards.totalDeposits || 0)],
       ["Retraits", formatMoney(cards.totalWithdrawals || 0)],
+      ["Depots en attente", cards.pendingDeposits || 0],
+      ["Retraits en attente", cards.pendingWithdraws || 0],
       ["Profit estime", formatMoney(cards.estimatedProfit || 0)],
       ["House edge", `${Number(cards.houseEdge || 0).toFixed(2)}%`],
       ["Visiteurs aujourd'hui", cards.todayVisitors || 0],
@@ -243,12 +245,27 @@
 
   function renderTransactions() {
     els.transactionsTableBody.innerHTML = state.transactions.map((transaction) => {
-      const actions = transaction.type === "withdraw" && transaction.status === "pending"
-        ? `<div class="table-actions">
-            <button class="mini-action js-approve-withdraw" data-transaction-id="${transaction._id}" type="button">Valider</button>
-            <button class="mini-action danger js-reject-withdraw" data-transaction-id="${transaction._id}" type="button">Refuser</button>
-          </div>`
-        : (transaction.type === "withdraw" ? "Traite" : "Aucune");
+      const isPending = transaction.status === "pending";
+      let actions = "Aucune";
+
+      if (transaction.type === "withdraw") {
+        actions = isPending
+          ? `<div class="table-actions">
+              <button class="mini-action js-approve-withdraw" data-transaction-id="${transaction._id}" type="button">Valider</button>
+              <button class="mini-action danger js-reject-withdraw" data-transaction-id="${transaction._id}" type="button">Refuser</button>
+            </div>`
+          : "Traite";
+      }
+
+      if (transaction.type === "deposit") {
+        actions = isPending
+          ? `<div class="table-actions">
+              <button class="mini-action js-approve-deposit" data-transaction-id="${transaction._id}" type="button">Crediter</button>
+              <button class="mini-action danger js-reject-deposit" data-transaction-id="${transaction._id}" type="button">Refuser</button>
+            </div>`
+          : "Traite";
+      }
+
       return `
         <tr>
           <td data-label="Type">${transaction.type}</td>
@@ -483,15 +500,35 @@
   async function handleTransactionAction(event) {
     const approveButton = event.target.closest(".js-approve-withdraw");
     const rejectButton = event.target.closest(".js-reject-withdraw");
-    const transactionId = approveButton?.dataset.transactionId || rejectButton?.dataset.transactionId;
+    const approveDepositButton = event.target.closest(".js-approve-deposit");
+    const rejectDepositButton = event.target.closest(".js-reject-deposit");
+    const transactionId = approveButton?.dataset.transactionId
+      || rejectButton?.dataset.transactionId
+      || approveDepositButton?.dataset.transactionId
+      || rejectDepositButton?.dataset.transactionId;
     if (!transactionId) return;
+
+    const action = approveButton
+      ? "approve-withdraw"
+      : rejectButton
+        ? "reject-withdraw"
+        : approveDepositButton
+          ? "approve-deposit"
+          : "reject-deposit";
+
     try {
-      await adminFetch(`/api/admin/transactions/${transactionId}/${approveButton ? "approve-withdraw" : "reject-withdraw"}`, {
+      await adminFetch(`/api/admin/transactions/${transactionId}/${action}`, {
         method: "PATCH",
         body: JSON.stringify({})
       });
       await Promise.all([loadBootstrap(), loadTransactions(new FormData(els.transactionsFilterForm)), loadLogs(), loadAlerts()]);
-      showToast(approveButton ? "Retrait valide" : "Retrait refuse");
+      showToast(approveButton
+        ? "Retrait valide"
+        : rejectButton
+          ? "Retrait refuse"
+          : approveDepositButton
+            ? "Depot credite"
+            : "Depot refuse");
     } catch (error) {
       showToast(error.message, "error");
     }
