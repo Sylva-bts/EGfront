@@ -86,6 +86,8 @@ let shieldStylesInjected = false;
 let accountLoading = false;
 let betRequestPending = false;
 let cashoutRequestPending = false;
+let activeRoundId = "";
+let roundStatusIntervalId;
 
 let gelBtn = document.getElementById("btn-gel");
 let bouclierBtn = document.getElementById("btn-bouclier");
@@ -673,7 +675,7 @@ function logoutProfile() {
 }
 
 async function debitGameBalance(amount) {
-  const payload = await powerApiFetch("/api/game/debit", {
+  const payload = await powerApiFetch("/api/game/start", {
     method: "POST",
     headers: getPowerHeaders(),
     body: JSON.stringify({
@@ -687,10 +689,10 @@ async function debitGameBalance(amount) {
 }
 
 async function creditGameBalance(amount) {
-  const payload = await powerApiFetch("/api/game/credit", {
+  const payload = await powerApiFetch("/api/game/cashout", {
     method: "POST",
     headers: getPowerHeaders(),
-    body: JSON.stringify({ amount })
+    body: JSON.stringify({ roundId: activeRoundId })
   });
   setDisplayedBalance(payload.user.balance);
   return payload;
@@ -795,6 +797,43 @@ function renderWorldChat(items) {
   `;
   }).join("");
   worldChatMessagesEl.scrollTop = worldChatMessagesEl.scrollHeight;
+}
+
+function stopRoundMonitor() {
+  if (roundStatusIntervalId) {
+    clearInterval(roundStatusIntervalId);
+    roundStatusIntervalId = undefined;
+  }
+}
+
+async function syncRoundStatus() {
+  if (!activeRoundId || !jeuEnCours) return;
+  try {
+    const payload = await powerApiFetch(`/api/game/round/${encodeURIComponent(activeRoundId)}`, {
+      method: "GET",
+      headers: getPowerHeaders()
+    });
+    const round = payload?.round;
+    if (!round) return;
+    const serverMultiplier = Number(round.multiplier);
+    if (Number.isFinite(serverMultiplier) && serverMultiplier >= 1) {
+      coteIni = serverMultiplier;
+      updateCote(coteIni);
+    }
+    if (round.status === "crashed") {
+      stopRoundMonitor();
+      pouuf = coteIni;
+    }
+  } catch (error) {
+    // A temporary polling failure must never credit a client-side gain.
+    setPowerStatus("Synchronisation de la manche interrompue. Reessayez apres reconnexion.", true);
+  }
+}
+
+function startRoundMonitor() {
+  stopRoundMonitor();
+  syncRoundStatus();
+  roundStatusIntervalId = setInterval(syncRoundStatus, 350);
 }
 
 async function refreshWorldPanels() {
@@ -1222,7 +1261,11 @@ async function Miser() {
 
   try {
     betRequestPending = true;
-    await debitGameBalance(mise);
+    const betPayload = await debitGameBalance(mise);
+    activeRoundId = String(betPayload?.round?.id || "");
+    if (!activeRoundId) {
+      throw new Error("La manche securisee n'a pas ete creee.");
+    }
     if (worldApiUnavailable) {
       appendLocalWorldActivity({
         type: "bet",
@@ -1279,11 +1322,13 @@ function GameOn() {
 
   refreshPowerButtons();
 
-  pouuf = tirerCote();
+  // The browser is only a renderer. The server reveals the live multiplier
+  // through the active round and alone decides whether a cashout is valid.
+  pouuf = Number.MAX_SAFE_INTEGER;
   updateCote(coteIni);
   schedulePsychoCue();
   start();
-  augmenterCote();
+  startRoundMonitor();
 }
 
 function start() {
@@ -1334,6 +1379,8 @@ function start() {
         Stick.style.display = "none";
         Stick1.style.display = "block";
         jeuEnCours = false;
+        activeRoundId = "";
+        stopRoundMonitor();
         refreshPowerButtons();
         if (!secChanceUsed) {
           saveTransaction("Perte", -mise, coteIni);
@@ -1372,11 +1419,12 @@ function updateCote(valeur) {
 }
 
 async function retrait() {
-  if (!jeuEnCours || cashoutRequestPending) return;
+  if (!jeuEnCours || cashoutRequestPending || !activeRoundId) return;
 
   jeuEnCours = false;
   clearPsychoCue();
   clearInterval(gameInterval);
+  stopRoundMonitor();
   stopAudio(jeuMusiqueAudio, { reset: true });
   if (bouclierTimeoutId) {
     clearTimeout(bouclierTimeoutId);
@@ -1390,22 +1438,18 @@ async function retrait() {
   Stick1.style.display = "block";
   refreshPowerButtons();
 
-  const gain = Number((mise * coteIni).toFixed(2));
-
   try {
     cashoutRequestPending = true;
-    await window.AppApi.fetchJson("/api/game/credit", {
+    const payload = await window.AppApi.fetchJson("/api/game/cashout", {
       method: "POST",
       headers: getPowerHeaders(),
-      body: JSON.stringify({
-        amount: gain,
-        betAmount: mise,
-        multiplier: Number(coteIni.toFixed(2))
-      })
-    }).then((payload) => {
-      setDisplayedBalance(payload.user.balance);
-      return payload;
+      body: JSON.stringify({ roundId: activeRoundId })
     });
+    const gain = Number(payload?.round?.payout || 0);
+    const serverMultiplier = Number(payload?.round?.multiplier || 1);
+    coteIni = Number.isFinite(serverMultiplier) ? serverMultiplier : coteIni;
+    setDisplayedBalance(payload.user.balance);
+    activeRoundId = "";
     playAudio(moneyAudio);
     if (worldApiUnavailable) {
       appendLocalWorldActivity({
@@ -1420,6 +1464,7 @@ async function retrait() {
     saveTransaction("Gain", gain, coteIni);
     await refreshWorldPanels();
   } catch (error) {
+    activeRoundId = "";
     showGameNotification(error.message || "Retrait impossible", "warn");
     setPowerStatus(error.message, true);
     await refreshAccountFromServer(false);
