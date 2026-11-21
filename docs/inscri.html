@@ -281,15 +281,15 @@
          <div class="steps">
             <div class="step">
                <strong>1. Creez votre profil</strong>
-               <span>Un nom, un email, un mot de passe, et vous etes pret a commencer.</span>
+               <span>Un nom, un email, un mot de passe securise, puis une verification obligatoire.</span>
             </div>
             <div class="step">
                <strong>2. Ajoutez un code d'affiliation</strong>
                <span>Le code se remplit automatiquement si vous arrivez depuis un lien de parrainage.</span>
             </div>
             <div class="step">
-               <strong>3. Connectez-vous et jouez</strong>
-               <span>Une fois le compte cree, vous etes redirige vers la page de connexion.</span>
+               <strong>3. Verifiez votre email</strong>
+               <span>Entrez le code a 5 chiffres recu par email pour activer legalement votre compte.</span>
             </div>
          </div>
       </aside>
@@ -310,7 +310,7 @@
                </div>
                <div class="field">
                   <label for="password">Mot de passe</label>
-                  <input type="password" id="password" name="password" placeholder="Choisissez un mot de passe" required>
+                  <input type="password" id="password" name="password" minlength="8" placeholder="8 caracteres, lettre et chiffre" required>
                </div>
                <div class="field">
                   <label for="confirm_password">Confirmer le mot de passe</label>
@@ -555,22 +555,11 @@
                   })
               });
 
-              if (!data.token) {
-                  throw new Error('Inscription incomplete: token absent dans la reponse serveur.');
-              }
-
-              window.AppApi.setToken(data.token, data.user);
-
-              if (!window.AppApi.getToken()) {
-                  throw new Error('Inscription impossible: le navigateur ne conserve pas la session.');
-              }
-
               window.AppApi.clearReferralCode();
               renderMessage(data.message, 'success');
-
               setTimeout(() => {
-                  window.AppApi.goToGame();
-              }, 1500);
+                  window.location.assign(`verify-email.html?email=${encodeURIComponent(data.email || email)}`);
+              }, 900);
 
           } catch (err) {
               renderMessage(err.message, 'error');

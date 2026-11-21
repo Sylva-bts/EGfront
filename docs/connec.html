@@ -347,6 +347,11 @@
               }, 1000);
           } catch (err) {
               renderMessage(err.message, 'error');
+              if (/verifiez votre email/i.test(err.message)) {
+                  setTimeout(() => {
+                      window.location.assign(`verify-email.html?email=${encodeURIComponent(email)}`);
+                  }, 900);
+              }
           }
       }
 
