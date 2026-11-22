@@ -477,7 +477,7 @@
 
               window.AppApi.setToken(data.token, data.user);
               window.AppApi.clearReferralCode();
-              renderMessage(data.message, 'success');
+              renderMessage(data.message, 'pending');
 
               setTimeout(() => {
                   window.AppApi.goToGame();
