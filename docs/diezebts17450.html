@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Escape the Ghost Admin</title>
-  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="admin.css?v=20261125-mobile">
 </head>
 <body>
   <div class="admin-login-shell" id="admin-login-shell">
@@ -29,17 +29,17 @@
         <p id="admin-profile-label">Session admin</p>
       </div>
 
-      <nav class="side-nav">
-        <button class="nav-link active" data-view="dashboard">Dashboard</button>
-        <button class="nav-link" data-view="users">Joueurs</button>
-        <button class="nav-link" data-view="transactions">Transactions</button>
-        <button class="nav-link" data-view="settings">Parametres Jeu</button>
-        <button class="nav-link" data-view="logs">Journal Admin</button>
+      <nav class="side-nav" aria-label="Navigation administrateur">
+        <button type="button" class="nav-link active" data-view="dashboard" data-mobile-label="Accueil">Dashboard</button>
+        <button type="button" class="nav-link" data-view="users" data-mobile-label="Joueurs">Joueurs</button>
+        <button type="button" class="nav-link" data-view="transactions" data-mobile-label="Finance">Transactions</button>
+        <button type="button" class="nav-link" data-view="settings" data-mobile-label="Reglages">Parametres Jeu</button>
+        <button type="button" class="nav-link" data-view="logs" data-mobile-label="Journal">Journal Admin</button>
       </nav>
 
       <div class="sidebar-actions">
-        <button class="ghost-button" id="refresh-bootstrap">Actualiser</button>
-        <button class="ghost-button danger" id="admin-logout">Deconnexion</button>
+        <button type="button" class="ghost-button" id="refresh-bootstrap">Actualiser</button>
+        <button type="button" class="ghost-button danger" id="admin-logout">Deconnexion</button>
       </div>
     </aside>
 
@@ -88,7 +88,7 @@
       <section class="view" id="view-users">
         <section class="panel">
           <div class="panel-head responsive-head">
-            <div><p class="eyebrow">Joueurs</p><h3>Centre utilisateurs</h3></div>
+            <div><p class="eyebrow">Joueurs</p><h3>Centre utilisateurs <span class="result-count" id="users-results-count"></span></h3></div>
             <form id="users-filter-form" class="inline-form">
               <input type="search" name="search" placeholder="Recherche nom ou email">
               <select name="status">
@@ -97,6 +97,7 @@
                 <option value="banned">Bannis</option>
               </select>
               <button type="submit">Filtrer</button>
+              <button type="button" class="ghost-button filter-reset" id="reset-users-filter">Reinitialiser</button>
             </form>
           </div>
           <div class="table-wrap">
@@ -115,7 +116,7 @@
       <section class="view" id="view-transactions">
         <section class="panel">
           <div class="panel-head responsive-head">
-            <div><p class="eyebrow">Finance</p><h3>Transactions</h3></div>
+            <div><p class="eyebrow">Finance</p><h3>Transactions <span class="result-count" id="transactions-results-count"></span></h3></div>
             <form id="transactions-filter-form" class="inline-form multi">
               <select name="type">
                 <option value="">Tous types</option>
@@ -136,6 +137,7 @@
               <input type="date" name="to">
               <input type="search" name="search" placeholder="Joueur ou email">
               <button type="submit">Appliquer</button>
+              <button type="button" class="ghost-button filter-reset" id="reset-transactions-filter">Effacer filtres</button>
             </form>
           </div>
           <div class="table-wrap">
@@ -267,6 +269,6 @@
 
   <div class="toast-stack" id="toast-stack"></div>
   <script src="app-api.js?v=20260530-api-base"></script>
-  <script src="admin.js"></script>
+  <script src="admin.js?v=20261125-mobile"></script>
 </body>
 </html>

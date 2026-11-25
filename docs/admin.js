@@ -1,5 +1,6 @@
 (function initAdminPanel() {
   const ADMIN_TOKEN_KEY = "escapeGhostAdminToken";
+  const ADMIN_VIEW_KEY = "escapeGhostAdminView";
   const state = {
     token: localStorage.getItem(ADMIN_TOKEN_KEY) || "",
     admin: null,
@@ -44,7 +45,11 @@
     worldChatDeleteForm: document.getElementById("world-chat-delete-form"),
     worldChatDeleteStatus: document.getElementById("world-chat-delete-status"),
     usersFilterForm: document.getElementById("users-filter-form"),
-    transactionsFilterForm: document.getElementById("transactions-filter-form")
+    transactionsFilterForm: document.getElementById("transactions-filter-form"),
+    usersResultsCount: document.getElementById("users-results-count"),
+    transactionsResultsCount: document.getElementById("transactions-results-count"),
+    resetUsersFilter: document.getElementById("reset-users-filter"),
+    resetTransactionsFilter: document.getElementById("reset-transactions-filter")
   };
 
   function formatMoney(value) {
@@ -180,6 +185,7 @@
   }
 
   function renderUsers() {
+    els.usersResultsCount.textContent = `${state.users.length} resultat${state.users.length > 1 ? "s" : ""}`;
     els.usersTableBody.innerHTML = state.users.map((user) => `
       <tr class="js-open-user-row" data-user-id="${user.id}">
         <td data-label="Joueur"><strong>${escapeHtml(user.username)}</strong><br><span>${escapeHtml(user.email)}</span></td>
@@ -244,6 +250,7 @@
   }
 
   function renderTransactions() {
+    els.transactionsResultsCount.textContent = `${state.transactions.length} resultat${state.transactions.length > 1 ? "s" : ""}`;
     els.transactionsTableBody.innerHTML = state.transactions.map((transaction) => {
       const isPending = transaction.status === "pending";
       let actions = "Aucune";
@@ -577,14 +584,27 @@
     }
   }
 
+  function activateView(viewName, shouldScroll = true) {
+    const nextView = document.getElementById(`view-${viewName}`);
+    const nextButton = document.querySelector(`.nav-link[data-view="${viewName}"]`);
+    if (!nextView || !nextButton) return;
+
+    document.querySelectorAll(".nav-link").forEach((item) => {
+      const isActive = item === nextButton;
+      item.classList.toggle("active", isActive);
+      item.setAttribute("aria-current", isActive ? "page" : "false");
+    });
+    document.querySelectorAll(".view").forEach((view) => view.classList.toggle("active", view === nextView));
+    sessionStorage.setItem(ADMIN_VIEW_KEY, viewName);
+
+    if (shouldScroll && window.innerWidth <= 640) {
+      window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    }
+  }
+
   function bindNavigation() {
     document.querySelectorAll(".nav-link").forEach((button) => {
-      button.addEventListener("click", () => {
-        document.querySelectorAll(".nav-link").forEach((item) => item.classList.remove("active"));
-        document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
-        button.classList.add("active");
-        document.getElementById(`view-${button.dataset.view}`).classList.add("active");
-      });
+      button.addEventListener("click", () => activateView(button.dataset.view));
     });
   }
 
@@ -655,6 +675,16 @@
     els.worldChatDeleteForm.addEventListener("submit", handleWorldChatDelete);
     els.usersFilterForm.addEventListener("submit", async (event) => { event.preventDefault(); await loadUsers(new FormData(event.currentTarget)); });
     els.transactionsFilterForm.addEventListener("submit", async (event) => { event.preventDefault(); await loadTransactions(new FormData(event.currentTarget)); });
+    els.resetUsersFilter.addEventListener("click", async () => {
+      els.usersFilterForm.reset();
+      await loadUsers(new FormData(els.usersFilterForm));
+      showToast("Filtres joueurs reinitialises");
+    });
+    els.resetTransactionsFilter.addEventListener("click", async () => {
+      els.transactionsFilterForm.reset();
+      await loadTransactions(new FormData(els.transactionsFilterForm));
+      showToast("Filtres transactions reinitialises");
+    });
     els.usersTableBody.addEventListener("click", async (event) => {
       const trigger = event.target.closest(".js-open-user");
       const rowTrigger = event.target.closest(".js-open-user-row");
@@ -679,6 +709,7 @@
     try {
       setAuthView(true);
       await loadBootstrap();
+      activateView(sessionStorage.getItem(ADMIN_VIEW_KEY) || "dashboard", false);
       if (alertsIntervalId) clearInterval(alertsIntervalId);
       alertsIntervalId = setInterval(() => { loadAlerts().catch(() => {}); }, 15000);
     } catch (error) {
