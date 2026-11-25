@@ -114,7 +114,7 @@
         : value === "rejected" || value === "failed" || value === "banned"
           ? "danger"
           : "";
-    return `<span class="status-pill ${tone}">${status || "N/A"}</span>`;
+    return `<span class="status-pill ${tone}">${escapeHtml(status || "N/A")}</span>`;
   }
 
   function renderDashboard() {
@@ -171,11 +171,11 @@
     `).join("") || '<div class="empty-state">Aucune cote enregistree.</div>';
 
     els.alertsList.innerHTML = state.alerts.map((alert) => `
-      <article class="feed-item"><strong>${alert.message}</strong><div>${formatDate(alert.createdAt)}</div></article>
+      <article class="feed-item"><strong>${escapeHtml(alert.message)}</strong><div>${formatDate(alert.createdAt)}</div></article>
     `).join("") || '<div class="empty-state">Aucune alerte.</div>';
 
     els.dashboardLogs.innerHTML = state.logs.slice(0, 8).map((log) => `
-      <article class="feed-item"><strong>${log.summary}</strong><div>${log.admin} • ${formatDate(log.createdAt)}</div></article>
+      <article class="feed-item"><strong>${escapeHtml(log.summary)}</strong><div>${escapeHtml(log.admin)} • ${formatDate(log.createdAt)}</div></article>
     `).join("") || '<div class="empty-state">Aucune action admin.</div>';
   }
 
@@ -268,8 +268,8 @@
 
       return `
         <tr>
-          <td data-label="Type">${transaction.type}</td>
-          <td data-label="Joueur"><strong>${transaction.user?.username || "Joueur"}</strong><br><span>${transaction.user?.email || ""}</span>${transaction.address ? `<br><span>${transaction.crypto || ""}: ${transaction.address}</span>` : ""}</td>
+        <td data-label="Type">${escapeHtml(transaction.type)}</td>
+          <td data-label="Joueur"><strong>${escapeHtml(transaction.user?.username || "Joueur")}</strong><br><span>${escapeHtml(transaction.user?.email || "")}</span>${transaction.address ? `<br><span>${escapeHtml(transaction.crypto || "")}: ${escapeHtml(transaction.address)}</span>` : ""}</td>
           <td data-label="Montant">${formatMoney(transaction.amount_fiat)}</td>
           <td data-label="Statut">${statusPill(transaction.status)}</td>
           <td data-label="Date">${formatDate(transaction.createdAt)}</td>
@@ -281,7 +281,7 @@
 
   function renderLogs() {
     els.logsList.innerHTML = state.logs.map((log) => `
-      <article class="feed-item"><strong>${log.summary}</strong><div>${log.action}</div><div>${log.admin} • ${formatDate(log.createdAt)}</div></article>
+      <article class="feed-item"><strong>${escapeHtml(log.summary)}</strong><div>${escapeHtml(log.action)}</div><div>${escapeHtml(log.admin)} • ${formatDate(log.createdAt)}</div></article>
     `).join("") || '<div class="empty-state">Aucun log.</div>';
   }
 
